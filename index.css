@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom scrollbar to match the design feel */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #fff5ec;
+}
+::-webkit-scrollbar-thumb {
+    background: #FF9666;
+    border-radius: 4px;
+}
+body {
+    overflow-x: hidden;
+}
+
+@keyframes cute-float {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+    33% {
+        transform: translateY(-4px) rotate(-3deg);
+    }
+    66% {
+        transform: translateY(2px) rotate(2deg);
+    }
+}
+
+.animate-cute-float {
+    animation: cute-float 4s ease-in-out infinite;
+}
+
+/* New Creative Logo Animation */
+@keyframes logo-alive {
+    0% {
+        transform: scale(1) rotate(0deg) translateY(0);
+        filter: drop-shadow(0 0 0 rgba(255, 150, 102, 0));
+    }
+    50% {
+        transform: scale(1.08) rotate(3deg) translateY(-8px);
+        filter: drop-shadow(0 10px 20px rgba(255, 150, 102, 0.3));
+    }
+    100% {
+        transform: scale(1) rotate(0deg) translateY(0);
+        filter: drop-shadow(0 0 0 rgba(255, 150, 102, 0));
+    }
+}
+
+.animate-logo-alive {
+    animation: logo-alive 5s ease-in-out infinite;
+    will-change: transform, filter;
+}
