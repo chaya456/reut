@@ -78,11 +78,12 @@ const Footer: React.FC = () => {
             className="bg-dark-coal text-white text-center relative z-10"
             style={{ clipPath: 'polygon(0 20vw, 100% 0, 100% 100%, 0 100%)', paddingTop: '25vw', paddingBottom: '20px' }}
         >
-            <div className="max-w-[800px] mx-auto px-[5vw]">
-                <h2 className="text-[clamp(32px,5vw,70px)] font-extrabold mb-[2vh] leading-tight animate-text-footer">
+            <div className="max-w-[1000px] mx-auto px-[5vw]">
+                {/* Title */}
+                <h2 className="text-[clamp(32px,5vw,70px)] font-extrabold mb-[2vh] leading-tight animate-text-footer md:whitespace-nowrap">
                     <span className="transition-colors duration-300 hover:text-brand-dark cursor-default inline-block">מעריכה</span> שהגעת עד לכאן
                 </h2>
-                <div className="text-[clamp(16px,2vw,24px)] leading-[1.6] opacity-80 max-w-[700px] mx-auto mb-[3vh] animate-text-footer">
+                <div className="text-[clamp(16px,2vw,24px)] leading-[1.6] opacity-80 max-w-[700px] mx-auto mb-[2vh] animate-text-footer">
                     יש לך מוצר חדש?<br />
                     מתעניינים על הוספת <span className="transition-colors duration-300 hover:text-brand-dark cursor-default inline-block">ערך</span> למוצר?<br />
                     יכול להיות שכבר מיתגנו אותו ועדיין לא ראית :)
@@ -92,13 +93,14 @@ const Footer: React.FC = () => {
                     <a 
                         href="#contact-form-fields" 
                         onClick={scrollToForm}
-                        className="inline-block text-brand-light font-extrabold no-underline text-[clamp(20px,2.5vw,28px)] border-b-2 border-brand-light hover:text-brand-dark hover:border-brand-dark transition-colors mb-[5vh]"
+                        className="inline-block text-brand-light font-extrabold no-underline text-[clamp(20px,2.5vw,28px)] border-b-2 border-brand-light hover:text-brand-dark hover:border-brand-dark transition-colors mb-[3vh]"
                     >
                         כאן בודקים את זה &gt;&gt;
                     </a>
                 </div>
 
-                <div className="max-w-[800px] mx-auto text-right mb-[5vh] animate-text-footer" id="contact-form-fields">
+                {/* Form Area */}
+                <div className="max-w-[800px] mx-auto text-right mb-[4vh] animate-text-footer" id="contact-form-fields">
                     {isSuccess ? (
                         <div className="bg-white/10 p-10 text-center border border-brand-light/20 animate-[fadeIn_0.5s_ease-out]">
                              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-brand-light text-dark-coal mb-4 shadow-lg">
@@ -123,13 +125,10 @@ const Footer: React.FC = () => {
                             </button>
                         </form>
                     )}
-                    
-                    {!isSuccess && (
-                        <p className="text-center text-white/40 text-sm mt-4">האתר בהרצה, יתכנו חסרים וליקויים, מצאת משו? ספרי לנו</p>
-                    )}
                 </div>
                 
-                <div className="border-t border-white/10 pt-6 mt-4 text-sm md:text-base text-white/60 flex flex-col md:flex-row items-center justify-center gap-4 animate-text-footer relative">
+                {/* Credits - NOW ABOVE THE BETA WARNING */}
+                <div className="border-t border-white/10 pt-4 mt-2 text-sm md:text-base text-white/60 flex flex-col md:flex-row items-center justify-center gap-4 animate-text-footer relative pb-2">
                     <span className="font-semibold text-white/80">אתרים שעובדים ח. גוטפרב</span>
                     <span className="hidden md:inline text-white/30">|</span>
                     <div className="relative">
@@ -142,6 +141,11 @@ const Footer: React.FC = () => {
                         )}
                     </div>
                 </div>
+
+                {/* Beta Warning - NOW AT THE BOTTOM */}
+                {!isSuccess && (
+                    <p className="text-center text-white/20 text-xs mt-2 mb-4">האתר בהרצה, יתכנו חסרים וליקויים, מצאת משו? ספרי לנו</p>
+                )}
             </div>
         </footer>
         <style>{`@keyframes fadeIn { from { opacity: 0; transform: translate(-50%, 10px); } to { opacity: 1; transform: translate(-50%, 0); } }`}</style>
