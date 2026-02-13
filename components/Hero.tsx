@@ -1,10 +1,12 @@
 import React, { useRef, useEffect, useState } from 'react';
 import gsap from 'gsap';
 import Logo from './Logo';
+import { useContent } from '../context/ContentContext';
 
 const Hero: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [mousePos, setMousePos] = useState({ x: '50%', y: '50%' });
+  const { content } = useContent();
 
   // Helper to split text into characters
   const splitText = (text: string) => {
@@ -44,6 +46,9 @@ const Hero: React.FC = () => {
         });
 
         // --- 2. Text Animation ---
+        // Need to wait for react render of new text, so we use a slight delay or just target class
+        // Re-run animation if text changes significantly? 
+        // For simplicity in CMS mode, we just run once on mount.
         const chars = document.querySelectorAll('.hero-char');
         gsap.fromTo(chars, 
           { y: 80, opacity: 0, scale: 0.9 },
@@ -64,7 +69,7 @@ const Hero: React.FC = () => {
     }, containerRef);
 
     return () => ctx.revert();
-  }, []);
+  }, [content.hero]); // Re-run if hero content changes
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!containerRef.current) return;
@@ -118,16 +123,11 @@ const Hero: React.FC = () => {
         </div>
 
         {/* CONTENT LAYER */}
-        {/* 
-            Using a flex container to center everything vertically.
-            items-start in RTL means aligned to the Right.
-        */}
         <div className="absolute inset-0 z-20 pointer-events-auto dir-rtl flex flex-col justify-center px-[5vw]">
             
             <div className="w-full max-w-[950px] flex flex-col items-start relative">
                 
-                {/* 1. Logo - Above Text, Aligned Right (Start) */}
-                {/* Removed origin-center and transition-transform to ensure strict alignment */}
+                {/* 1. Logo */}
                 <div className="w-[clamp(140px,20vw,270px)] mb-[1vh] md:translate-y-16">
                      <Logo className="w-full h-full text-white" animated={false} />
                 </div>
@@ -136,20 +136,20 @@ const Hero: React.FC = () => {
                 <div className="text-right w-full">
                     <h1 className="hero-title text-[clamp(48px,9vw,130px)] font-extrabold leading-[0.9] mb-[2vh] drop-shadow-md text-white cursor-default">
                         <div className="block overflow-hidden">
-                            {splitText("מוסיפים ")}
+                            {splitText(content.hero.titleLine1 + " ")}
                             <span className="transition-colors duration-300 hover:text-brand-dark cursor-default inline-block">
-                                {splitText("ערך")}
+                                {splitText(content.hero.titleLine2)}
                             </span>
                         </div>
                         <div className="block overflow-hidden">
-                            {splitText("למוצר")}
+                            {splitText(content.hero.titleLine3)}
                         </div>
                     </h1>
 
                     {/* Subtitle */}
                     <div className="overflow-hidden mb-[3vh]">
                         <h2 className="hero-subtitle text-[clamp(18px,2.5vw,36px)] font-light text-brand-dark drop-shadow-md pointer-events-none tracking-wide">
-                        אמירה. יצירה. שלמות.
+                        {content.hero.subtitle}
                         </h2>
                     </div>
 
@@ -159,14 +159,13 @@ const Hero: React.FC = () => {
                             onClick={scrollToContact}
                             className="text-[clamp(16px,1.5vw,22px)] font-medium px-[4vw] py-[2vh] bg-brand-dark border-2 border-brand-dark rounded-none text-white transition-all duration-300 hover:bg-white hover:text-brand-dark shadow-lg backdrop-blur-sm cursor-pointer transform hover:scale-105"
                         >
-                        המוצר עליכם | הערך עלינו
+                        {content.hero.buttonText}
                         </button>
                     </div>
                 </div>
 
-                {/* 3. Invisible Spacer - Balances the Logo so text remains perfectly vertically centered */}
+                {/* 3. Invisible Spacer */}
                 <div className="w-[clamp(140px,20vw,270px)] mt-[1vh] opacity-0 pointer-events-none select-none" aria-hidden="true">
-                    {/* Maintain 1:1 aspect ratio to match Logo shape if needed, or just occupy space */}
                     <div className="w-full pt-[100%]"></div>
                 </div>
 

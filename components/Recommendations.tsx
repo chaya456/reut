@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Draggable } from 'gsap/Draggable';
+import { useContent } from '../context/ContentContext';
 
 gsap.registerPlugin(ScrollTrigger, Draggable);
 
@@ -45,6 +46,9 @@ const Recommendations: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<HTMLDivElement[]>([]);
   const stickersRef = useRef<HTMLDivElement[]>([]);
+  const { content } = useContent();
+
+  const reviews = content.recommendations.filter(item => !item.isHidden);
 
   const stickers = [
     { label: "רקמה", Icon: EmbroideryIcon, top: "20%", left: "10%", rotate: -8, color: "text-brand-dark" },
@@ -65,6 +69,9 @@ const Recommendations: React.FC = () => {
                 }
             );
         });
+        
+        // Reset cardsRef for new data length
+        cardsRef.current = cardsRef.current.slice(0, reviews.length);
 
         cardsRef.current.forEach((card, index) => {
             if (index > 0 && card) {
@@ -120,18 +127,7 @@ const Recommendations: React.FC = () => {
 
     }, containerRef);
     return () => ctx.revert();
-  }, []);
-
-  const reviews = [
-      { id: 1, name: "בתיה", image: "https://i.postimg.cc/s2WVcfSg/hmlzh-btyh.png", color: "bg-white" },
-      { id: 2, name: "רבקי", image: "https://i.postimg.cc/HxCTPG4g/hmlzh-rbqy.png", color: "bg-brand-soft" },
-      { id: 3, name: "פרומי", image: "https://i.postimg.cc/s2Qhh0rk/hmlzh-prwmy.png", color: "bg-white" },
-      { id: 4, name: "רוחמה", image: "https://i.postimg.cc/8CJ66nGQ/hmlzh-rwhmh.png", color: "bg-brand-soft" },
-      { id: 5, name: "רחלי", image: "https://i.postimg.cc/s2Qhh0zC/hmlzh-rhly.png", color: "bg-white" },
-      { id: 6, name: "חני", image: "https://i.postimg.cc/8C49sr9y/hmlzh-hny.jpg", color: "bg-brand-soft" },
-      { id: 7, name: "מירב", image: "https://i.postimg.cc/YSRZjmZb/hmlzh-myrb.jpg", color: "bg-white" },
-      { id: 8, name: "ריקי", image: "https://i.postimg.cc/1zB24N27/hmlzh-ryqy.jpg", color: "bg-brand-soft" },
-  ];
+  }, [reviews.length]); // Re-run when recommendations change
 
   return (
     <section 
@@ -174,7 +170,7 @@ const Recommendations: React.FC = () => {
             ))}
         </div>
 
-        {/* Stickers Layer - Responsive Size */}
+        {/* Stickers Layer */}
         {stickers.map((sticker, idx) => (
             <div 
                 key={idx}

@@ -1,82 +1,20 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useContent } from '../context/ContentContext';
+import { GalleryItem } from '../types';
 
 gsap.registerPlugin(ScrollTrigger);
-
-// Define the structure for a project item
-interface ProjectItem {
-  id: number;
-  title: string;
-  thumbnail: string;
-  size: 'large' | 'small' | 'tall'; // For grid layout control
-  images: string[]; // Images to show in lightbox
-}
 
 const Gallery: React.FC = () => {
   const galleryRef = useRef<HTMLDivElement>(null);
   const [lightboxOpen, setLightboxOpen] = useState(false);
-  const [currentProject, setCurrentProject] = useState<ProjectItem | null>(null);
+  const [currentProject, setCurrentProject] = useState<GalleryItem | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isImageLoading, setIsImageLoading] = useState(true);
-
-  // New Data from User
-  const galleryItems: ProjectItem[] = [
-      { 
-        id: 1, 
-        title: "אירוסין", 
-        thumbnail: "https://i.postimg.cc/DwV5DXct/DSC01640.jpg",
-        size: 'large', 
-        images: [
-            "https://i.postimg.cc/DwV5DXct/DSC01640.jpg",
-            "https://i.postimg.cc/HkG3Ky2C/DSC01658.jpg",
-            "https://i.postimg.cc/wjKFPmVM/DSC01679.jpg",
-            "https://i.postimg.cc/fR45F9KL/DSC01681.jpg",
-            "https://i.postimg.cc/vBmv9LQx/DSC02031.jpg",
-            "https://i.postimg.cc/VNgRdHcB/DSC02039.jpg"
-        ]
-      },
-      { 
-        id: 2, 
-        title: "יומולדת", 
-        thumbnail: "https://i.postimg.cc/9XsF6mq0/tpt-swlhn.jpg",
-        size: 'tall', 
-        images: [
-            "https://i.postimg.cc/9XsF6mq0/tpt-swlhn.jpg",
-            "https://i.postimg.cc/Y0FkrFmS/kws-wphyt.jpg",
-            "https://i.postimg.cc/DfRy9vbw/phyt.jpg",
-            "https://i.postimg.cc/vTnMYn6n/phyt-wkws.jpg",
-            "https://i.postimg.cc/sfG39kHq/pytwt.jpg"
-        ]
-      },
-      { 
-        id: 3, 
-        title: "יום נישואין", 
-        thumbnail: "https://i.postimg.cc/MTMRR6CK/zlht.jpg", 
-        size: 'small', 
-        images: [
-            "https://i.postimg.cc/MTMRR6CK/zlht.jpg", 
-            "https://i.postimg.cc/KcnVgBtQ/1B4A6988.jpg", 
-            "https://i.postimg.cc/023WG43d/swlhn-'lkswn.jpg",
-            "https://i.postimg.cc/qB1ZqqGN/swlhn-mlm'lh.jpg",
-            "https://i.postimg.cc/xdV6hz9h/swlhn-rwhb.jpg",
-            "https://i.postimg.cc/W4c5CksW/sqyq.jpg"
-        ]
-      },
-      { 
-        id: 4, 
-        title: "שבע ברכות", 
-        thumbnail: "https://i.postimg.cc/7LpX0JWf/freepik-img1-img2-37235.jpg",
-        size: 'small', 
-        images: [
-            "https://i.postimg.cc/7LpX0JWf/freepik-img1-img2-37235.jpg",
-            "https://i.postimg.cc/GmgX35P6/kws.jpg",
-            "https://i.postimg.cc/xdktX3gs/zlht.jpg",
-            "https://i.postimg.cc/k5Vf2vf2/swlhn-'rwk.jpg",
-            "https://i.postimg.cc/Bb3gw9st/swlhn-mlm'lh.jpg"
-        ]
-      },
-  ];
+  
+  const { content } = useContent();
+  const galleryItems = content.gallery.filter(item => !item.isHidden);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -91,18 +29,21 @@ const Gallery: React.FC = () => {
             );
         });
 
+        // Re-run items animation if list changes
         const items = gsap.utils.toArray<HTMLElement>('.gallery-item');
-        gsap.fromTo(items, 
-            { y: 60, opacity: 0 },
-            { 
-                y: 0, opacity: 1, duration: 1.2, ease: "power3.out", stagger: 0.15,
-                scrollTrigger: { trigger: ".gallery-grid", start: "top 80%" }
-            }
-        );
+        if (items.length > 0) {
+            gsap.fromTo(items, 
+                { y: 60, opacity: 0 },
+                { 
+                    y: 0, opacity: 1, duration: 1.2, ease: "power3.out", stagger: 0.15,
+                    scrollTrigger: { trigger: ".gallery-grid", start: "top 80%" }
+                }
+            );
+        }
 
     }, galleryRef);
     return () => ctx.revert();
-  }, []);
+  }, [galleryItems.length]); 
 
   useLayoutEffect(() => {
     if (lightboxOpen) {
@@ -119,7 +60,7 @@ const Gallery: React.FC = () => {
     };
   }, [lightboxOpen]);
 
-  const openLightbox = (project: ProjectItem) => {
+  const openLightbox = (project: GalleryItem) => {
     setCurrentProject(project);
     setCurrentImageIndex(0);
     setIsImageLoading(true);
@@ -177,7 +118,6 @@ const Gallery: React.FC = () => {
                             ${item.size === 'small' ? 'md:col-span-1 md:row-span-1' : ''}
                         `}
                     >
-                        {/* Removed zoom transition group-hover:scale-110 to fix perceived bug */}
                         <div 
                             className="absolute inset-0 bg-cover bg-center"
                             style={{ backgroundImage: `url('${item.thumbnail}')` }}
