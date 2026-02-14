@@ -17,12 +17,14 @@ const NewsletterModal: React.FC = () => {
     const formData = new FormData();
     formData.append('fields[name]', name);
     formData.append('fields[email]', email);
-    formData.append('fields[last_name]', 'ניוזלטר');
+    // Optional: keeping a tag or field to identify source if needed, or remove if specific form handles it
+    formData.append('fields[last_name]', 'ניוזלטר'); 
     formData.append('ml-submit', '1');
     formData.append('ajax', '1');
 
     try {
-        await fetch('https://assets.mailerlite.com/jsonp/2099621/forms/178883421740729971/subscribe', {
+        // Updated Form ID: 179288490336323106
+        await fetch('https://assets.mailerlite.com/jsonp/2099621/forms/179288490336323106/subscribe', {
             method: 'POST', body: formData, mode: 'no-cors'
         });
         alert("תודה שנרשמת!");
