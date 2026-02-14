@@ -5,36 +5,15 @@ const NewsletterModal: React.FC = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  
   useEffect(() => {
     const timer = setTimeout(() => { setIsOpen(true); }, 7000);
     return () => clearTimeout(timer);
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    const formData = new FormData();
-    formData.append('fields[name]', name);
-    formData.append('fields[email]', email);
-    // Optional: keeping a tag or field to identify source if needed, or remove if specific form handles it
-    formData.append('fields[last_name]', 'ניוזלטר'); 
-    formData.append('ml-submit', '1');
-    formData.append('ajax', '1');
-
-    try {
-        // Updated Form ID: 179288490336323106
-        await fetch('https://assets.mailerlite.com/jsonp/2099621/forms/179288490336323106/subscribe', {
-            method: 'POST', body: formData, mode: 'no-cors'
-        });
-        alert("תודה שנרשמת!");
-        setIsOpen(false); setName(''); setEmail('');
-    } catch (error) {
-        console.error('Submission error:', error);
-        alert("אירעה שגיאה בשליחה, אנא נסה שנית.");
-    } finally {
-        setIsSubmitting(false);
-    }
+    // Form submission disabled as requested
   };
 
   if (!isOpen) return null;

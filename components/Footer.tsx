@@ -15,12 +15,13 @@ const Footer: React.FC = () => {
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-
+  
   // Admin State
   const [showAdminLogin, setShowAdminLogin] = useState(false);
   const [adminPassword, setAdminPassword] = useState('');
   const [isAdminOpen, setIsAdminOpen] = useState(false);
     
+  // Credits Contact Links
   const emailSubject = encodeURIComponent("ראיתי את האתר של רעות");
   const emailBody = encodeURIComponent("גם אני רוצה אתר שיביא תוצאות");
   const gmailLink = `https://mail.google.com/mail/?view=cm&fs=1&to=c0548496967@gmail.com&su=${emailSubject}&body=${emailBody}`;
@@ -44,18 +45,24 @@ const Footer: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
     setIsSubmitting(true);
+    
     const formData = new FormData();
     formData.append('fields[name]', name);
     formData.append('fields[email]', email);
     formData.append('fields[phone]', phone);
+    // Mapping message to last_name as a storage field for the message content
     formData.append('fields[last_name]', message);
     formData.append('ml-submit', '1');
     formData.append('ajax', '1');
 
     try {
         await fetch('https://assets.mailerlite.com/jsonp/2099621/forms/178883421740729971/subscribe', {
-            method: 'POST', body: formData, mode: 'no-cors'
+            method: 'POST', 
+            body: formData, 
+            mode: 'no-cors' 
         });
         setIsSuccess(true);
         setName(''); setPhone(''); setEmail(''); setMessage('');
