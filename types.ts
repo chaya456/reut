@@ -7,6 +7,12 @@ export interface HeroContent {
   buttonText: string;
 }
 
+export interface ValueItem {
+  id: number;
+  before: string;
+  after: string;
+}
+
 export interface GalleryItem {
   id: number;
   title: string;
@@ -26,6 +32,7 @@ export interface Recommendation {
 
 export interface AppContent {
   hero: HeroContent;
+  valueSection: ValueItem[];
   gallery: GalleryItem[];
   recommendations: Recommendation[];
 }

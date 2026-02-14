@@ -1,6 +1,5 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { useContent } from '../context/ContentContext';
-import { GalleryItem, Recommendation } from '../types';
 
 interface AdminPanelProps {
   isOpen: boolean;
@@ -12,12 +11,12 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
       content, updateHero, 
       addGalleryItem, updateGalleryItem, deleteGalleryItem,
       addRecommendation, updateRecommendation, deleteRecommendation,
+      addValueItem, updateValueItem, deleteValueItem,
       resetContent 
   } = useContent();
   
-  const [activeTab, setActiveTab] = useState<'hero' | 'gallery' | 'recommendations'>('hero');
+  const [activeTab, setActiveTab] = useState<'hero' | 'value' | 'gallery' | 'recommendations'>('hero');
   const [editingItem, setEditingItem] = useState<any>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   if (!isOpen) return null;
 
@@ -55,6 +54,12 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                 className={`px-8 py-4 font-bold transition-colors whitespace-nowrap ${activeTab === 'hero' ? 'bg-white text-brand-dark border-t-4 border-brand-dark' : 'text-gray-500 hover:bg-gray-100'}`}
             >
                 עמוד הבית (Hero)
+            </button>
+            <button 
+                onClick={() => { setActiveTab('value'); setEditingItem(null); }}
+                className={`px-8 py-4 font-bold transition-colors whitespace-nowrap ${activeTab === 'value' ? 'bg-white text-brand-dark border-t-4 border-brand-dark' : 'text-gray-500 hover:bg-gray-100'}`}
+            >
+                לפני / אחרי
             </button>
             <button 
                 onClick={() => { setActiveTab('gallery'); setEditingItem(null); }}
@@ -100,6 +105,84 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                         </div>
                     </div>
                 </div>
+            )}
+
+            {/* VALUE SECTION (BEFORE/AFTER) EDITOR */}
+            {activeTab === 'value' && (
+                 <div className="space-y-6">
+                    <button 
+                        onClick={() => setEditingItem({ id: Date.now(), before: '', after: '', isNew: true })}
+                        className="bg-brand-dark text-white px-6 py-2 rounded-lg font-bold hover:bg-brand-light hover:text-dark-coal transition-colors shadow-md"
+                    >
+                        + הוספת זוג חדש
+                    </button>
+
+                    {editingItem && (
+                        <div className="bg-white p-6 rounded-lg shadow-lg border-2 border-brand-light mb-8 animate-[fadeIn_0.2s]">
+                            <h3 className="font-bold text-lg mb-4">{editingItem.isNew ? 'זוג לפני/אחרי חדש' : 'עריכת זוג'}</h3>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-4">
+                                <div>
+                                    <label className="block text-sm mb-1 font-bold text-gray-700">תמונת לפני (ללא הדמיה)</label>
+                                    <div className="flex flex-col gap-2">
+                                        {editingItem.before && (
+                                            <div className="h-40 bg-gray-100 rounded border overflow-hidden">
+                                                <img src={editingItem.before} alt="before" className="w-full h-full object-contain" />
+                                            </div>
+                                        )}
+                                        <input type="file" onChange={(e) => handleImageUpload(e, (base64) => setEditingItem({...editingItem, before: base64}))} className="text-sm" />
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="block text-sm mb-1 font-bold text-brand-dark">תמונת אחרי (עם ערך)</label>
+                                    <div className="flex flex-col gap-2">
+                                        {editingItem.after && (
+                                            <div className="h-40 bg-gray-100 rounded border overflow-hidden">
+                                                <img src={editingItem.after} alt="after" className="w-full h-full object-contain" />
+                                            </div>
+                                        )}
+                                        <input type="file" onChange={(e) => handleImageUpload(e, (base64) => setEditingItem({...editingItem, after: base64}))} className="text-sm" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="flex gap-3 justify-end mt-6">
+                                <button onClick={() => setEditingItem(null)} className="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded">ביטול</button>
+                                <button 
+                                    onClick={() => {
+                                        if(editingItem.isNew) addValueItem({ ...editingItem, id: Date.now() });
+                                        else updateValueItem(editingItem.id, editingItem);
+                                        setEditingItem(null);
+                                    }}
+                                    className="px-6 py-2 bg-brand-dark text-white rounded font-bold hover:opacity-90"
+                                >
+                                    שמירה
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {content.valueSection.map(item => (
+                            <div key={item.id} className="bg-white p-3 rounded-lg shadow hover:shadow-md transition-shadow relative">
+                                <div className="flex gap-1 h-32 mb-2">
+                                    <div className="w-1/2 h-full bg-gray-100 rounded overflow-hidden relative">
+                                        <span className="absolute top-0 left-0 bg-black/50 text-white text-[10px] px-1">לפני</span>
+                                        <img src={item.before} className="w-full h-full object-cover" />
+                                    </div>
+                                    <div className="w-1/2 h-full bg-gray-100 rounded overflow-hidden relative">
+                                        <span className="absolute top-0 left-0 bg-brand-dark text-white text-[10px] px-1">אחרי</span>
+                                        <img src={item.after} className="w-full h-full object-cover" />
+                                    </div>
+                                </div>
+                                <div className="flex justify-between items-center text-sm pt-2 border-t">
+                                    <button onClick={() => setEditingItem({...item, isNew: false})} className="text-blue-600 hover:underline font-bold">עריכה</button>
+                                    <button onClick={() => { if(confirm('למחוק?')) deleteValueItem(item.id) }} className="text-red-500 hover:text-red-700">מחיקה</button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                 </div>
             )}
 
             {/* GALLERY EDITOR */}
@@ -179,7 +262,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                                 <h4 className="font-bold text-lg mb-2">{item.title}</h4>
                                 <div className="flex justify-between items-center text-sm">
                                     <div className="space-x-2 space-x-reverse">
-                                        <button onClick={() => setEditingItem({...item, isNew: false})} className="text-blue-600 hover:underline">עריכה</button>
+                                        <button onClick={() => setEditingItem({...item, isNew: false})} className="text-blue-600 hover:underline font-bold">עריכה</button>
                                         <button onClick={() => updateGalleryItem(item.id, { isHidden: !item.isHidden })} className="text-orange-600 hover:underline">{item.isHidden ? 'הצג' : 'הסתר'}</button>
                                     </div>
                                     <button onClick={() => { if(confirm('למחוק?')) deleteGalleryItem(item.id) }} className="text-red-500 hover:text-red-700">מחיקה</button>
@@ -249,7 +332,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                                 </div>
                                 <h4 className="font-bold text-center mb-2">{item.name}</h4>
                                 <div className="flex justify-center gap-4 text-sm mt-2 border-t pt-2">
-                                    <button onClick={() => setEditingItem({...item, isNew: false})} className="text-blue-600 hover:underline">עריכה</button>
+                                    <button onClick={() => setEditingItem({...item, isNew: false})} className="text-blue-600 hover:underline font-bold">עריכה</button>
                                     <button onClick={() => { if(confirm('למחוק?')) deleteRecommendation(item.id) }} className="text-red-500 hover:text-red-700">מחיקה</button>
                                 </div>
                             </div>
@@ -257,6 +340,15 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                     </div>
                 </div>
             )}
+
+            <div className="mt-8 pt-6 border-t flex justify-end">
+                <button 
+                    onClick={onClose} 
+                    className="bg-dark-coal text-white px-8 py-3 rounded-lg font-bold hover:bg-gray-800 transition-colors shadow-lg"
+                >
+                    סגירה ושמירת שינויים
+                </button>
+            </div>
 
         </div>
       </div>
