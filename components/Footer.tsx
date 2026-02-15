@@ -1,7 +1,9 @@
+
 import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import AdminPanel from './AdminPanel';
+import { CONTACT_CONFIG } from '../formConfig';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -9,22 +11,20 @@ const Footer: React.FC = () => {
   const footerRef = useRef<HTMLDivElement>(null);
   const [showContact, setShowContact] = useState(false);
   
+  // Form State
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  
+
   // Admin State
   const [showAdminLogin, setShowAdminLogin] = useState(false);
   const [adminPassword, setAdminPassword] = useState('');
   const [isAdminOpen, setIsAdminOpen] = useState(false);
     
-  // Credits Contact Links
-  const emailSubject = encodeURIComponent("ראיתי את האתר של רעות");
-  const emailBody = encodeURIComponent("גם אני רוצה אתר שיביא תוצאות");
-  const gmailLink = `https://mail.google.com/mail/?view=cm&fs=1&to=c0548496967@gmail.com&su=${emailSubject}&body=${emailBody}`;
+  // Social Links
   const whatsappLink = "https://wa.me/972539660418";
 
   useEffect(() => {
@@ -45,39 +45,41 @@ const Footer: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isSubmitting) return;
-
     setIsSubmitting(true);
-    
-    const formData = new FormData();
-    formData.append('fields[name]', name);
-    formData.append('fields[email]', email);
-    formData.append('fields[phone]', phone);
-    // Mapping message to last_name as a storage field for the message content
-    formData.append('fields[last_name]', message);
-    formData.append('ml-submit', '1');
-    formData.append('ajax', '1');
 
     try {
-        await fetch('https://assets.mailerlite.com/jsonp/2099621/forms/178883421740729971/subscribe', {
-            method: 'POST', 
-            body: formData, 
-            mode: 'no-cors' 
+        // Create FormData for MailerLite
+        const formData = new FormData();
+        formData.append('fields[name]', name);
+        formData.append('fields[email]', email);
+        
+        // Combine Phone and Message because the MailerLite form uses 'last_name' for the text area
+        // and does not have a dedicated phone field in the snippet provided.
+        const fullMessage = `טלפון: ${phone || 'לא צוין'}\n\nהודעה: ${message || ''}`;
+        
+        // Map to 'fields[last_name]' as per the provided HTML snippet for the textarea
+        formData.append('fields[last_name]', fullMessage);
+        
+        formData.append('ml-submit', '1');
+        formData.append('anticsrf', 'true');
+
+        // Use fetch with no-cors mode for MailerLite - Specific Contact URL
+        await fetch(CONTACT_CONFIG.contactUrl, {
+            method: "POST",
+            mode: 'no-cors', 
+            body: formData
         });
+
+        // In no-cors mode, we can't check response.ok, so we assume success if no network error thrown
         setIsSuccess(true);
         setName(''); setPhone(''); setEmail(''); setMessage('');
+        
     } catch (error) {
-        console.error('Submission error:', error);
-        alert("אירעה שגיאה בשליחה, אנא נסה שנית.");
+        console.error("Form error:", error);
+        alert("אירעה שגיאה בשליחה, אנא נסי שנית או פני בווצאפ");
     } finally {
         setIsSubmitting(false);
     }
-  };
-
-  const scrollToForm = (e: React.MouseEvent) => {
-      e.preventDefault();
-      const formElement = document.getElementById('contact-form-fields');
-      if (formElement) formElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
   };
 
   const handleAdminLogin = (e: React.FormEvent) => {
@@ -113,15 +115,8 @@ const Footer: React.FC = () => {
                     יכול להיות שכבר מיתגנו אותו ועדיין לא ראית :)
                 </div>
                 
-                <div className="animate-text-footer">
-                    <a 
-                        href="#contact-form-fields" 
-                        onClick={scrollToForm}
-                        className="inline-block text-brand-light font-extrabold no-underline text-[clamp(20px,2.5vw,28px)] border-b-2 border-brand-light hover:text-brand-dark hover:border-brand-dark transition-colors mb-[3vh]"
-                    >
-                        כאן בודקים את זה &gt;&gt;
-                    </a>
-                </div>
+                {/* Spacer to replace the removed link */}
+                <div className="h-[3vh] animate-text-footer"></div>
 
                 {/* Form Area */}
                 <div className="max-w-[800px] mx-auto text-right mb-[4vh] animate-text-footer" id="contact-form-fields">
@@ -131,20 +126,26 @@ const Footer: React.FC = () => {
                                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
                              </div>
                              <h3 className="text-3xl font-bold text-brand-light mb-2">תודה רבה!</h3>
-                             <p className="text-xl text-white/90">הפרטים שלך התקבלו בהצלחה.<br/>אנחנו כבר מתחילים להערך :)</p>
+                             <p className="text-xl text-white/90">הפרטים נשלחו בהצלחה.<br/>אנחנו כבר מתחילים להערך :)</p>
                              <button onClick={() => setIsSuccess(false)} className="mt-8 text-sm text-white/50 hover:text-white underline transition-colors">שליחת הודעה נוספת</button>
                         </div>
                     ) : (
                         <form onSubmit={handleSubmit}>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-[1.5vh] mb-[1.5vh]">
-                                <input type="text" placeholder="שם" value={name} onChange={(e) => setName(e.target.value)} className="w-full p-[clamp(10px,1.5vh,15px)] border border-white/30 bg-white/5 rounded-none text-white text-base placeholder-white/50 focus:outline-none focus:border-brand-light focus:bg-white/10 transition-colors" />
+                                {/* REQUIRED fields */}
+                                <input type="text" placeholder="שם מלא *" required value={name} onChange={(e) => setName(e.target.value)} className="w-full p-[clamp(10px,1.5vh,15px)] border border-white/30 bg-white/5 rounded-none text-white text-base placeholder-white/50 focus:outline-none focus:border-brand-light focus:bg-white/10 transition-colors" />
+                                
+                                {/* OPTIONAL field */}
                                 <input type="tel" placeholder="נייד" value={phone} onChange={(e) => setPhone(e.target.value)} className="w-full p-[clamp(10px,1.5vh,15px)] border border-white/30 bg-white/5 rounded-none text-white text-base placeholder-white/50 focus:outline-none focus:border-brand-light focus:bg-white/10 transition-colors text-right" />
-                                <input type="email" placeholder="מייל" required value={email} onChange={(e) => setEmail(e.target.value)} className="w-full p-[clamp(10px,1.5vh,15px)] border border-white/30 bg-white/5 rounded-none text-white text-base placeholder-white/50 focus:outline-none focus:border-brand-light focus:bg-white/10 transition-colors" />
+                                
+                                {/* REQUIRED field */}
+                                <input type="email" placeholder="מייל *" required value={email} onChange={(e) => setEmail(e.target.value)} className="w-full p-[clamp(10px,1.5vh,15px)] border border-white/30 bg-white/5 rounded-none text-white text-base placeholder-white/50 focus:outline-none focus:border-brand-light focus:bg-white/10 transition-colors" />
                             </div>
                             <div className="mb-[1.5vh]">
+                                {/* OPTIONAL field */}
                                 <textarea placeholder="גמני רוצה להוסיף ערך למוצר ורוצה לדעת פרטים על:" value={message} onChange={(e) => setMessage(e.target.value)} className="w-full p-[clamp(10px,1.5vh,15px)] border border-white/30 bg-white/5 rounded-none text-white text-base placeholder-white/50 focus:outline-none focus:border-brand-light focus:bg-white/10 transition-colors min-h-[120px] resize-y" />
                             </div>
-                            <button type="submit" disabled={isSubmitting} className="w-full p-[clamp(10px,1.5vh,15px)] bg-brand-light text-dark-coal font-extrabold border-none rounded-none text-lg cursor-pointer hover:bg-brand-dark hover:text-white transition-colors disabled:opacity-70">
+                            <button type="submit" disabled={isSubmitting} className="w-full p-[clamp(10px,1.5vh,15px)] bg-brand-light text-dark-coal font-extrabold border-none rounded-none text-lg cursor-pointer hover:bg-brand-dark hover:text-white transition-colors disabled:opacity-70 disabled:cursor-not-allowed">
                                 {isSubmitting ? 'שולח...' : 'מתחילה להערך'}
                             </button>
                         </form>
@@ -160,7 +161,6 @@ const Footer: React.FC = () => {
                         {showContact && (
                             <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 bg-white text-dark-coal p-4 rounded-none shadow-xl min-w-[200px] flex flex-col gap-3 animate-[fadeIn_0.2s_ease-out] z-50 after:content-[''] after:absolute after:top-full after:left-1/2 after:-translate-x-1/2 after:border-[8px] after:border-transparent after:border-t-white">
                                 <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 hover:text-[#25D366] transition-colors p-2 hover:bg-gray-50"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.592 2.654-.696c1.029.662 1.977 1.216 3.073 1.216.001 0 .002 0 .002 0 3.181 0 5.768-2.587 5.768-5.766 0-3.18-2.587-5.627-5.768-5.766zm9.969 5.766c0 5.504-4.478 9.981-9.981 9.981-5.281 0-9.626-4.061-9.948-9.172l-2.071 7.253 7.643-2.007c1.32.72 2.825 1.129 4.376 1.129 5.503 0 9.981-4.477 9.981-9.981 0-5.504-4.478-9.982-9.981-9.982-5.503 0-9.981 4.478-9.981 9.982 0 1.246.231 2.435.644 3.535l-1.603-5.908c-.287-1.043.292-2.128 1.296-2.427 1.004-.298 2.062.274 2.36 1.373l1.985 7.31c.298 1.099-.275 2.217-1.279 2.516-.145.043-.292.064-.437.064-.863 0-1.637-.58-1.879-1.47l-.903-3.329c-.066-.242.079-.494.321-.56.242-.066.495.079.56.321l.666 2.455c.066.242.318.387.56.321.242-.066.387-.318.321-.56l-1.984-7.311c-.066-.241-.318-.386-.56-.32-.242.066-.387.318-.32.56l1.378 5.078c-3.036-1.619-5.111-4.787-5.111-8.472 0-5.32 4.328-9.648 9.648-9.648 5.32 0 9.648 4.328 9.648 9.648z"/></svg><span className="font-medium">וואטסאפ</span></a>
-                                <a href={gmailLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 hover:text-[#EA4335] transition-colors p-2 hover:bg-gray-50"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg><span className="font-medium">ג'ימייל</span></a>
                             </div>
                         )}
                     </div>
