@@ -27,6 +27,11 @@ const Footer: React.FC = () => {
   // Social Links
   const whatsappLink = "https://wa.me/972539660418";
 
+  // Gmail Compose Link construction
+  const emailRecipient = "c0548496967@gmail.com";
+  const emailSubject = "ראיתי את האתר של רעות, גם אני רוצה אתר שעובד";
+  const gmailLink = `https://mail.google.com/mail/?view=cm&fs=1&to=${emailRecipient}&su=${encodeURIComponent(emailSubject)}`;
+
   useEffect(() => {
     const ctx = gsap.context(() => {
         const texts = gsap.utils.toArray<HTMLElement>('.animate-text-footer');
@@ -160,7 +165,23 @@ const Footer: React.FC = () => {
                         <button onClick={() => setShowContact(!showContact)} className="hover:text-brand-light transition-colors font-bold flex items-center gap-2 focus:outline-none">צור קשר</button>
                         {showContact && (
                             <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 bg-white text-dark-coal p-4 rounded-none shadow-xl min-w-[200px] flex flex-col gap-3 animate-[fadeIn_0.2s_ease-out] z-50 after:content-[''] after:absolute after:top-full after:left-1/2 after:-translate-x-1/2 after:border-[8px] after:border-transparent after:border-t-white">
-                                <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 hover:text-[#25D366] transition-colors p-2 hover:bg-gray-50"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.592 2.654-.696c1.029.662 1.977 1.216 3.073 1.216.001 0 .002 0 .002 0 3.181 0 5.768-2.587 5.768-5.766 0-3.18-2.587-5.627-5.768-5.766zm9.969 5.766c0 5.504-4.478 9.981-9.981 9.981-5.281 0-9.626-4.061-9.948-9.172l-2.071 7.253 7.643-2.007c1.32.72 2.825 1.129 4.376 1.129 5.503 0 9.981-4.477 9.981-9.981 0-5.504-4.478-9.982-9.981-9.982-5.503 0-9.981 4.478-9.981 9.982 0 1.246.231 2.435.644 3.535l-1.603-5.908c-.287-1.043.292-2.128 1.296-2.427 1.004-.298 2.062.274 2.36 1.373l1.985 7.31c.298 1.099-.275 2.217-1.279 2.516-.145.043-.292.064-.437.064-.863 0-1.637-.58-1.879-1.47l-.903-3.329c-.066-.242.079-.494.321-.56.242-.066.495.079.56.321l.666 2.455c.066.242.318.387.56.321.242-.066.387-.318.321-.56l-1.984-7.311c-.066-.241-.318-.386-.56-.32-.242.066-.387.318-.32.56l1.378 5.078c-3.036-1.619-5.111-4.787-5.111-8.472 0-5.32 4.328-9.648 9.648-9.648 5.32 0 9.648 4.328 9.648 9.648z"/></svg><span className="font-medium">וואטסאפ</span></a>
+                                {/* Whatsapp Link */}
+                                <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 hover:text-[#25D366] transition-colors p-2 hover:bg-gray-50 border-b border-gray-100">
+                                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.592 2.654-.696c1.029.662 1.977 1.216 3.073 1.216.001 0 .002 0 .002 0 3.181 0 5.768-2.587 5.768-5.766 0-3.18-2.587-5.627-5.768-5.766zm9.969 5.766c0 5.504-4.478 9.981-9.981 9.981-5.281 0-9.626-4.061-9.948-9.172l-2.071 7.253 7.643-2.007c1.32.72 2.825 1.129 4.376 1.129 5.503 0 9.981-4.477 9.981-9.981 0-5.504-4.478-9.982-9.981-9.982-5.503 0-9.981 4.478-9.981 9.982 0 1.246.231 2.435.644 3.535l-1.603-5.908c-.287-1.043.292-2.128 1.296-2.427 1.004-.298 2.062.274 2.36 1.373l1.985 7.31c.298 1.099-.275 2.217-1.279 2.516-.145.043-.292.064-.437.064-.863 0-1.637-.58-1.879-1.47l-.903-3.329c-.066-.242.079-.494.321-.56.242-.066.495.079.56.321l.666 2.455c.066.242.318.387.56.321.242-.066.387-.318.321-.56l-1.984-7.311c-.066-.241-.318-.386-.56-.32-.242.066-.387.318-.32.56l1.378 5.078c-3.036-1.619-5.111-4.787-5.111-8.472 0-5.32 4.328-9.648 9.648-9.648 5.32 0 9.648 4.328 9.648 9.648z"/></svg>
+                                    <span className="font-medium">וואטסאפ</span>
+                                </a>
+
+                                {/* Website Link */}
+                                <a href="https://meek-licorice-beb232.netlify.app/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 hover:text-brand-dark transition-colors p-2 hover:bg-gray-50 border-b border-gray-100">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                                    <span className="font-medium">לאתר שלי</span>
+                                </a>
+
+                                {/* Gmail Link */}
+                                <a href={gmailLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 hover:text-brand-dark transition-colors p-2 hover:bg-gray-50">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                                    <span className="font-medium">שלח מייל (Gmail)</span>
+                                </a>
                             </div>
                         )}
                     </div>
