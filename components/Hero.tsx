@@ -1,3 +1,4 @@
+
 import React, { useRef, useEffect, useState } from 'react';
 import gsap from 'gsap';
 import Logo from './Logo';
@@ -153,14 +154,17 @@ const Hero: React.FC = () => {
                         </h2>
                     </div>
 
-                    {/* Button */}
-                    <div className="hero-tagline relative z-50">
+                    {/* Button and Hint */}
+                    <div className="hero-tagline relative z-50 inline-flex flex-col items-center">
                         <button 
                             onClick={scrollToContact}
                             className="text-[clamp(16px,1.5vw,22px)] font-medium px-[4vw] py-[2vh] bg-brand-dark border-2 border-brand-dark rounded-none text-white transition-all duration-300 hover:bg-white hover:text-brand-dark shadow-lg backdrop-blur-sm cursor-pointer transform hover:scale-105"
                         >
                         {content.hero.buttonText}
                         </button>
+                        <p className="text-[clamp(14px,1.2vw,18px)] text-brand-dark mt-2 font-medium drop-shadow-md opacity-90">
+                             מוזמנים לעבור על התמונה ולגלות את הערך
+                        </p>
                     </div>
                 </div>
 

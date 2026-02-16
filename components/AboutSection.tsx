@@ -34,10 +34,13 @@ const AboutSection: React.FC = () => {
         }
       );
 
-      gsap.fromTo(sectionRef.current?.querySelector('h2'),
-          { y: 30, opacity: 0 },
-          { y: 0, opacity: 1, duration: 1, ease: "power3.out", scrollTrigger: { trigger: sectionRef.current, start: "top 70%" } }
-      );
+      const heading = sectionRef.current?.querySelector('h2');
+      if (heading) {
+        gsap.fromTo(heading,
+            { y: 30, opacity: 0 },
+            { y: 0, opacity: 1, duration: 1, ease: "power3.out", scrollTrigger: { trigger: sectionRef.current, start: "top 70%" } }
+        );
+      }
 
     }, sectionRef);
 
