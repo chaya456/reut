@@ -33,8 +33,8 @@ const Recommendations: React.FC = () => {
 
         // Infinite Marquee Animation (Left to Right)
         if (marqueeRef.current) {
-            // Slower duration for readability (approx 5s per item)
-            const duration = reviews.length * 5; 
+            // Slower duration for readability (Increased to 10s per item for slower speed)
+            const duration = reviews.length * 10; 
             
             gsap.fromTo(marqueeRef.current, 
                 { xPercent: -50 }, // Start from the second set (Left side)
@@ -75,7 +75,7 @@ const Recommendations: React.FC = () => {
             className="relative z-10 -mt-[15vw] bg-transparent overflow-hidden" 
             style={{ 
                 paddingTop: '20vw',
-                paddingBottom: 'calc(10vw + 150px)' 
+                paddingBottom: 'calc(10vw + 300px)' 
             }}
         >
           <div ref={containerRef} className="flex flex-col items-center justify-start relative w-full">
@@ -83,9 +83,7 @@ const Recommendations: React.FC = () => {
                 <h2 className="text-[clamp(36px,5vw,70px)] font-extrabold m-0 leading-tight animate-text text-dark-coal">
                     <span className="transition-colors duration-300 hover:text-brand-dark cursor-default inline-block">מעריכים</span> אותנו
                 </h2>
-                <p className="text-[clamp(16px,1.2vw,20px)] mt-2 text-dark-coal/60 animate-text">
-                    לחצו על המלצה לקריאה בהגדלה
-                </p>
+                {/* Instruction text removed */}
             </div>
             
             {/* Infinite Marquee Container */}
@@ -106,10 +104,7 @@ const Recommendations: React.FC = () => {
                                     ${rec.color === 'bg-brand-soft' ? 'bg-[#fff5ec]' : 'bg-white'}
                                 `}
                             >
-                                {/* Quote Icon */}
-                                <div className="absolute top-3 right-3 text-brand-dark/20 z-10">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M14.017 21L14.017 18C14.017 16.8954 14.9124 16 16.017 16H19.017C19.5693 16 20.017 15.5523 20.017 15V9C20.017 8.44772 19.5693 8 19.017 8H15.017C14.4647 8 14.017 8.44772 14.017 9V11C14.017 11.5523 13.5693 12 13.017 12H12.017V5H22.017V15C22.017 18.3137 19.3307 21 16.017 21H14.017ZM5.0166 21L5.0166 18C5.0166 16.8954 5.91203 16 7.0166 16H10.0166C10.5689 16 11.0166 15.5523 11.0166 15V9C11.0166 8.44772 10.5689 8 10.0166 8H6.0166C5.46432 8 5.0166 8.44772 5.0166 9V11C5.0166 11.5523 4.56889 12 4.0166 12H3.0166V5H13.0166V15C13.0166 18.3137 10.3303 21 7.0166 21H5.0166Z" /></svg>
-                                </div>
+                                {/* Quote Icon Removed */}
 
                                 <div className="w-full flex-1 min-h-0 relative rounded-sm overflow-hidden flex items-center justify-center mb-2">
                                     <img src={rec.image} alt={rec.name} className="w-full h-full object-contain object-center" />
@@ -125,54 +120,53 @@ const Recommendations: React.FC = () => {
           </div>
         </section>
 
-        {/* Modal / Lightbox */}
+        {/* Modal / Lightbox - Without dark backdrop */}
         {selectedRec && (
             <div 
-                className="fixed inset-0 z-[200] bg-dark-coal/90 backdrop-blur-sm flex items-center justify-center p-4 animate-[fadeIn_0.3s_ease-out]"
+                className="fixed inset-0 z-[200] flex items-center justify-center p-4"
                 onClick={() => setSelectedRec(null)}
             >
+                {/* Transparent overlay to catch clicks */}
+                <div className="absolute inset-0 bg-transparent" />
+                
                 <div 
-                    className="relative bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden"
+                    className="relative bg-white rounded-xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] border border-gray-100 w-[90vw] md:w-[50vw] h-[60vh] md:h-[50vh] flex flex-col overflow-hidden animate-[popIn_0.3s_cubic-bezier(0.16,1,0.3,1)] z-10"
                     onClick={(e) => e.stopPropagation()}
                 >
                     <button 
                         onClick={() => setSelectedRec(null)}
-                        className="absolute top-4 right-4 z-50 w-10 h-10 bg-dark-coal/10 hover:bg-dark-coal/20 text-dark-coal rounded-full flex items-center justify-center transition-colors text-xl font-bold"
+                        className="absolute top-4 right-4 z-50 w-8 h-8 text-dark-coal/50 hover:text-dark-coal flex items-center justify-center transition-colors text-xl font-light"
                     >
                         ✕
                     </button>
 
-                    <div className="flex-1 overflow-auto p-4 md:p-8 flex items-center justify-center bg-gray-50 relative">
-                        {/* Navigation Arrows */}
+                    <div className="flex-1 overflow-hidden relative flex items-center justify-center bg-white p-8">
+                        {/* Navigation Arrows - Thin and delicate */}
                         <button 
                             onClick={handleNextRec}
-                            className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-white/80 hover:bg-white text-dark-coal rounded-full shadow-lg flex items-center justify-center transition-all hover:scale-110 z-10"
+                            className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center text-dark-coal/40 hover:text-dark-coal transition-all z-20"
                         >
-                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6" /></svg>
+                             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="0.8" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
                         </button>
                         
                         <button 
                             onClick={handlePrevRec}
-                            className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-white/80 hover:bg-white text-dark-coal rounded-full shadow-lg flex items-center justify-center transition-all hover:scale-110 z-10"
+                            className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center text-dark-coal/40 hover:text-dark-coal transition-all z-20"
                         >
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6" /></svg>
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="0.8" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6" /></svg>
                         </button>
 
                         <img 
-                            key={selectedRec.id} // Re-render on change
+                            key={selectedRec.id} 
                             src={selectedRec.image} 
                             alt={selectedRec.name} 
-                            className="w-full h-auto max-h-[75vh] object-contain shadow-md rounded-lg animate-[fadeIn_0.3s_ease-out]"
+                            className="w-full h-full object-contain animate-[fadeIn_0.3s_ease-out]"
                         />
-                    </div>
-                    
-                    <div className="bg-white p-4 border-t border-gray-100 text-center relative z-20">
-                        <h3 className="text-2xl font-bold text-dark-coal">{selectedRec.name}</h3>
-                        <p className="text-sm text-gray-500 mt-1">{reviews.findIndex(r => r.id === selectedRec.id) + 1} מתוך {reviews.length}</p>
                     </div>
                 </div>
             </div>
         )}
+        <style>{`@keyframes popIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }`}</style>
     </>
   );
 };

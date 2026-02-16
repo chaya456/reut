@@ -154,7 +154,7 @@ const Hero: React.FC = () => {
                         </h2>
                     </div>
 
-                    {/* Button and Hint */}
+                    {/* Button - Hint text removed */}
                     <div className="hero-tagline relative z-50 inline-flex flex-col items-center">
                         <button 
                             onClick={scrollToContact}
@@ -162,9 +162,6 @@ const Hero: React.FC = () => {
                         >
                         {content.hero.buttonText}
                         </button>
-                        <p className="text-[clamp(14px,1.2vw,18px)] text-brand-dark mt-2 font-medium drop-shadow-md opacity-90">
-                             מוזמנים לעבור על התמונה ולגלות את הערך
-                        </p>
                     </div>
                 </div>
 
