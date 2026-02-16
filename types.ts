@@ -33,6 +33,7 @@ export interface Recommendation {
 export interface AppContent {
   hero: HeroContent;
   valueSection: ValueItem[];
+  aboutText: string;
   gallery: GalleryItem[];
   recommendations: Recommendation[];
 }

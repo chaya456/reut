@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { AppContent, GalleryItem, Recommendation, ValueItem } from '../types';
 
@@ -10,6 +11,7 @@ const defaultContent: AppContent = {
     subtitle: "אמירה. יצירה. שלמות.",
     buttonText: "המוצר עליכם | הערך עלינו"
   },
+  aboutText: "נעים להכיר, אנחנו ב'ערך מוסף' מתמחים בלהפוך כל מוצר פשוט ליצירת אומנות אישית.",
   valueSection: [
     { id: 1, before: "https://i.postimg.cc/W3VPvdFY/1BEFORE.png", after: "https://i.postimg.cc/NMxvfQR0/1AFTER.jpg" },
     { id: 2, before: "https://i.postimg.cc/50JMVXQW/2BEFORE.jpg", after: "https://i.postimg.cc/4dGTgY7M/2AFTER.jpg" },
@@ -106,6 +108,7 @@ const defaultContent: AppContent = {
 interface ContentContextType {
   content: AppContent;
   updateHero: (hero: Partial<AppContent['hero']>) => void;
+  updateAbout: (text: string) => void;
   // Value Section CRUD
   addValueItem: (item: ValueItem) => void;
   updateValueItem: (id: number, item: Partial<ValueItem>) => void;
@@ -147,6 +150,10 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const updateHero = (heroData: Partial<AppContent['hero']>) => {
     setContent(prev => ({ ...prev, hero: { ...prev.hero, ...heroData } }));
+  };
+
+  const updateAbout = (text: string) => {
+    setContent(prev => ({ ...prev, aboutText: text }));
   };
 
   // --- Value Section Logic ---
@@ -215,7 +222,8 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
   return (
     <ContentContext.Provider value={{ 
         content, 
-        updateHero, 
+        updateHero,
+        updateAbout,
         addValueItem,
         updateValueItem,
         deleteValueItem,
@@ -239,3 +247,4 @@ export const useContent = () => {
   }
   return context;
 };
+    

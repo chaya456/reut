@@ -1,3 +1,4 @@
+
 import React, { useRef, useState, useEffect } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -12,9 +13,11 @@ const ValueSection: React.FC = () => {
   const { content } = useContent();
   const galleryData = content.valueSection;
   
+  // Initialize with a random item so it's different every time the component mounts
   const [activeItem, setActiveItem] = useState(() => {
     if (galleryData.length > 0) {
-        return galleryData[0];
+        const randomIndex = Math.floor(Math.random() * galleryData.length);
+        return galleryData[randomIndex];
     }
     // Fallback if empty
     return { id: 0, before: "", after: "" };
@@ -141,10 +144,10 @@ const ValueSection: React.FC = () => {
           <p className="text-[clamp(18px,2vw,28px)] mt-[1vh] opacity-80 animate-text">זו לא הדמיה זו תמונה</p>
         </div>
 
-        {/* 1. Main Comparison Slider - Fluid height */}
+        {/* 1. Main Comparison Slider - 16:9 Aspect Ratio (Reverted from 4:3) */}
         <div 
           ref={sliderRef}
-          className="w-full lg:w-10/12 h-[45vh] min-h-[300px] lg:h-[60vh] relative rounded-none overflow-hidden shadow-2xl bg-brand-soft mb-[6vh] cursor-ew-resize select-none border-4 border-white"
+          className="w-full max-w-[1000px] aspect-[16/9] relative rounded-none overflow-hidden shadow-2xl bg-brand-soft mb-[6vh] cursor-ew-resize select-none border-4 border-white"
           onMouseMove={handleMove}
           onTouchMove={handleMove}
         >
@@ -182,7 +185,10 @@ const ValueSection: React.FC = () => {
                         <div key={`${item.id}-${idx}`} className="w-1/3 shrink-0 px-[1vw]">
                             <div 
                                 onClick={() => changeMainDisplay(item)}
-                                className="aspect-[4/3] w-full bg-white relative cursor-pointer overflow-hidden shadow-md border-2 border-transparent hover:border-brand-dark group transition-all"
+                                className={`
+                                    aspect-[16/9] w-full relative cursor-pointer overflow-hidden shadow-md border-2 transition-all group
+                                    ${activeItem.id === item.id ? 'border-brand-dark ring-2 ring-brand-light' : 'border-transparent hover:border-brand-dark'}
+                                `}
                             >
                                 <img src={item.before} className="w-full h-full object-cover absolute inset-0 group-hover:opacity-0 transition-opacity" alt="Before" />
                                 <img src={item.after} className="w-full h-full object-cover absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity" alt="After" />

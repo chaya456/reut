@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useContent } from '../context/ContentContext';
 
@@ -8,7 +9,7 @@ interface AdminPanelProps {
 
 const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
   const { 
-      content, updateHero, 
+      content, updateHero,
       addGalleryItem, updateGalleryItem, deleteGalleryItem,
       addRecommendation, updateRecommendation, deleteRecommendation,
       addValueItem, updateValueItem, deleteValueItem,
@@ -51,25 +52,25 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
         <div className="flex border-b border-gray-200 bg-gray-50 shrink-0 overflow-x-auto">
             <button 
                 onClick={() => { setActiveTab('hero'); setEditingItem(null); }}
-                className={`px-8 py-4 font-bold transition-colors whitespace-nowrap ${activeTab === 'hero' ? 'bg-white text-brand-dark border-t-4 border-brand-dark' : 'text-gray-500 hover:bg-gray-100'}`}
+                className={`px-6 py-4 font-bold transition-colors whitespace-nowrap ${activeTab === 'hero' ? 'bg-white text-brand-dark border-t-4 border-brand-dark' : 'text-gray-500 hover:bg-gray-100'}`}
             >
-                עמוד הבית (Hero)
+                עמוד הבית
             </button>
-            <button 
+             <button 
                 onClick={() => { setActiveTab('value'); setEditingItem(null); }}
-                className={`px-8 py-4 font-bold transition-colors whitespace-nowrap ${activeTab === 'value' ? 'bg-white text-brand-dark border-t-4 border-brand-dark' : 'text-gray-500 hover:bg-gray-100'}`}
+                className={`px-6 py-4 font-bold transition-colors whitespace-nowrap ${activeTab === 'value' ? 'bg-white text-brand-dark border-t-4 border-brand-dark' : 'text-gray-500 hover:bg-gray-100'}`}
             >
                 לפני / אחרי
             </button>
             <button 
                 onClick={() => { setActiveTab('gallery'); setEditingItem(null); }}
-                className={`px-8 py-4 font-bold transition-colors whitespace-nowrap ${activeTab === 'gallery' ? 'bg-white text-brand-dark border-t-4 border-brand-dark' : 'text-gray-500 hover:bg-gray-100'}`}
+                className={`px-6 py-4 font-bold transition-colors whitespace-nowrap ${activeTab === 'gallery' ? 'bg-white text-brand-dark border-t-4 border-brand-dark' : 'text-gray-500 hover:bg-gray-100'}`}
             >
                 גלריה
             </button>
             <button 
                 onClick={() => { setActiveTab('recommendations'); setEditingItem(null); }}
-                className={`px-8 py-4 font-bold transition-colors whitespace-nowrap ${activeTab === 'recommendations' ? 'bg-white text-brand-dark border-t-4 border-brand-dark' : 'text-gray-500 hover:bg-gray-100'}`}
+                className={`px-6 py-4 font-bold transition-colors whitespace-nowrap ${activeTab === 'recommendations' ? 'bg-white text-brand-dark border-t-4 border-brand-dark' : 'text-gray-500 hover:bg-gray-100'}`}
             >
                 המלצות
             </button>

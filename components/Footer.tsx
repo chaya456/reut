@@ -166,33 +166,35 @@ const Footer: React.FC = () => {
                     </div>
                 </div>
 
-                {/* HIDDEN ADMIN LOGIN */}
-                <div className="flex flex-col items-center justify-center mt-2 pb-4">
-                     <button 
-                        onClick={() => setShowAdminLogin(!showAdminLogin)} 
-                        className="text-[10px] text-white/10 hover:text-white/30 transition-colors"
-                     >
-                         ניהול אתר
-                     </button>
-                     
-                     {showAdminLogin && (
-                         <form onSubmit={handleAdminLogin} className="mt-2 flex gap-2 animate-[fadeIn_0.2s_ease-out]">
+                {/* Beta Warning */}
+                {!isSuccess && (
+                    <p className="text-center text-white/20 text-xs mt-0 mb-4">האתר בהרצה, יתכנו חסרים וליקויים, מצאת משו? ספרי לנו</p>
+                )}
+            </div>
+            
+            {/* HIDDEN ADMIN LOGIN - Moved to bottom right corner fixed position */}
+            <div className="fixed bottom-0 right-0 p-1 z-[9999]">
+                 <button 
+                    onClick={() => setShowAdminLogin(!showAdminLogin)} 
+                    className="text-[10px] text-white/5 hover:text-white/30 transition-colors opacity-50 hover:opacity-100"
+                 >
+                     ●
+                 </button>
+                 
+                 {showAdminLogin && (
+                     <div className="absolute bottom-8 right-0 bg-white p-2 rounded shadow-lg animate-[fadeIn_0.2s_ease-out]">
+                         <form onSubmit={handleAdminLogin} className="flex flex-col gap-2">
                              <input 
                                 type="password" 
                                 placeholder="סיסמה" 
                                 value={adminPassword}
                                 onChange={(e) => setAdminPassword(e.target.value)}
-                                className="px-2 py-1 text-xs text-dark-coal rounded"
+                                className="px-2 py-1 text-xs text-dark-coal rounded border"
                              />
-                             <button type="submit" className="px-2 py-1 bg-brand-light text-dark-coal text-xs font-bold rounded">כניסה</button>
+                             <button type="submit" className="px-2 py-1 bg-brand-light text-dark-coal text-xs font-bold rounded hover:bg-brand-dark hover:text-white">כניסה</button>
                          </form>
-                     )}
-                </div>
-
-                {/* Beta Warning */}
-                {!isSuccess && (
-                    <p className="text-center text-white/20 text-xs mt-0 mb-4">האתר בהרצה, יתכנו חסרים וליקויים, מצאת משו? ספרי לנו</p>
-                )}
+                     </div>
+                 )}
             </div>
 
             {/* Render Admin Panel if authenticated */}

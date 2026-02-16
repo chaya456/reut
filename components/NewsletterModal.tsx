@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { CONTACT_CONFIG } from '../formConfig';
 
@@ -64,16 +65,12 @@ const NewsletterModal: React.FC = () => {
             יש לנו <span className="transition-colors duration-300 hover:text-brand-dark cursor-default inline-block">ערך</span> מוסף
             </h2>
             
-            {/* Launch Week Promotion Details */}
-            <div className="w-full max-w-[320px] mb-[3vh] space-y-1">
-                <p className="text-brand-dark font-bold text-lg">הטבה מיוחדת לשבוע ההשקה</p>
-                <p className="text-dark-coal/70 text-sm font-medium tracking-wide">כח’ שבט - ב’ אדר תשפ"ו</p>
-                <p className="text-dark-coal font-extrabold text-[clamp(16px,1.2vw,18px)] mt-2 leading-snug">
-                    בהזמנת חריטה על מוצר -<br/>מוצר שני בחמישים אחוז!
-                </p>
-            </div>
-
-            <form onSubmit={handleSubmit} className="flex flex-col gap-[1.5vh] w-full max-w-[320px]">
+            <p className="text-[clamp(16px,1.2vw,18px)] text-dark-coal/80 mb-6 max-w-[400px] leading-relaxed font-medium">
+                רוצים לדעת איך אנחנו מוסיפים ערך למוצר?<br/>
+                קבלו הצצה לפני כולם
+            </p>
+            
+            <form onSubmit={handleSubmit} className="flex flex-col gap-[1.5vh] w-full max-w-[320px] mb-6">
                 {/* Honeypot to prevent spam */}
                 <input type="text" name="_honey" style={{display: 'none'}} />
                 
@@ -83,9 +80,18 @@ const NewsletterModal: React.FC = () => {
                     {isSubmitting ? 'שולח...' : 'ברור שאני בפנים :)'}
                 </button>
             </form>
+
+            {/* Launch Week Promotion Details - Moved Below Form */}
+            <div className="w-full max-w-[320px] space-y-1 border-t border-dark-coal/10 pt-4">
+                <p className="text-brand-dark font-bold text-lg">הטבה מיוחדת לשבוע ההשקה</p>
+                <p className="text-dark-coal/70 text-sm font-medium tracking-wide">כח’ שבט - ב’ אדר תשפ"ו</p>
+                <p className="text-dark-coal font-extrabold text-[clamp(16px,1.2vw,18px)] mt-2 leading-snug">
+                    בהזמנת חריטה על מוצר -<br/>מוצר שני בחמישים אחוז!
+                </p>
+                 <p className="text-sm font-bold text-gray-400 mt-2">על הזול מבינהם</p>
+            </div>
             
             <div className="mt-3 text-center">
-                <p className="text-sm font-bold text-gray-400">על הזול מבינהם</p>
                 <p className="text-[10px] text-dark-coal/50 mt-1">השארת הפרטים מהווה אישור לקבלת דיוור ותוכן שיווקי</p>
             </div>
         </div>
@@ -96,3 +102,4 @@ const NewsletterModal: React.FC = () => {
 };
 
 export default NewsletterModal;
+    
