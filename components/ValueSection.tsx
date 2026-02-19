@@ -34,10 +34,25 @@ const ValueSection: React.FC = () => {
 
   const carouselTrackRef = useRef<HTMLDivElement>(null);
   const [carouselIndex, setCarouselIndex] = useState(0);
+  const [itemsPerView, setItemsPerView] = useState(3);
   
+  // Responsive Items Per View
+  useEffect(() => {
+    const handleResize = () => {
+        if (window.innerWidth < 768) setItemsPerView(1);
+        else if (window.innerWidth < 1024) setItemsPerView(2);
+        else setItemsPerView(3);
+    };
+    
+    // Initial check
+    handleResize();
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   // Safe carousel items logic (duplicate for loop if needed, but handle empty)
   const carouselItems = galleryData.length > 0 ? [...galleryData, ...galleryData] : [];
-  const itemsPerView = 3;
   const maxIndex = Math.max(0, carouselItems.length - itemsPerView);
 
   useEffect(() => {
@@ -83,7 +98,7 @@ const ValueSection: React.FC = () => {
     if (carouselItems.length === 0) return;
     const timer = setInterval(() => { handleNext(); }, 4000);
     return () => clearInterval(timer);
-  }, [carouselIndex, carouselItems.length]);
+  }, [carouselIndex, carouselItems.length, itemsPerView]);
 
   useEffect(() => {
     if (carouselTrackRef.current) {
@@ -93,7 +108,7 @@ const ValueSection: React.FC = () => {
             ease: "power2.inOut"
         });
     }
-  }, [carouselIndex]);
+  }, [carouselIndex, itemsPerView]);
 
   const handleNext = () => setCarouselIndex((prev) => prev >= maxIndex ? 0 : prev + 1);
   const handlePrev = () => setCarouselIndex((prev) => prev <= 0 ? maxIndex : prev - 1);
@@ -175,14 +190,18 @@ const ValueSection: React.FC = () => {
 
         {/* 2. Controlled Carousel */}
         <div className="w-full flex items-center justify-center gap-4 md:gap-6 select-none mb-[6vh]">
-            <button onClick={handlePrev} className="w-10 h-10 md:w-12 md:h-12 border-2 border-brand-dark flex items-center justify-center text-brand-dark hover:bg-brand-dark hover:text-white transition-all">
+            <button onClick={handlePrev} className="w-10 h-10 md:w-12 md:h-12 border-2 border-brand-dark flex items-center justify-center text-brand-dark hover:bg-brand-dark hover:text-white transition-all shrink-0">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6" /></svg>
             </button>
 
             <div className="w-full max-w-[900px] overflow-hidden rounded-none dir-rtl">
                 <div ref={carouselTrackRef} className="flex w-full" style={{ direction: 'rtl' }}>
                     {carouselItems.map((item, idx) => (
-                        <div key={`${item.id}-${idx}`} className="w-1/3 shrink-0 px-[1vw]">
+                        <div 
+                            key={`${item.id}-${idx}`} 
+                            className="shrink-0 px-[1vw]"
+                            style={{ width: `${100 / itemsPerView}%` }}
+                        >
                             <div 
                                 onClick={() => changeMainDisplay(item)}
                                 className={`
@@ -198,7 +217,7 @@ const ValueSection: React.FC = () => {
                 </div>
             </div>
 
-            <button onClick={handleNext} className="w-10 h-10 md:w-12 md:h-12 border-2 border-brand-dark flex items-center justify-center text-brand-dark hover:bg-brand-dark hover:text-white transition-all">
+            <button onClick={handleNext} className="w-10 h-10 md:w-12 md:h-12 border-2 border-brand-dark flex items-center justify-center text-brand-dark hover:bg-brand-dark hover:text-white transition-all shrink-0">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6" /></svg>
             </button>
         </div>

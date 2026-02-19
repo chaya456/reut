@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import Logo from './Logo';
 
@@ -70,8 +71,8 @@ const Navbar: React.FC = () => {
             ))}
         </div>
 
-        {/* Small Logo (Visible ONLY on scroll) */}
-        <div className="flex items-center">
+        {/* Small Logo (Visible ONLY on scroll, Desktop Only) */}
+        <div className="hidden md:flex items-center">
             <button 
                 onClick={() => scrollToSection('home')}
                 className={`transition-all duration-700 ease-out flex items-center relative z-50 focus:outline-none ${
@@ -87,10 +88,18 @@ const Navbar: React.FC = () => {
             </button>
         </div>
 
-        {/* Mobile Toggle Button */}
+        {/* Mobile Layout: Logo on Right, Hamburger on Left */}
         <div className="md:hidden flex w-full items-center justify-between">
+            {/* 1. Mobile Logo - Placed first (Right side in RTL) */}
+            <div className={`transition-opacity duration-300 ${scrolled ? 'opacity-100' : 'opacity-0'}`}>
+                 <div className="h-[32px] w-auto">
+                    <Logo className="w-full h-full text-brand-dark" animated={false} />
+                </div>
+            </div>
+
+            {/* 2. Hamburger Button - Placed second (Left side in RTL) */}
              <button 
-                className="p-2 text-dark-coal z-50 relative focus:outline-none -mr-2"
+                className="p-2 text-dark-coal z-[110] relative focus:outline-none -ml-2"
                 onClick={() => setIsOpen(!isOpen)}
                 aria-label="Toggle Menu"
             >
@@ -100,30 +109,37 @@ const Navbar: React.FC = () => {
                     <span className={`h-[2px] bg-current transition-all duration-300 ${isOpen ? 'w-full -rotate-45 -translate-y-[8px]' : 'w-full'}`}></span>
                 </div>
             </button>
-
-            {/* Mobile Logo logic */}
-            <div className={`transition-opacity duration-300 ${scrolled ? 'opacity-100' : 'opacity-0'}`}>
-                 <div className="h-[32px] w-auto">
-                    <Logo className="w-full h-full text-brand-dark" animated={false} />
-                </div>
-            </div>
         </div>
 
-        {/* Mobile Menu Overlay */}
+        {/* Mobile Menu Backdrop */}
         <div 
-            className={`fixed inset-0 bg-white/95 backdrop-blur-xl z-40 flex flex-col items-center justify-center gap-[4vh] transition-all duration-500 md:hidden ${
+            className={`fixed inset-0 bg-dark-coal/40 backdrop-blur-sm z-[100] transition-opacity duration-500 md:hidden ${
                 isOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'
             }`}
+            onClick={() => setIsOpen(false)}
+        />
+
+        {/* Mobile Menu Drawer (Side Panel) */}
+        <div 
+            className={`fixed top-0 right-0 h-full w-[75vw] max-w-[300px] bg-white z-[105] shadow-2xl flex flex-col items-start justify-start pt-[120px] px-[8vw] gap-[3vh] transition-transform duration-500 ease-[cubic-bezier(0.33,1,0.68,1)] md:hidden ${
+                isOpen ? 'translate-x-0' : 'translate-x-full'
+            }`}
         >
-            {links.map((link) => (
+            {links.map((link, index) => (
                 <button 
                     key={link.name}
                     onClick={() => scrollToSection(link.id)}
-                    className="text-[clamp(24px,7vw,40px)] font-bold text-dark-coal hover:text-brand-dark transition-colors transform hover:scale-105 duration-300"
+                    className={`text-[clamp(20px,5vw,24px)] font-bold text-dark-coal hover:text-brand-dark transition-all duration-300 transform w-full text-right border-b border-gray-100 pb-2 ${isOpen ? 'translate-x-0 opacity-100' : 'translate-x-8 opacity-0'}`}
+                    style={{ transitionDelay: `${index * 50 + 100}ms` }}
                 >
                     {link.name}
                 </button>
             ))}
+            
+            {/* Decorative bottom element */}
+            <div className="mt-auto mb-8 w-full opacity-20">
+                 <Logo className="w-20 h-auto text-brand-dark mx-auto" animated={false} />
+            </div>
         </div>
       </div>
     </nav>

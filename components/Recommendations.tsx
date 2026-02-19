@@ -97,7 +97,7 @@ const Recommendations: React.FC = () => {
                             <div 
                                 onClick={() => setSelectedRec(rec)}
                                 className={`
-                                    relative w-[300px] md:w-[350px] h-[240px] p-3 shrink-0 cursor-pointer
+                                    relative w-[80vw] md:w-[350px] h-[240px] p-3 shrink-0 cursor-pointer
                                     shadow-[0_10px_30px_rgba(0,0,0,0.05)] hover:shadow-[0_15px_40px_rgba(0,0,0,0.1)] 
                                     flex flex-col items-center justify-between text-center 
                                     border border-brand-dark/10 rounded-xl transition-all duration-300 hover:scale-105
