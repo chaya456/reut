@@ -81,15 +81,6 @@ const NewsletterModal: React.FC = () => {
                 </button>
             </form>
 
-            {/* Launch Week Promotion Details - Moved Below Form */}
-            <div className="w-full max-w-[320px] space-y-1 border-t border-dark-coal/10 pt-4">
-                <p className="text-brand-dark font-bold text-lg">הטבה מיוחדת לשבוע ההשקה</p>
-                <p className="text-dark-coal font-extrabold text-[clamp(16px,1.2vw,18px)] mt-2 leading-snug">
-                    בהזמנת חריטה על מוצר -<br/>מוצר שני בחמישים אחוז!
-                </p>
-                 <p className="text-sm font-bold text-gray-400 mt-2">על הזול מבינהם</p>
-            </div>
-            
             <div className="mt-3 text-center">
                 <p className="text-[10px] text-dark-coal/50 mt-1">השארת הפרטים מהווה אישור לקבלת דיוור ותוכן שיווקי</p>
             </div>
