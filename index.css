@@ -53,3 +53,15 @@ body {
     animation: logo-alive 5s ease-in-out infinite;
     will-change: transform, filter;
 }
+
+@keyframes dynamic-peach {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.bg-dynamic-peach {
+    background: linear-gradient(-45deg, #FFDAB9, #FFB07C, #E69B6B, #FFB07C);
+    background-size: 400% 400%;
+    animation: dynamic-peach 15s ease infinite;
+}

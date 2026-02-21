@@ -224,18 +224,31 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
 
                             <div className="mb-4">
                                 <label className="block text-sm mb-1">תמונות נוספות לגלריה (לחץ להוספה)</label>
-                                <div className="flex flex-wrap gap-2 mb-2">
-                                    {editingItem.images?.map((img: string, idx: number) => (
-                                        <div key={idx} className="relative group w-20 h-20">
-                                            <img src={img} className="w-full h-full object-cover rounded border" />
+                                <div className="flex flex-col gap-2 mb-2">
+                                    {editingItem.images?.map((imgObj: any, idx: number) => (
+                                        <div key={idx} className="relative group flex items-center gap-2 bg-gray-50 p-2 rounded border">
+                                            <div className="w-16 h-16 shrink-0">
+                                                <img src={imgObj.url} className="w-full h-full object-cover rounded border" />
+                                            </div>
+                                            <input 
+                                                type="text" 
+                                                placeholder="תיאור לתמונה (אופציונלי)" 
+                                                value={imgObj.description || ''} 
+                                                onChange={(e) => {
+                                                    const newImages = [...editingItem.images];
+                                                    newImages[idx] = { ...newImages[idx], description: e.target.value };
+                                                    setEditingItem({...editingItem, images: newImages});
+                                                }}
+                                                className="flex-1 p-2 border rounded text-sm"
+                                            />
                                             <button 
                                                 onClick={() => setEditingItem({...editingItem, images: editingItem.images.filter((_:any, i:number) => i !== idx)})}
-                                                className="absolute top-0 right-0 bg-red-500 text-white w-5 h-5 flex items-center justify-center rounded-full text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                                                className="bg-red-500 text-white w-6 h-6 flex items-center justify-center rounded-full text-xs hover:bg-red-600 transition-colors"
                                             >✕</button>
                                         </div>
                                     ))}
                                 </div>
-                                <input type="file" multiple onChange={(e) => handleImageUpload(e, (base64) => setEditingItem({...editingItem, images: [...(editingItem.images || []), base64]}))} className="text-sm" />
+                                <input type="file" multiple onChange={(e) => handleImageUpload(e, (base64) => setEditingItem({...editingItem, images: [...(editingItem.images || []), { url: base64, description: '' }]}))} className="text-sm" />
                             </div>
 
                             <div className="flex gap-3 justify-end mt-6">

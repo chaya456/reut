@@ -6,7 +6,14 @@ import { GalleryItem } from '../types';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const Gallery: React.FC = () => {
+interface GalleryProps {
+    id?: string;
+    data?: { items: GalleryItem[], note?: string };
+    title?: string;
+    subtitle?: string;
+}
+
+const Gallery: React.FC<GalleryProps> = ({ id, data, title, subtitle }) => {
   const galleryRef = useRef<HTMLDivElement>(null);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentProject, setCurrentProject] = useState<GalleryItem | null>(null);
@@ -14,7 +21,10 @@ const Gallery: React.FC = () => {
   const [isImageLoading, setIsImageLoading] = useState(true);
   
   const { content } = useContent();
-  const galleryItems = content.gallery.filter(item => !item.isHidden);
+  const galleryItems = data?.items || content.gallery.filter(item => !item.isHidden);
+  const sectionTitle = title || "עורכים לכם שולחן";
+  const sectionSubtitle = subtitle;
+  const sectionNote = data?.note;
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -89,7 +99,7 @@ const Gallery: React.FC = () => {
   return (
     <>
         <section 
-            id="gallery"
+            id={id || "gallery"}
             ref={galleryRef} 
             className="py-[10vh] pb-[20vh] relative z-20 -mt-[15vw] flex flex-col justify-center bg-gradient-to-br from-brand-soft via-brand-light/30 to-brand-soft"
             style={{ 
@@ -101,8 +111,14 @@ const Gallery: React.FC = () => {
         <div className="max-w-[1400px] mx-auto px-[5vw] w-full">
             <div className="text-center mb-[8vh] pt-0">
             <h2 className="text-[clamp(36px,5vw,70px)] font-extrabold m-0 leading-tight text-dark-coal animate-text">
-                <span className="transition-colors duration-300 hover:text-brand-dark cursor-default inline-block">ערכנו</span> שולחן
+                <span className="transition-colors duration-300 hover:text-brand-dark cursor-default inline-block">{sectionTitle.split(' ')[0]}</span> {sectionTitle.split(' ').slice(1).join(' ')}
             </h2>
+            <p className="text-[clamp(18px,2vw,28px)] mt-[1vh] opacity-80 animate-text">{sectionSubtitle}</p>
+            {sectionNote && (
+                <p className="text-[clamp(16px,1.5vw,22px)] mt-[2vh] font-handwriting text-brand-dark animate-text transform -rotate-2">
+                    {sectionNote}
+                </p>
+            )}
             </div>
 
             {/* Fluid Grid */}
@@ -156,7 +172,7 @@ const Gallery: React.FC = () => {
 
                         <img 
                             key={`${currentProject.id}-${currentImageIndex}`}
-                            src={currentProject.images[currentImageIndex]} 
+                            src={currentProject.images[currentImageIndex].url} 
                             alt={currentProject.title} 
                             onLoad={() => setIsImageLoading(false)}
                             className={`max-w-full max-h-[70vh] object-contain shadow-2xl origin-center z-10 transition-opacity duration-300 ease-out will-change-opacity ${isImageLoading ? 'opacity-0' : 'opacity-100'}`}
@@ -177,16 +193,20 @@ const Gallery: React.FC = () => {
                     <div className="w-full mt-[2vh] flex flex-col md:flex-row items-center justify-between text-white">
                         <div className="text-right">
                             <h3 className="text-[clamp(20px,2.5vw,30px)] font-bold">{currentProject.title}</h3>
+                            {/* Display specific image description if available, otherwise project description */}
+                            <p className="text-[clamp(16px,1.5vw,20px)] opacity-90 mt-1 font-medium text-brand-light">
+                                {currentProject.images[currentImageIndex].description || currentProject.description}
+                            </p>
                         </div>
                         
                         <div className="flex gap-2 mt-[2vh] md:mt-0 overflow-x-auto pb-2">
-                            {currentProject.images.map((img, idx) => (
+                            {currentProject.images.map((imgObj, idx) => (
                                 <div 
                                     key={idx} 
                                     onClick={(e) => { e.stopPropagation(); if (idx !== currentImageIndex) { setIsImageLoading(true); setCurrentImageIndex(idx); } }}
                                     className={`w-[clamp(50px,6vw,80px)] h-[clamp(50px,6vw,80px)] shrink-0 cursor-pointer border-2 transition-all ${idx === currentImageIndex ? 'border-brand-dark opacity-100' : 'border-transparent opacity-50 hover:opacity-80'}`}
                                 >
-                                    <img src={img} className="w-full h-full object-cover" alt="thumb" />
+                                    <img src={imgObj.url} className="w-full h-full object-cover" alt="thumb" />
                                 </div>
                             ))}
                         </div>

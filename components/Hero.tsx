@@ -3,11 +3,17 @@ import React, { useRef, useEffect, useState } from 'react';
 import gsap from 'gsap';
 import Logo from './Logo';
 import { useContent } from '../context/ContentContext';
+import { HeroContent } from '../types';
 
-const Hero: React.FC = () => {
+interface HeroProps {
+    data?: HeroContent;
+}
+
+const Hero: React.FC<HeroProps> = ({ data }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [mousePos, setMousePos] = useState({ x: '50%', y: '50%' });
   const { content } = useContent();
+  const heroData = data || content.hero;
 
   // Helper to split text into characters
   const splitText = (text: string) => {
@@ -70,7 +76,7 @@ const Hero: React.FC = () => {
     }, containerRef);
 
     return () => ctx.revert();
-  }, [content.hero]); // Re-run if hero content changes
+  }, [heroData]); // Re-run if hero content changes
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!containerRef.current) return;
@@ -137,20 +143,20 @@ const Hero: React.FC = () => {
                 <div className="text-right w-full">
                     <h1 className="hero-title text-[clamp(48px,9vw,130px)] font-extrabold leading-[0.9] mb-[2vh] drop-shadow-md text-white cursor-default">
                         <div className="block overflow-hidden">
-                            {splitText(content.hero.titleLine1 + " ")}
+                            {splitText(heroData.titleLine1 + " ")}
                             <span className="transition-colors duration-300 hover:text-brand-dark cursor-default inline-block">
-                                {splitText(content.hero.titleLine2)}
+                                {splitText(heroData.titleLine2)}
                             </span>
                         </div>
                         <div className="block overflow-hidden">
-                            {splitText(content.hero.titleLine3)}
+                            {splitText(heroData.titleLine3)}
                         </div>
                     </h1>
 
                     {/* Subtitle */}
                     <div className="overflow-hidden mb-[3vh]">
                         <h2 className="hero-subtitle text-[clamp(18px,2.5vw,36px)] font-light text-brand-dark drop-shadow-md pointer-events-none tracking-wide">
-                        {content.hero.subtitle}
+                        {heroData.subtitle}
                         </h2>
                     </div>
 
@@ -160,7 +166,7 @@ const Hero: React.FC = () => {
                             onClick={scrollToContact}
                             className="text-[clamp(16px,1.5vw,22px)] font-medium px-[4vw] py-[2vh] bg-brand-dark border-2 border-brand-dark rounded-none text-white transition-all duration-300 hover:bg-white hover:text-brand-dark shadow-lg backdrop-blur-sm cursor-pointer transform hover:scale-105"
                         >
-                        {content.hero.buttonText}
+                        {heroData.buttonText}
                         </button>
                     </div>
                 </div>

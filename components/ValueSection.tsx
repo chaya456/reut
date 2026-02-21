@@ -3,15 +3,27 @@ import React, { useRef, useState, useEffect } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useContent } from '../context/ContentContext';
+import { ValueItem } from '../types';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const ValueSection: React.FC = () => {
+interface ValueSectionProps {
+    id?: string;
+    data?: { items: ValueItem[], text?: string };
+    title?: string;
+    subtitle?: string;
+}
+
+const ValueSection: React.FC<ValueSectionProps> = ({ id, data, title, subtitle }) => {
   const sliderRef = useRef<HTMLDivElement>(null);
   const beforeContainerRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLDivElement>(null);
   const { content } = useContent();
-  const galleryData = content.valueSection;
+  
+  const galleryData = data?.items || content.valueSection;
+  const sectionTitle = title || "ערך מוסף";
+  const sectionSubtitle = subtitle || "זו לא הדמיה זו תמונה";
+  const sectionText = data?.text;
   
   // Initialize with a random item so it's different every time the component mounts
   const [activeItem, setActiveItem] = useState(() => {
@@ -113,6 +125,18 @@ const ValueSection: React.FC = () => {
   const handleNext = () => setCarouselIndex((prev) => prev >= maxIndex ? 0 : prev + 1);
   const handlePrev = () => setCarouselIndex((prev) => prev <= 0 ? maxIndex : prev - 1);
 
+  const handleMainNext = () => {
+    const currentIndex = galleryData.findIndex(item => item.id === activeItem.id);
+    const nextIndex = (currentIndex + 1) % galleryData.length;
+    changeMainDisplay(galleryData[nextIndex]);
+  };
+
+  const handleMainPrev = () => {
+    const currentIndex = galleryData.findIndex(item => item.id === activeItem.id);
+    const prevIndex = (currentIndex - 1 + galleryData.length) % galleryData.length;
+    changeMainDisplay(galleryData[prevIndex]);
+  };
+
   const handleMove = (e: React.MouseEvent | React.TouchEvent) => {
     if (!sliderRef.current) return;
     const rect = sliderRef.current.getBoundingClientRect();
@@ -141,7 +165,7 @@ const ValueSection: React.FC = () => {
 
   return (
     <section 
-        id="value"
+        id={id || "value"}
         ref={sectionRef} 
         className="py-[15vh] relative overflow-hidden bg-white/50 z-30 flex flex-col justify-center"
         style={{ 
@@ -154,15 +178,15 @@ const ValueSection: React.FC = () => {
         <div className="text-center mb-[6vh]">
           {/* Responsive Heading */}
           <h2 className="text-[clamp(36px,5vw,70px)] font-extrabold m-0 leading-tight animate-text">
-            <span className="transition-colors duration-300 hover:text-brand-dark cursor-default">ערך</span> מוסף
+            <span className="transition-colors duration-300 hover:text-brand-dark cursor-default">{sectionTitle.split(' ')[0]}</span> {sectionTitle.split(' ').slice(1).join(' ')}
           </h2>
-          <p className="text-[clamp(18px,2vw,28px)] mt-[1vh] opacity-80 animate-text">זו לא הדמיה זו תמונה</p>
+          <p className="text-[clamp(18px,2vw,28px)] mt-[1vh] opacity-80 animate-text">{sectionSubtitle}</p>
         </div>
 
         {/* 1. Main Comparison Slider - 16:9 Aspect Ratio (Reverted from 4:3) */}
         <div 
           ref={sliderRef}
-          className="w-full max-w-[1000px] aspect-[16/9] relative rounded-none overflow-hidden shadow-2xl bg-brand-soft mb-[6vh] cursor-ew-resize select-none border-4 border-white"
+          className="w-full max-w-[1000px] aspect-[16/9] relative rounded-none overflow-hidden shadow-2xl bg-brand-soft mb-[6vh] cursor-ew-resize select-none border-4 border-white group/slider"
           onMouseMove={handleMove}
           onTouchMove={handleMove}
         >
@@ -186,7 +210,29 @@ const ValueSection: React.FC = () => {
                 ⇄
              </div>
           </div>
+
+          {/* Main Slider Navigation Arrows */}
+          <button 
+            onClick={(e) => { e.stopPropagation(); handleMainPrev(); }}
+            className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/20 hover:bg-white/40 backdrop-blur-md text-white flex items-center justify-center transition-all z-30 opacity-0 group-hover/slider:opacity-100"
+            aria-label="Previous image"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6" /></svg>
+          </button>
+          <button 
+            onClick={(e) => { e.stopPropagation(); handleMainNext(); }}
+            className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/20 hover:bg-white/40 backdrop-blur-md text-white flex items-center justify-center transition-all z-30 opacity-0 group-hover/slider:opacity-100"
+            aria-label="Next image"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6" /></svg>
+          </button>
         </div>
+
+        {sectionText && (
+            <p className="text-[clamp(16px,1.5vw,22px)] opacity-80 max-w-[800px] mx-auto mb-[6vh] animate-text">
+                {sectionText}
+            </p>
+        )}
 
         {/* 2. Controlled Carousel */}
         <div className="w-full flex items-center justify-center gap-4 md:gap-6 select-none mb-[6vh]">

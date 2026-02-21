@@ -2,7 +2,12 @@
 import React, { useState, useEffect } from 'react';
 import Logo from './Logo';
 
-const Navbar: React.FC = () => {
+interface NavbarProps {
+  isAdmin?: boolean;
+  onToggleAdmin?: () => void;
+}
+
+const Navbar: React.FC<NavbarProps> = ({ isAdmin, onToggleAdmin }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -45,7 +50,7 @@ const Navbar: React.FC = () => {
 
   return (
     <nav 
-      className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] dir-rtl ${
+      className={`fixed top-0 left-0 right-0 z-[200] transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] dir-rtl ${
         scrolled 
             ? 'bg-white/85 backdrop-blur-xl shadow-sm py-[1vh]' 
             : 'bg-transparent py-[3vh]'
@@ -69,6 +74,18 @@ const Navbar: React.FC = () => {
                     <span className="absolute -bottom-1 right-0 w-0 h-0.5 bg-brand-dark transition-all duration-300 group-hover:w-full"></span>
                 </button>
             ))}
+
+            {/* Management Toggle Button */}
+            <button 
+                onClick={onToggleAdmin}
+                className={`text-[clamp(14px,1vw,18px)] font-bold px-4 py-1.5 rounded-full transition-all duration-300 ${
+                    isAdmin 
+                    ? 'bg-brand-dark text-white shadow-lg' 
+                    : 'bg-gray-100 text-gray-400 hover:bg-gray-200'
+                }`}
+            >
+                {isAdmin ? 'מצב ניהול פעיל' : 'ניהול אתר'}
+            </button>
         </div>
 
         {/* Small Logo (Visible ONLY on scroll, Desktop Only) */}
@@ -135,6 +152,22 @@ const Navbar: React.FC = () => {
                     {link.name}
                 </button>
             ))}
+
+            {/* Mobile Management Toggle */}
+            <button 
+                onClick={() => {
+                    onToggleAdmin?.();
+                    setIsOpen(false);
+                }}
+                className={`text-[clamp(18px,4vw,22px)] font-bold px-6 py-3 rounded-xl transition-all duration-300 mt-4 text-right ${
+                    isAdmin 
+                    ? 'bg-brand-dark text-white shadow-lg' 
+                    : 'bg-gray-100 text-gray-500'
+                } ${isOpen ? 'translate-x-0 opacity-100' : 'translate-x-8 opacity-0'}`}
+                style={{ transitionDelay: `${links.length * 50 + 100}ms` }}
+            >
+                {isAdmin ? 'יציאה ממצב ניהול' : 'כניסה לניהול אתר'}
+            </button>
             
             {/* Decorative bottom element */}
             <div className="mt-auto mb-8 w-full opacity-20">

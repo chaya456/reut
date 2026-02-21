@@ -28,9 +28,10 @@ const Footer: React.FC = () => {
   const whatsappLink = "https://wa.me/972539660418";
 
   // Gmail Compose Link construction
-  const emailRecipient = "c0548496967@gmail.com";
-  const emailSubject = "ראיתי את האתר של רעות, גם אני רוצה אתר שעובד";
-  const gmailLink = `https://mail.google.com/mail/?view=cm&fs=1&to=${emailRecipient}&su=${encodeURIComponent(emailSubject)}`;
+  const emailRecipient = "Reut21948@gmail.com";
+  const emailSubject = "אני רוצה להוסיף ערך למוצר";
+  const emailBody = "מעוניין בהצעת מחיר מותאמת אישית על...";
+  const gmailLink = `https://mail.google.com/mail/?view=cm&fs=1&to=${emailRecipient}&su=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -112,16 +113,24 @@ const Footer: React.FC = () => {
             <div className="max-w-[1000px] mx-auto px-[5vw]">
                 {/* Title */}
                 <h2 className="text-[clamp(32px,5vw,70px)] font-extrabold mb-[2vh] leading-tight animate-text-footer md:whitespace-nowrap">
-                    <span className="transition-colors duration-300 hover:text-brand-dark cursor-default inline-block">מעריכה</span> שהגעת עד לכאן
+                    <span className="transition-colors duration-300 hover:text-brand-dark cursor-default inline-block">ככה</span> נערכים
                 </h2>
                 <div className="text-[clamp(16px,2vw,24px)] leading-[1.6] opacity-80 max-w-[700px] mx-auto mb-[2vh] animate-text-footer">
-                    יש לך מוצר חדש?<br />
                     מתעניינים על הוספת <span className="transition-colors duration-300 hover:text-brand-dark cursor-default inline-block">ערך</span> למוצר?<br />
-                    יכול להיות שכבר מיתגנו אותו ועדיין לא ראית :)
+                    יש לכם מוצר חדש?<br />
+                    יכול להיות שכבר מיתגנו ועדיין לא ראיתם :)
                 </div>
                 
-                {/* Spacer to replace the removed link */}
-                <div className="h-[3vh] animate-text-footer"></div>
+                <div className="mb-[4vh] animate-text-footer">
+                    <a 
+                        href={gmailLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[clamp(18px,2.5vw,28px)] font-bold text-[#FFB07C] hover:text-white transition-colors underline underline-offset-8 decoration-2"
+                    >
+                        כאן בודקים את זה
+                    </a>
+                </div>
 
                 {/* Form Area */}
                 <div className="max-w-[800px] mx-auto text-right mb-[4vh] animate-text-footer" id="contact-form-fields">
@@ -148,18 +157,29 @@ const Footer: React.FC = () => {
                             </div>
                             <div className="mb-[1.5vh]">
                                 {/* OPTIONAL field */}
-                                <textarea placeholder="גמני רוצה להוסיף ערך למוצר ורוצה לדעת פרטים על:" value={message} onChange={(e) => setMessage(e.target.value)} className="w-full p-[clamp(10px,1.5vh,15px)] border border-white/30 bg-white/5 rounded-none text-white text-base placeholder-white/50 focus:outline-none focus:border-brand-light focus:bg-white/10 transition-colors min-h-[120px] resize-y" />
+                                <textarea placeholder="מעוניין בהצעת מחיר מותאמת אישית על..." value={message} onChange={(e) => setMessage(e.target.value)} className="w-full p-[clamp(10px,1.5vh,15px)] border border-white/30 bg-white/5 rounded-none text-white text-base placeholder-white/50 focus:outline-none focus:border-brand-light focus:bg-white/10 transition-colors min-h-[120px] resize-y" />
                             </div>
                             <button type="submit" disabled={isSubmitting} className="w-full p-[clamp(10px,1.5vh,15px)] bg-brand-light text-dark-coal font-extrabold border-none rounded-none text-lg cursor-pointer hover:bg-brand-dark hover:text-white transition-colors disabled:opacity-70 disabled:cursor-not-allowed">
-                                {isSubmitting ? 'שולח...' : 'מתחילה להערך'}
+                                {isSubmitting ? 'שולח...' : 'מתחילים להערך'}
                             </button>
                         </form>
                     )}
                 </div>
+
+                <div className="text-center text-white/40 text-xs mt-2 mb-8 animate-text-footer">
+                    גאולה, ירושלים | אופציה למשלוחים
+                </div>
                 
                 {/* Credits */}
                 <div className="border-t border-white/10 pt-4 mt-2 text-sm md:text-base text-white/60 flex flex-col md:flex-row items-center justify-center gap-4 animate-text-footer relative pb-2">
-                    <span className="font-semibold text-white/80">אתרים שעובדים ח. גוטפרב</span>
+                    <a 
+                        href="https://meek-licorice-beb232.netlify.app/" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="font-semibold text-white/80 hover:text-brand-light transition-colors"
+                    >
+                        אתרים שעובדים ח. גוטפרב
+                    </a>
                     <span className="hidden md:inline text-white/30">|</span>
                     <div className="relative">
                         <button onClick={() => setShowContact(!showContact)} className="hover:text-brand-light transition-colors font-bold flex items-center gap-2 focus:outline-none">צור קשר</button>

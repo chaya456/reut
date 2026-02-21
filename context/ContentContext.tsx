@@ -3,16 +3,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { AppContent, GalleryItem, Recommendation, ValueItem } from '../types';
 
 // Default / Initial Data
-const defaultContent: AppContent = {
-  hero: {
-    titleLine1: "מוסיפים",
-    titleLine2: "ערך",
-    titleLine3: "למוצר",
-    subtitle: "אמירה. יצירה. שלמות.",
-    buttonText: "המוצר עליכם | הערך עלינו"
-  },
-  aboutText: "נעים להכיר, אנחנו ב'ערך מוסף' מתמחים בלהפוך כל מוצר פשוט ליצירת אומנות אישית.",
-  valueSection: [
+const initialValueItems: ValueItem[] = [
     { id: 1, before: "https://i.postimg.cc/W3VPvdFY/1BEFORE.png", after: "https://i.postimg.cc/NMxvfQR0/1AFTER.jpg" },
     { id: 2, before: "https://i.postimg.cc/50JMVXQW/2BEFORE.jpg", after: "https://i.postimg.cc/4dGTgY7M/2AFTER.jpg" },
     { id: 3, before: "https://i.postimg.cc/Hxt1sTb1/3BEFORE.jpg", after: "https://i.postimg.cc/d19ctJGK/3AFTER.png" },
@@ -36,64 +27,70 @@ const defaultContent: AppContent = {
     { id: 22, before: "https://i.postimg.cc/XNQ6R7jj/22BEFORE.jpg", after: "https://i.postimg.cc/J7PCf4r8/22AFTER.jpg" },
     { id: 23, before: "https://i.postimg.cc/BQbf496R/23BEFORE.jpg", after: "https://i.postimg.cc/3JNQY5Nh/23AFTER.jpg" },
     { id: 24, before: "https://i.postimg.cc/k4Cdm26H/24BEFORE.png", after: "https://i.postimg.cc/zXvY8ZvJ/24AFTER.png" }
-  ],
-  gallery: [
+];
+
+const initialGalleryItems: GalleryItem[] = [
       { 
         id: 1, 
         title: "אירוסין", 
+        description: "חריטה על מקרונים, חיתוך צורני טפט וניל",
         thumbnail: "https://i.postimg.cc/DwV5DXct/DSC01640.jpg",
         size: 'large', 
         images: [
-            "https://i.postimg.cc/DwV5DXct/DSC01640.jpg",
-            "https://i.postimg.cc/HkG3Ky2C/DSC01658.jpg",
-            "https://i.postimg.cc/wjKFPmVM/DSC01679.jpg",
-            "https://i.postimg.cc/fR45F9KL/DSC01681.jpg",
-            "https://i.postimg.cc/vBmv9LQx/DSC02031.jpg",
-            "https://i.postimg.cc/VNgRdHcB/DSC02039.jpg"
+            { url: "https://i.postimg.cc/DwV5DXct/DSC01640.jpg", description: "חריטה על מקרונים" },
+            { url: "https://i.postimg.cc/HkG3Ky2C/DSC01658.jpg" },
+            { url: "https://i.postimg.cc/wjKFPmVM/DSC01679.jpg" },
+            { url: "https://i.postimg.cc/fR45F9KL/DSC01681.jpg", description: "חיתוך צורני טפט וניל" },
+            { url: "https://i.postimg.cc/vBmv9LQx/DSC02031.jpg" },
+            { url: "https://i.postimg.cc/VNgRdHcB/DSC02039.jpg" }
         ]
       },
       { 
         id: 2, 
         title: "יומולדת", 
+        description: "הטבעת חיתוך צורני בחום, חריטה על פחית, חריטה על סביבונים",
         thumbnail: "https://i.postimg.cc/9XsF6mq0/tpt-swlhn.jpg",
         size: 'tall', 
         images: [
-            "https://i.postimg.cc/9XsF6mq0/tpt-swlhn.jpg",
-            "https://i.postimg.cc/Y0FkrFmS/kws-wphyt.jpg",
-            "https://i.postimg.cc/DfRy9vbw/phyt.jpg",
-            "https://i.postimg.cc/vTnMYn6n/phyt-wkws.jpg",
-            "https://i.postimg.cc/sfG39kHq/pytwt.jpg"
+            { url: "https://i.postimg.cc/9XsF6mq0/tpt-swlhn.jpg", description: "הטבעת חיתוך צורני בחום" },
+            { url: "https://i.postimg.cc/Y0FkrFmS/kws-wphyt.jpg", description: "חריטה על סביבונים" },
+            { url: "https://i.postimg.cc/DfRy9vbw/phyt.jpg", description: "חריטה על פחית" },
+            { url: "https://i.postimg.cc/vTnMYn6n/phyt-wkws.jpg", description: "חיתוך צורני טפט וניל" },
+            { url: "https://i.postimg.cc/sfG39kHq/pytwt.jpg", description: "חריטה על פיתות" }
         ]
       },
       { 
         id: 3, 
         title: "יום נישואין", 
+        description: "חיתוך צורני, חריטה על עור, רקמה",
         thumbnail: "https://i.postimg.cc/MTMRR6CK/zlht.jpg", 
         size: 'small', 
         images: [
-            "https://i.postimg.cc/MTMRR6CK/zlht.jpg", 
-            "https://i.postimg.cc/KcnVgBtQ/1B4A6988.jpg", 
-            "https://i.postimg.cc/023WG43d/swlhn-'lkswn.jpg",
-            "https://i.postimg.cc/qB1ZqqGN/swlhn-mlm'lh.jpg",
-            "https://i.postimg.cc/xdV6hz9h/swlhn-rwhb.jpg",
-            "https://i.postimg.cc/W4c5CksW/sqyq.jpg"
+            { url: "https://i.postimg.cc/MTMRR6CK/zlht.jpg", description: "בד בחיתוך צורני" }, 
+            { url: "https://i.postimg.cc/KcnVgBtQ/1B4A6988.jpg", description: "חיתוך צורני טפט וניל" }, 
+            { url: "https://i.postimg.cc/023WG43d/swlhn-'lkswn.jpg" },
+            { url: "https://i.postimg.cc/qB1ZqqGN/swlhn-mlm'lh.jpg" },
+            { url: "https://i.postimg.cc/xdV6hz9h/swlhn-rwhb.jpg" },
+            { url: "https://i.postimg.cc/W4c5CksW/sqyq.jpg", description: "חריטה על עור" }
         ]
       },
       { 
         id: 4, 
         title: "שבע ברכות", 
+        description: "חיתוך צורני טפט וניל",
         thumbnail: "https://i.postimg.cc/7LpX0JWf/freepik-img1-img2-37235.jpg",
         size: 'small', 
         images: [
-            "https://i.postimg.cc/7LpX0JWf/freepik-img1-img2-37235.jpg",
-            "https://i.postimg.cc/GmgX35P6/kws.jpg",
-            "https://i.postimg.cc/xdktX3gs/zlht.jpg",
-            "https://i.postimg.cc/k5Vf2vf2/swlhn-'rwk.jpg",
-            "https://i.postimg.cc/Bb3gw9st/swlhn-mlm'lh.jpg"
+            { url: "https://i.postimg.cc/7LpX0JWf/freepik-img1-img2-37235.jpg" },
+            { url: "https://i.postimg.cc/GmgX35P6/kws.jpg" },
+            { url: "https://i.postimg.cc/xdktX3gs/zlht.jpg", description: "חיתוך צורני טפט וניל" },
+            { url: "https://i.postimg.cc/k5Vf2vf2/swlhn-'rwk.jpg" },
+            { url: "https://i.postimg.cc/Bb3gw9st/swlhn-mlm'lh.jpg" }
         ]
       },
-  ],
-  recommendations: [
+];
+
+const initialRecommendations: Recommendation[] = [
       { id: 1, name: "בתיה", image: "https://i.postimg.cc/s2WVcfSg/hmlzh-btyh.png", color: "bg-white" },
       { id: 2, name: "רבקי", image: "https://i.postimg.cc/HxCTPG4g/hmlzh-rbqy.png", color: "bg-brand-soft" },
       { id: 3, name: "פרומי", image: "https://i.postimg.cc/s2Qhh0rk/hmlzh-prwmy.png", color: "bg-white" },
@@ -102,6 +99,74 @@ const defaultContent: AppContent = {
       { id: 6, name: "חני", image: "https://i.postimg.cc/8C49sr9y/hmlzh-hny.jpg", color: "bg-brand-soft" },
       { id: 7, name: "מירב", image: "https://i.postimg.cc/YSRZjmZb/hmlzh-myrb.jpg", color: "bg-white" },
       { id: 8, name: "ריקי", image: "https://i.postimg.cc/1zB24N27/hmlzh-ryqy.jpg", color: "bg-brand-soft" },
+];
+
+const defaultContent: AppContent = {
+  hero: {
+    titleLine1: "מוסיפים",
+    titleLine2: "ערך",
+    titleLine3: "למוצר",
+    subtitle: "אמירה. יצירה. שלמות.",
+    buttonText: "המוצר עליכם | הערך עלינו"
+  },
+  aboutText: "נעים להכיר, אנחנו ב'ערך מוסף' מתמחים בלהפוך כל מוצר פשוט ליצירת אומנות אישית.",
+  valueSection: initialValueItems,
+  gallery: initialGalleryItems,
+  recommendations: initialRecommendations,
+  sections: [
+      {
+          id: 'hero-main',
+          type: 'hero',
+          data: {
+            titleLine1: "מוסיפים",
+            titleLine2: "ערך",
+            titleLine3: "למוצר",
+            subtitle: "אמירה. יצירה. שלמות.",
+            buttonText: "המוצר עליכם | הערך עלינו"
+          }
+      },
+      {
+          id: 'comparison-main',
+          type: 'comparison',
+          title: 'ערך מוסף',
+          subtitle: 'זו לא הדמיה זו תוצאה',
+          data: {
+              items: initialValueItems,
+          }
+      },
+      {
+          id: 'about-main',
+          type: 'about',
+          title: 'איך מוסיפים ערך?',
+          data: {
+              text: "אצלנו תשדרגו כל מוצר שברשותכם\nבאמירה ייחודית ויצירתית\nבאמצעות מיתוג אישי ומכשור חדשני:\nחריטה על מגוון חומרים, הטבעה בחום\nוחיתוך צורני מותאם אישית",
+              steps: [
+                  { text: 'חולמים חלום' },
+                  { text: 'מתאימים מוצר' },
+                  { text: 'משתפים אותנו', isLink: true },
+                  { text: 'בודקים אפשרויות' },
+                  { text: 'מעצבים עבורכם' },
+                  { text: 'מגשימים לכם חלום' }
+              ],
+              summary: 'החריטה מתבצעת על כל מוצר יחידנית\nוללא מגע יד אדם'
+          }
+      },
+      {
+          id: 'gallery-main',
+          type: 'gallery',
+          title: 'עורכים לכם שולחן',
+          data: {
+              items: initialGalleryItems,
+          }
+      },
+      {
+          id: 'testimonials-main',
+          type: 'testimonial',
+          title: 'מעריכים',
+          data: {
+              items: initialRecommendations
+          }
+      }
   ]
 };
 

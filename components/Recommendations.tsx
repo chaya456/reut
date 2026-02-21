@@ -7,13 +7,23 @@ import { Recommendation } from '../types';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const Recommendations: React.FC = () => {
+interface RecommendationsProps {
+    id?: string;
+    data?: { items: Recommendation[] };
+    title?: string;
+    subtitle?: string;
+}
+
+const Recommendations: React.FC<RecommendationsProps> = ({ id, data, title, subtitle }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const marqueeRef = useRef<HTMLDivElement>(null);
   const { content } = useContent();
   const [selectedRec, setSelectedRec] = useState<Recommendation | null>(null);
 
-  const reviews = content.recommendations.filter(item => !item.isHidden);
+  const reviews = data?.items || content.recommendations.filter(item => !item.isHidden);
+  const sectionTitle = title || "מעריכים";
+  const sectionSubtitle = subtitle;
+  
   // Duplicate list for infinite loop
   const marqueeItems = [...reviews, ...reviews];
 
@@ -71,7 +81,7 @@ const Recommendations: React.FC = () => {
   return (
     <>
         <section 
-            id="recommendations"
+            id={id || "recommendations"}
             className="relative z-10 -mt-[15vw] bg-transparent overflow-hidden" 
             style={{ 
                 paddingTop: '20vw',
@@ -81,9 +91,13 @@ const Recommendations: React.FC = () => {
           <div ref={containerRef} className="flex flex-col items-center justify-start relative w-full">
             <div className="max-w-[1400px] w-full mx-auto px-[5vw] text-center mb-[6vh] relative z-20">
                 <h2 className="text-[clamp(36px,5vw,70px)] font-extrabold m-0 leading-tight animate-text text-dark-coal">
-                    <span className="transition-colors duration-300 hover:text-brand-dark cursor-default inline-block">מעריכים</span> אותנו
+                    <span className="transition-colors duration-300 hover:text-brand-dark cursor-default inline-block">{sectionTitle.split(' ')[0]}</span> {sectionTitle.split(' ').slice(1).join(' ')}
                 </h2>
-                {/* Instruction text removed */}
+                {sectionSubtitle && (
+                    <p className="text-[clamp(18px,2vw,28px)] mt-[1vh] opacity-80 animate-text">
+                        {sectionSubtitle}
+                    </p>
+                )}
             </div>
             
             {/* Infinite Marquee Container */}
