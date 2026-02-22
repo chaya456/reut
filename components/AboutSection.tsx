@@ -114,12 +114,12 @@ const AboutSection: React.FC<AboutSectionProps> = ({ id, title, text, steps, sum
                                         {step.isLink ? (
                                             <button 
                                                 onClick={scrollToContact}
-                                                className="text-[clamp(22px,3vw,38px)] font-bold text-white hover:text-black transition-all underline underline-offset-8 decoration-2 drop-shadow-md"
+                                                className="text-[clamp(22px,3vw,38px)] font-normal text-white hover:text-black transition-all underline underline-offset-8 decoration-2 drop-shadow-md"
                                             >
                                                 {step.text}
                                             </button>
                                         ) : (
-                                            <div className="text-[clamp(22px,3vw,38px)] font-bold text-white drop-shadow-md">
+                                            <div className="text-[clamp(22px,3vw,38px)] font-normal text-white drop-shadow-md">
                                                 {step.text}
                                             </div>
                                         )}

@@ -21,15 +21,36 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
 
   if (!isOpen) return null;
 
-  // Image Upload Helper
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, callback: (base64: string) => void) => {
+  const [isUploading, setIsUploading] = useState(false);
+
+  // Cloudinary Upload Helper
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, callback: (url: string) => void) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        callback(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    setIsUploading(true);
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', 'client_upload'); 
+
+    try {
+      const response = await fetch(
+        'https://api.cloudinary.com/v1_1/dhcscd7il/image/upload',
+        {
+          method: 'POST',
+          body: formData,
+        }
+      );
+
+      if (!response.ok) throw new Error('Upload failed');
+
+      const data = await response.json();
+      callback(data.secure_url);
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      alert('שגיאה בהעלאת התמונה, אנא נסה שנית');
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -150,14 +171,15 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                             <div className="flex gap-3 justify-end mt-6">
                                 <button onClick={() => setEditingItem(null)} className="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded">ביטול</button>
                                 <button 
+                                    disabled={isUploading}
                                     onClick={() => {
                                         if(editingItem.isNew) addValueItem({ ...editingItem, id: Date.now() });
                                         else updateValueItem(editingItem.id, editingItem);
                                         setEditingItem(null);
                                     }}
-                                    className="px-6 py-2 bg-brand-dark text-white rounded font-bold hover:opacity-90"
+                                    className="px-6 py-2 bg-brand-dark text-white rounded font-bold hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    שמירה
+                                    {isUploading ? 'מעלה...' : 'שמירה'}
                                 </button>
                             </div>
                         </div>
@@ -254,14 +276,15 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                             <div className="flex gap-3 justify-end mt-6">
                                 <button onClick={() => setEditingItem(null)} className="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded">ביטול</button>
                                 <button 
+                                    disabled={isUploading}
                                     onClick={() => {
                                         if(editingItem.isNew) addGalleryItem({ ...editingItem, id: Date.now() });
                                         else updateGalleryItem(editingItem.id, editingItem);
                                         setEditingItem(null);
                                     }}
-                                    className="px-6 py-2 bg-brand-dark text-white rounded font-bold hover:opacity-90"
+                                    className="px-6 py-2 bg-brand-dark text-white rounded font-bold hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    שמירה
+                                    {isUploading ? 'מעלה...' : 'שמירה'}
                                 </button>
                             </div>
                         </div>
@@ -325,14 +348,15 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                             <div className="flex gap-3 justify-end mt-6">
                                 <button onClick={() => setEditingItem(null)} className="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded">ביטול</button>
                                 <button 
+                                    disabled={isUploading}
                                     onClick={() => {
                                         if(editingItem.isNew) addRecommendation({ ...editingItem, id: Date.now() });
                                         else updateRecommendation(editingItem.id, editingItem);
                                         setEditingItem(null);
                                     }}
-                                    className="px-6 py-2 bg-brand-dark text-white rounded font-bold hover:opacity-90"
+                                    className="px-6 py-2 bg-brand-dark text-white rounded font-bold hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    שמירה
+                                    {isUploading ? 'מעלה...' : 'שמירה'}
                                 </button>
                             </div>
                         </div>

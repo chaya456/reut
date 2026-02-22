@@ -193,10 +193,12 @@ const Gallery: React.FC<GalleryProps> = ({ id, data, title, subtitle }) => {
                     <div className="w-full mt-[2vh] flex flex-col md:flex-row items-center justify-between text-white">
                         <div className="text-right">
                             <h3 className="text-[clamp(20px,2.5vw,30px)] font-bold">{currentProject.title}</h3>
-                            {/* Display specific image description if available, otherwise project description */}
-                            <p className="text-[clamp(16px,1.5vw,20px)] opacity-90 mt-1 font-medium text-brand-light">
-                                {currentProject.images[currentImageIndex].description || currentProject.description}
-                            </p>
+                            {/* Display specific image description ONLY if available */}
+                            {currentProject.images[currentImageIndex].description && (
+                                <p className="text-[clamp(16px,1.5vw,20px)] opacity-90 mt-1 font-medium text-brand-light">
+                                    {currentProject.images[currentImageIndex].description}
+                                </p>
+                            )}
                         </div>
                         
                         <div className="flex gap-2 mt-[2vh] md:mt-0 overflow-x-auto pb-2">
