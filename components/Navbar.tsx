@@ -22,10 +22,10 @@ const Navbar: React.FC<NavbarProps> = () => {
 
   const links = [
     { name: 'בית', id: 'home' },
-    { name: 'אודות', id: 'about' },
-    { name: 'ערך מוסף', id: 'value' },
-    { name: 'גלריה', id: 'gallery' },
-    { name: 'המלצות', id: 'recommendations' },
+    { name: 'אודות', id: 'about-main' },
+    { name: 'ערך מוסף', id: 'comparison-main' },
+    { name: 'גלריה', id: 'gallery-main' },
+    { name: 'המלצות', id: 'testimonials-main' },
     { name: 'צור קשר', id: 'contact' },
   ];
 
