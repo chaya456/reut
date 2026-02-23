@@ -2,7 +2,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import AdminPanel from './AdminPanel';
 import { CONTACT_CONFIG } from '../formConfig';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -18,11 +17,6 @@ const Footer: React.FC = () => {
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-
-  // Admin State
-  const [showAdminLogin, setShowAdminLogin] = useState(false);
-  const [adminPassword, setAdminPassword] = useState('');
-  const [isAdminOpen, setIsAdminOpen] = useState(false);
     
   // Social Links
   const whatsappLink = "https://wa.me/972539660418";
@@ -86,17 +80,6 @@ const Footer: React.FC = () => {
     } finally {
         setIsSubmitting(false);
     }
-  };
-
-  const handleAdminLogin = (e: React.FormEvent) => {
-      e.preventDefault();
-      if (adminPassword === 'רעות') {
-          setIsAdminOpen(true);
-          setShowAdminLogin(false);
-          setAdminPassword('');
-      } else {
-          alert('סיסמה שגויה');
-      }
   };
 
   return (
@@ -212,34 +195,6 @@ const Footer: React.FC = () => {
                     <p className="text-center text-white/20 text-xs mt-0 mb-4">האתר בהרצה, יתכנו חסרים וליקויים, מצאת משו? ספרי לנו</p>
                 )}
             </div>
-            
-            {/* HIDDEN ADMIN LOGIN - Moved to bottom right corner fixed position */}
-            <div className="fixed bottom-0 right-0 p-1 z-[9999]">
-                 <button 
-                    onClick={() => setShowAdminLogin(!showAdminLogin)} 
-                    className="text-[10px] text-white/5 hover:text-white/30 transition-colors opacity-50 hover:opacity-100"
-                 >
-                     ●
-                 </button>
-                 
-                 {showAdminLogin && (
-                     <div className="absolute bottom-8 right-0 bg-white p-2 rounded shadow-lg animate-[fadeIn_0.2s_ease-out]">
-                         <form onSubmit={handleAdminLogin} className="flex flex-col gap-2">
-                             <input 
-                                type="password" 
-                                placeholder="סיסמה" 
-                                value={adminPassword}
-                                onChange={(e) => setAdminPassword(e.target.value)}
-                                className="px-2 py-1 text-xs text-dark-coal rounded border"
-                             />
-                             <button type="submit" className="px-2 py-1 bg-brand-light text-dark-coal text-xs font-bold rounded hover:bg-brand-dark hover:text-white">כניסה</button>
-                         </form>
-                     </div>
-                 )}
-            </div>
-
-            {/* Render Admin Panel if authenticated */}
-            <AdminPanel isOpen={isAdminOpen} onClose={() => setIsAdminOpen(false)} />
         </footer>
         <style>{`@keyframes fadeIn { from { opacity: 0; transform: translate(-50%, 10px); } to { opacity: 1; transform: translate(-50%, 0); } }`}</style>
     </div>

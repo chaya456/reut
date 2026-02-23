@@ -174,7 +174,7 @@ const Recommendations: React.FC<RecommendationsProps> = ({ id, data, title, subt
                             key={selectedRec.id} 
                             src={selectedRec.image} 
                             alt={selectedRec.name} 
-                            className="w-full h-full object-contain animate-[fadeIn_0.3s_ease-out]"
+                            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full object-contain animate-[fadeIn_0.3s_ease-out]"
                         />
                     </div>
                 </div>

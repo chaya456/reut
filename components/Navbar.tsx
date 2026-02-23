@@ -2,12 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import Logo from './Logo';
 
-interface NavbarProps {
-  isAdmin?: boolean;
-  onToggleAdmin?: () => void;
-}
-
-const Navbar: React.FC<NavbarProps> = () => {
+const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -75,8 +70,6 @@ const Navbar: React.FC<NavbarProps> = () => {
                     <span className="absolute -bottom-1 right-0 w-0 h-0.5 bg-brand-dark transition-all duration-300 group-hover:w-full"></span>
                 </button>
             ))}
-
-            {/* Management Toggle Button - REMOVED */}
         </div>
 
         {/* Small Logo (Visible ONLY on scroll, Desktop Only) */}
@@ -143,8 +136,6 @@ const Navbar: React.FC<NavbarProps> = () => {
                     {link.name}
                 </button>
             ))}
-
-            {/* Mobile Management Toggle - REMOVED */}
             
             {/* Decorative bottom element */}
             <div className="mt-auto mb-8 w-full opacity-20">

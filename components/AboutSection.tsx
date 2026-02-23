@@ -100,7 +100,7 @@ const AboutSection: React.FC<AboutSectionProps> = ({ id, title, text, steps, sum
                 </div>
 
                 <div className="timeline-container relative w-full max-w-[600px] mx-auto py-10">
-                    <div className="flex flex-col gap-[15vh]"> 
+                    <div className="flex flex-col gap-[22vh] md:gap-[15vh]"> 
                         {steps.map((step, index) => (
                             <div 
                                 key={index}
@@ -131,7 +131,7 @@ const AboutSection: React.FC<AboutSectionProps> = ({ id, title, text, steps, sum
                                     <CurvedArrow 
                                         direction={index % 2 === 0 ? 'left-to-right' : 'right-to-left'} 
                                         className={`
-                                            top-[90%] 
+                                            top-[110%] 
                                             left-1/2 -translate-x-1/2
                                             w-[250px] h-[150px]
                                         `}

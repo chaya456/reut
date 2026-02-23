@@ -187,12 +187,19 @@ interface ContentContextType {
   updateRecommendation: (id: number, item: Partial<Recommendation>) => void;
   deleteRecommendation: (id: number) => void;
   resetContent: () => void;
+  isAdmin: boolean;
+  login: (password: string) => boolean;
+  logout: () => void;
+  showAdminPanel: boolean;
+  setShowAdminPanel: (show: boolean) => void;
 }
 
 const ContentContext = createContext<ContentContextType | undefined>(undefined);
 
 export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [content, setContent] = useState<AppContent>(defaultContent);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [showAdminPanel, setShowAdminPanel] = useState(false);
 
   // Load from local storage on mount
   useEffect(() => {
@@ -213,69 +220,141 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
     localStorage.setItem('reut_site_content', JSON.stringify(content));
   }, [content]);
 
+  const login = (password: string) => {
+      if (password === 'רעות בהצלחה') {
+          setIsAdmin(true);
+          setShowAdminPanel(true);
+          return true;
+      }
+      return false;
+  };
+
+  const logout = () => {
+      setIsAdmin(false);
+      setShowAdminPanel(false);
+  };
+
   const updateHero = (heroData: Partial<AppContent['hero']>) => {
-    setContent(prev => ({ ...prev, hero: { ...prev.hero, ...heroData } }));
+    setContent(prev => {
+        const newHero = { ...prev.hero, ...heroData };
+        return {
+            ...prev,
+            hero: newHero,
+            sections: prev.sections.map(s => s.type === 'hero' ? { ...s, data: newHero } : s)
+        };
+    });
   };
 
   const updateAbout = (text: string) => {
-    setContent(prev => ({ ...prev, aboutText: text }));
+    setContent(prev => {
+        return {
+            ...prev,
+            aboutText: text,
+            sections: prev.sections.map(s => s.type === 'about' ? { ...s, data: { ...s.data, text: text } } : s)
+        };
+    });
   };
 
   // --- Value Section Logic ---
   const addValueItem = (item: ValueItem) => {
-    setContent(prev => ({ ...prev, valueSection: [item, ...prev.valueSection] }));
+    setContent(prev => {
+        const newValueSection = [item, ...prev.valueSection];
+        return {
+            ...prev,
+            valueSection: newValueSection,
+            sections: prev.sections.map(s => s.type === 'comparison' ? { ...s, data: { ...s.data, items: newValueSection } } : s)
+        };
+    });
   };
 
   const updateValueItem = (id: number, itemData: Partial<ValueItem>) => {
-    setContent(prev => ({
-      ...prev,
-      valueSection: prev.valueSection.map(item => item.id === id ? { ...item, ...itemData } : item)
-    }));
+    setContent(prev => {
+        const newValueSection = prev.valueSection.map(item => item.id === id ? { ...item, ...itemData } : item);
+        return {
+            ...prev,
+            valueSection: newValueSection,
+            sections: prev.sections.map(s => s.type === 'comparison' ? { ...s, data: { ...s.data, items: newValueSection } } : s)
+        };
+    });
   };
 
   const deleteValueItem = (id: number) => {
-    setContent(prev => ({
-      ...prev,
-      valueSection: prev.valueSection.filter(item => item.id !== id)
-    }));
+    setContent(prev => {
+        const newValueSection = prev.valueSection.filter(item => item.id !== id);
+        return {
+            ...prev,
+            valueSection: newValueSection,
+            sections: prev.sections.map(s => s.type === 'comparison' ? { ...s, data: { ...s.data, items: newValueSection } } : s)
+        };
+    });
   };
 
   // --- Gallery Logic ---
   const addGalleryItem = (item: GalleryItem) => {
-    setContent(prev => ({ ...prev, gallery: [...prev.gallery, item] }));
+    setContent(prev => {
+        const newGallery = [...prev.gallery, item];
+        return {
+            ...prev,
+            gallery: newGallery,
+            sections: prev.sections.map(s => s.type === 'gallery' ? { ...s, data: { ...s.data, items: newGallery } } : s)
+        };
+    });
   };
 
   const updateGalleryItem = (id: number, itemData: Partial<GalleryItem>) => {
-    setContent(prev => ({
-      ...prev,
-      gallery: prev.gallery.map(item => item.id === id ? { ...item, ...itemData } : item)
-    }));
+    setContent(prev => {
+        const newGallery = prev.gallery.map(item => item.id === id ? { ...item, ...itemData } : item);
+        return {
+            ...prev,
+            gallery: newGallery,
+            sections: prev.sections.map(s => s.type === 'gallery' ? { ...s, data: { ...s.data, items: newGallery } } : s)
+        };
+    });
   };
 
   const deleteGalleryItem = (id: number) => {
-    setContent(prev => ({
-      ...prev,
-      gallery: prev.gallery.filter(item => item.id !== id)
-    }));
+    setContent(prev => {
+        const newGallery = prev.gallery.filter(item => item.id !== id);
+        return {
+            ...prev,
+            gallery: newGallery,
+            sections: prev.sections.map(s => s.type === 'gallery' ? { ...s, data: { ...s.data, items: newGallery } } : s)
+        };
+    });
   };
 
   // --- Recommendations Logic ---
   const addRecommendation = (item: Recommendation) => {
-    setContent(prev => ({ ...prev, recommendations: [...prev.recommendations, item] }));
+    setContent(prev => {
+        const newRecommendations = [...prev.recommendations, item];
+        return {
+            ...prev,
+            recommendations: newRecommendations,
+            sections: prev.sections.map(s => s.type === 'testimonial' ? { ...s, data: { ...s.data, items: newRecommendations } } : s)
+        };
+    });
   };
 
   const updateRecommendation = (id: number, itemData: Partial<Recommendation>) => {
-    setContent(prev => ({
-      ...prev,
-      recommendations: prev.recommendations.map(item => item.id === id ? { ...item, ...itemData } : item)
-    }));
+    setContent(prev => {
+        const newRecommendations = prev.recommendations.map(item => item.id === id ? { ...item, ...itemData } : item);
+        return {
+            ...prev,
+            recommendations: newRecommendations,
+            sections: prev.sections.map(s => s.type === 'testimonial' ? { ...s, data: { ...s.data, items: newRecommendations } } : s)
+        };
+    });
   };
 
   const deleteRecommendation = (id: number) => {
-    setContent(prev => ({
-      ...prev,
-      recommendations: prev.recommendations.filter(item => item.id !== id)
-    }));
+    setContent(prev => {
+        const newRecommendations = prev.recommendations.filter(item => item.id !== id);
+        return {
+            ...prev,
+            recommendations: newRecommendations,
+            sections: prev.sections.map(s => s.type === 'testimonial' ? { ...s, data: { ...s.data, items: newRecommendations } } : s)
+        };
+    });
   };
 
   const resetContent = () => {
@@ -298,7 +377,12 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
         addRecommendation,
         updateRecommendation,
         deleteRecommendation,
-        resetContent
+        resetContent,
+        isAdmin,
+        login,
+        logout,
+        showAdminPanel,
+        setShowAdminPanel
     }}>
       {children}
     </ContentContext.Provider>

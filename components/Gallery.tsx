@@ -59,14 +59,14 @@ const Gallery: React.FC<GalleryProps> = ({ id, data, title, subtitle }) => {
     if (lightboxOpen) {
       const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
       document.body.style.overflow = 'hidden';
-      document.body.style.paddingLeft = `${scrollbarWidth}px`; 
+      document.body.style.paddingRight = `${scrollbarWidth}px`; 
     } else {
       document.body.style.overflow = '';
-      document.body.style.paddingLeft = '';
+      document.body.style.paddingRight = '';
     }
     return () => {
       document.body.style.overflow = '';
-      document.body.style.paddingLeft = '';
+      document.body.style.paddingRight = '';
     };
   }, [lightboxOpen]);
 
@@ -175,7 +175,7 @@ const Gallery: React.FC<GalleryProps> = ({ id, data, title, subtitle }) => {
                             src={currentProject.images[currentImageIndex].url} 
                             alt={currentProject.title} 
                             onLoad={() => setIsImageLoading(false)}
-                            className={`max-w-full max-h-[70vh] object-contain shadow-2xl origin-center z-10 transition-opacity duration-300 ease-out will-change-opacity ${isImageLoading ? 'opacity-0' : 'opacity-100'}`}
+                            className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-w-full max-h-[70vh] object-contain shadow-2xl z-10 transition-opacity duration-300 ease-out will-change-opacity ${isImageLoading ? 'opacity-0' : 'opacity-100'}`}
                         />
                         
                         {currentProject.images.length > 1 && (
