@@ -20,6 +20,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
   const [editingItem, setEditingItem] = useState<any>(null);
   const [isUploading, setIsUploading] = useState(false);
 
+  // Check if Sanity is configured
+  const isConfigured = !!import.meta.env.VITE_SANITY_PROJECT_ID;
+
   if (!isOpen) return null;
 
   // Cloudinary Upload Helper
@@ -61,7 +64,13 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
         
         {/* Header */}
         <div className="bg-brand-dark text-white p-6 flex justify-between items-center shrink-0">
-            <h2 className="text-2xl font-bold">מערכת ניהול אתר - רעות</h2>
+            <div className="flex items-center gap-4">
+                <h2 className="text-2xl font-bold">מערכת ניהול אתר - רעות</h2>
+                <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold ${isConfigured ? 'bg-green-500/20 text-green-300' : 'bg-yellow-500/20 text-yellow-300'}`}>
+                    <div className={`w-2 h-2 rounded-full ${isConfigured ? 'bg-green-400 animate-pulse' : 'bg-yellow-400'}`}></div>
+                    {isConfigured ? 'מחובר ל-Sanity' : 'מצב מקומי (ללא Sanity)'}
+                </div>
+            </div>
             <div className="flex gap-4">
                 <button onClick={() => { if(window.confirm('האם להתנתק מהמערכת?')) logout(); }} className="text-sm bg-red-500/20 hover:bg-red-500/40 px-3 py-1 rounded transition-colors">יציאה</button>
                 <button onClick={resetContent} className="text-sm bg-red-500/20 hover:bg-red-500/40 px-3 py-1 rounded transition-colors">איפוס נתונים</button>

@@ -1,6 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { AppContent, GalleryItem, Recommendation, ValueItem } from '../types';
+import { saveContentToSanity, loadContentFromSanity } from '../services/sanityService';
 
 // Default / Initial Data
 const initialValueItems: ValueItem[] = [
@@ -201,23 +202,35 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [isAdmin, setIsAdmin] = useState(false);
   const [showAdminPanel, setShowAdminPanel] = useState(false);
 
-  // Load from local storage on mount
+  // Load from local storage OR Sanity on mount
   useEffect(() => {
-    const saved = localStorage.getItem('reut_site_content');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        // Merge with default to ensure structure exists if new fields were added
-        setContent({ ...defaultContent, ...parsed });
-      } catch (e) {
-        console.error("Failed to parse saved content");
+    const loadData = async () => {
+      // 1. Try Sanity first
+      const sanityData = await loadContentFromSanity();
+      if (sanityData) {
+        setContent({ ...defaultContent, ...sanityData });
+        return;
       }
-    }
+
+      // 2. Fallback to Local Storage
+      const saved = localStorage.getItem('reut_site_content');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          setContent({ ...defaultContent, ...parsed });
+        } catch (e) {
+          console.error("Failed to parse saved content");
+        }
+      }
+    };
+    
+    loadData();
   }, []);
 
-  // Save to local storage on change
+  // Save to local storage AND Sanity on change
   useEffect(() => {
     localStorage.setItem('reut_site_content', JSON.stringify(content));
+    saveContentToSanity(content); // Async save to Sanity
   }, [content]);
 
   const login = (password: string) => {
