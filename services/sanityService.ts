@@ -1,38 +1,48 @@
-import { createClient } from '@sanity/client';
 import { AppContent } from '../types';
 
 /**
- * פונקציית עזר לניקוי תווים שאינם ASCII ממשתני סביבה
- * מונע שגיאות ISO-8859-1 ורווחים בלתי נראים
+ * פונקציית עזר לניקוי תווים שאינם ASCII ורווחים ממשתני סביבה
  */
-const cleanEnvVar = (val: any): string => {
+const cleanString = (val: any): string => {
   if (!val || typeof val !== 'string') return '';
-  return val.trim().replace(/[^\x20-\x7E]/g, '');
+  // מסיר רווחים, ירידות שורה, ותווים נסתרים
+  return val.replace(/\s+/g, '').replace(/[^\x20-\x7E]/g, '').trim();
 };
 
 const PROJECT_ID = 's42jv3ts';
 const DATASET = 'production';
-const TOKEN = cleanEnvVar(import.meta.env.VITE_SANITY_TOKEN);
+const TOKEN = cleanString(import.meta.env.VITE_SANITY_TOKEN);
 
-// יצירת הלקוח רק אם יש טוקן, עם הגדרה ידנית של ה-Host למניעת שגיאות URL
-export const sanityClient = TOKEN ? createClient({
-  projectId: PROJECT_ID,
-  dataset: DATASET,
-  useCdn: false,
-  apiVersion: '2023-05-03',
-  token: TOKEN,
-  apiHost: `https://${PROJECT_ID}.api.sanity.io`,
-  useProjectHostname: false,
-}) : null;
+const API_VERSION = '2023-05-03';
+const BASE_URL = `https://${PROJECT_ID}.api.sanity.io/v${API_VERSION}/data`;
 
 export const saveContentToSanity = async (content: AppContent) => {
-  if (!sanityClient) return;
+  if (!TOKEN) return;
   try {
-    await sanityClient.createOrReplace({
-      _id: 'siteContent',
-      _type: 'siteContent',
-      ...content
+    const response = await fetch(`${BASE_URL}/mutate/${DATASET}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${TOKEN}`
+      },
+      body: JSON.stringify({
+        mutations: [
+          {
+            createOrReplace: {
+              _id: 'siteContent',
+              _type: 'siteContent',
+              ...content
+            }
+          }
+        ]
+      })
     });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
     console.log('✅ נשמר ב-Sanity בהצלחה');
   } catch (error: any) {
     console.error('❌ שגיאת שמירה ב-Sanity:', error);
@@ -43,9 +53,24 @@ export const saveContentToSanity = async (content: AppContent) => {
 };
 
 export const loadContentFromSanity = async (): Promise<AppContent | null> => {
-  if (!sanityClient) return null;
+  if (!TOKEN) return null;
   try {
-    const data = await sanityClient.fetch(`*[_id == "siteContent"][0]`);
+    const query = encodeURIComponent('*[_id == "siteContent"][0]');
+    const response = await fetch(`${BASE_URL}/query/${DATASET}?query=${query}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${TOKEN}`
+      }
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
+    const json = await response.json();
+    const data = json.result;
+
     if (data) {
       const { _id, _type, _createdAt, _updatedAt, _rev, ...content } = data;
       return content as AppContent;
