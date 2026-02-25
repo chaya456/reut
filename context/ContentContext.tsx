@@ -189,6 +189,11 @@ interface ContentContextType {
   deleteRecommendation: (id: number) => void;
   resetContent: () => void;
   isAdmin: boolean;
+  isEditMode: boolean;
+  setIsEditMode: (mode: boolean) => void;
+  hasUnsavedChanges: boolean;
+  publishChanges: () => Promise<void>;
+  cancelChanges: () => void;
   login: (password: string) => boolean;
   logout: () => void;
   showAdminPanel: boolean;
@@ -199,8 +204,11 @@ const ContentContext = createContext<ContentContextType | undefined>(undefined);
 
 export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [content, setContent] = useState<AppContent>(defaultContent);
+  const [lastPublishedContent, setLastPublishedContent] = useState<AppContent>(defaultContent);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
   const [showAdminPanel, setShowAdminPanel] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   // Load from local storage OR Sanity on mount
   useEffect(() => {
@@ -208,7 +216,9 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
       // 1. Try Sanity first
       const sanityData = await loadContentFromSanity();
       if (sanityData) {
-        setContent({ ...defaultContent, ...sanityData });
+        const merged = { ...defaultContent, ...sanityData };
+        setContent(merged);
+        setLastPublishedContent(merged);
         return;
       }
 
@@ -217,7 +227,9 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
       if (saved) {
         try {
           const parsed = JSON.parse(saved);
-          setContent({ ...defaultContent, ...parsed });
+          const merged = { ...defaultContent, ...parsed };
+          setContent(merged);
+          setLastPublishedContent(merged);
         } catch (e) {
           console.error("Failed to parse saved content");
         }
@@ -227,16 +239,29 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
     loadData();
   }, []);
 
-  // Save to local storage AND Sanity on change
+  // Save to local storage on change
   useEffect(() => {
     localStorage.setItem('reut_site_content', JSON.stringify(content));
-    saveContentToSanity(content); // Async save to Sanity
-  }, [content]);
+    
+    // Check if content differs from last published
+    const isDifferent = JSON.stringify(content) !== JSON.stringify(lastPublishedContent);
+    setHasUnsavedChanges(isDifferent);
+
+    // Auto-save to Sanity only if NOT in edit mode (immediate sync for admin panel)
+    // In edit mode, we save on blur or publish
+    if (!isEditMode && isDifferent) {
+      const timer = setTimeout(() => {
+        saveContentToSanity(content);
+        setLastPublishedContent(content);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [content, isEditMode, lastPublishedContent]);
 
   const login = (password: string) => {
       if (password === 'רעות בהצלחה') {
           setIsAdmin(true);
-          setShowAdminPanel(true);
+          // Don't auto-open admin panel, let user choose edit mode or panel
           return true;
       }
       return false;
@@ -244,7 +269,24 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const logout = () => {
       setIsAdmin(false);
+      setIsEditMode(false);
       setShowAdminPanel(false);
+  };
+
+  const publishChanges = async () => {
+    await saveContentToSanity(content);
+    setLastPublishedContent(content);
+    setHasUnsavedChanges(false);
+    setIsEditMode(false);
+    alert('השינויים פורסמו בהצלחה!');
+  };
+
+  const cancelChanges = () => {
+    if (window.confirm('האם לבטל את כל השינויים שלא פורסמו?')) {
+      setContent(lastPublishedContent);
+      setHasUnsavedChanges(false);
+      setIsEditMode(false);
+    }
   };
 
   const updateHero = (heroData: Partial<AppContent['hero']>) => {
@@ -395,7 +437,12 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
         login,
         logout,
         showAdminPanel,
-        setShowAdminPanel
+        setShowAdminPanel,
+        isEditMode,
+        setIsEditMode,
+        hasUnsavedChanges,
+        publishChanges,
+        cancelChanges
     }}>
       {children}
     </ContentContext.Provider>

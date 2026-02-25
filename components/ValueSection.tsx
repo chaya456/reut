@@ -1,11 +1,10 @@
 
 import React, { useRef, useState, useEffect } from 'react';
 import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useContent } from '../context/ContentContext';
 import { ValueItem } from '../types';
-
-gsap.registerPlugin(ScrollTrigger);
+import EditableText from './editable/EditableText';
+import EditableImage from './editable/EditableImage';
 
 interface ValueSectionProps {
     id?: string;
@@ -18,7 +17,7 @@ const ValueSection: React.FC<ValueSectionProps> = ({ id, data, title, subtitle }
   const sliderRef = useRef<HTMLDivElement>(null);
   const beforeContainerRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLDivElement>(null);
-  const { content } = useContent();
+  const { content, isEditMode, updateValueItem } = useContent();
   
   const galleryData = data?.items || content.valueSection;
   const sectionTitle = title || "ערך מוסף";
@@ -122,8 +121,8 @@ const ValueSection: React.FC<ValueSectionProps> = ({ id, data, title, subtitle }
     }
   }, [carouselIndex, itemsPerView]);
 
-  const handleNext = () => setCarouselIndex((prev) => prev >= maxIndex ? 0 : prev + 1);
-  const handlePrev = () => setCarouselIndex((prev) => prev <= 0 ? maxIndex : prev - 1);
+  const handleNext = () => setCarouselIndex((prev: number) => prev >= maxIndex ? 0 : prev + 1);
+  const handlePrev = () => setCarouselIndex((prev: number) => prev <= 0 ? maxIndex : prev - 1);
 
   const handleMainNext = () => {
     const currentIndex = galleryData.findIndex(item => item.id === activeItem.id);
@@ -177,13 +176,22 @@ const ValueSection: React.FC<ValueSectionProps> = ({ id, data, title, subtitle }
       <div className="max-w-[1400px] mx-auto px-[5vw] w-full relative z-10 flex flex-col items-center">
         <div className="text-center mb-[6vh]">
           {/* Responsive Heading */}
-          <h2 className="text-[clamp(36px,5vw,70px)] font-extrabold m-0 leading-tight animate-text">
-            <span className="transition-colors duration-300 hover:text-brand-dark cursor-default">{sectionTitle.split(' ')[0]}</span> {sectionTitle.split(' ').slice(1).join(' ')}
-          </h2>
-          <p className="text-[clamp(18px,2vw,28px)] mt-[1vh] opacity-80 animate-text">{sectionSubtitle}</p>
+          {isEditMode ? (
+            <div className="flex flex-col items-center gap-2">
+                <EditableText tagName="h2" value={sectionTitle} onSave={() => {}} className="text-[clamp(36px,5vw,70px)] font-extrabold m-0 leading-tight" />
+                <EditableText tagName="p" value={sectionSubtitle} onSave={() => {}} className="text-[clamp(18px,2vw,28px)] mt-[1vh] opacity-80" />
+            </div>
+          ) : (
+            <>
+                <h2 className="text-[clamp(36px,5vw,70px)] font-extrabold m-0 leading-tight animate-text">
+                    <span className="transition-colors duration-300 hover:text-brand-dark cursor-default">{sectionTitle.split(' ')[0]}</span> {sectionTitle.split(' ').slice(1).join(' ')}
+                </h2>
+                <p className="text-[clamp(18px,2vw,28px)] mt-[1vh] opacity-80 animate-text">{sectionSubtitle}</p>
+            </>
+          )}
         </div>
 
-        {/* 1. Main Comparison Slider - 16:9 Aspect Ratio (Reverted from 4:3) */}
+        {/* 1. Main Comparison Slider */}
         <div 
           ref={sliderRef}
           className="w-full max-w-[1000px] aspect-[16/9] relative rounded-none overflow-hidden shadow-2xl bg-brand-soft mb-[6vh] cursor-ew-resize select-none border-4 border-white group/slider"
@@ -191,7 +199,15 @@ const ValueSection: React.FC<ValueSectionProps> = ({ id, data, title, subtitle }
           onTouchMove={handleMove}
         >
           <div className="absolute inset-0 w-full h-full">
-            <img src={activeItem.after} alt="After" className="w-full h-full object-cover" draggable={false} />
+            {isEditMode ? (
+                <EditableImage 
+                    src={activeItem.after} 
+                    onUpload={(url) => updateValueItem(activeItem.id, { after: url })} 
+                    aspectRatio="aspect-auto w-full h-full"
+                />
+            ) : (
+                <img src={activeItem.after} alt="After" className="w-full h-full object-cover" draggable={false} />
+            )}
           </div>
           
           <div 
@@ -199,7 +215,15 @@ const ValueSection: React.FC<ValueSectionProps> = ({ id, data, title, subtitle }
             className="absolute inset-0 w-full h-full border-r-4 border-white z-[2] bg-brand-soft"
             style={{ clipPath: `inset(0 ${100 - sliderPos}% 0 0)` }}
           >
-             <img src={activeItem.before} alt="Before" className="w-full h-full object-cover" draggable={false} />
+             {isEditMode ? (
+                <EditableImage 
+                    src={activeItem.before} 
+                    onUpload={(url) => updateValueItem(activeItem.id, { before: url })} 
+                    aspectRatio="aspect-auto w-full h-full"
+                />
+            ) : (
+                <img src={activeItem.before} alt="Before" className="w-full h-full object-cover" draggable={false} />
+            )}
           </div>
 
           <div 
@@ -229,9 +253,13 @@ const ValueSection: React.FC<ValueSectionProps> = ({ id, data, title, subtitle }
         </div>
 
         {sectionText && (
-            <p className="text-[clamp(16px,1.5vw,22px)] opacity-80 max-w-[800px] mx-auto mb-[6vh] animate-text">
-                {sectionText}
-            </p>
+            isEditMode ? (
+                <EditableText tagName="p" multiline value={sectionText} onSave={() => {}} className="text-[clamp(16px,1.5vw,22px)] opacity-80 max-w-[800px] mx-auto mb-[6vh] block w-full text-center" />
+            ) : (
+                <p className="text-[clamp(16px,1.5vw,22px)] opacity-80 max-w-[800px] mx-auto mb-[6vh] animate-text">
+                    {sectionText}
+                </p>
+            )
         )}
 
         {/* 2. Controlled Carousel */}

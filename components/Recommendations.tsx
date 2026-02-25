@@ -1,11 +1,10 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useContent } from '../context/ContentContext';
 import { Recommendation } from '../types';
-
-gsap.registerPlugin(ScrollTrigger);
+import EditableText from './editable/EditableText';
+import EditableImage from './editable/EditableImage';
 
 interface RecommendationsProps {
     id?: string;
@@ -17,7 +16,7 @@ interface RecommendationsProps {
 const Recommendations: React.FC<RecommendationsProps> = ({ id, data, title, subtitle }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const marqueeRef = useRef<HTMLDivElement>(null);
-  const { content } = useContent();
+  const { content, isEditMode, updateRecommendation } = useContent();
   const [selectedRec, setSelectedRec] = useState<Recommendation | null>(null);
 
   const reviews = data?.items || content.recommendations.filter(item => !item.isHidden);
@@ -42,7 +41,7 @@ const Recommendations: React.FC<RecommendationsProps> = ({ id, data, title, subt
         });
 
         // Infinite Marquee Animation (Left to Right)
-        if (marqueeRef.current) {
+        if (marqueeRef.current && !isEditMode) {
             // Slower duration for readability (Increased to 10s per item for slower speed)
             const duration = reviews.length * 10; 
             
@@ -58,7 +57,7 @@ const Recommendations: React.FC<RecommendationsProps> = ({ id, data, title, subt
         }
     }, containerRef);
     return () => ctx.revert();
-  }, [reviews.length]);
+  }, [reviews.length, isEditMode]);
 
   const handleNextRec = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -90,26 +89,35 @@ const Recommendations: React.FC<RecommendationsProps> = ({ id, data, title, subt
         >
           <div ref={containerRef} className="flex flex-col items-center justify-start relative w-full">
             <div className="max-w-[1400px] w-full mx-auto px-[5vw] text-center mb-[6vh] relative z-20">
-                <h2 className="text-[clamp(36px,5vw,70px)] font-extrabold m-0 leading-tight animate-text text-dark-coal">
-                    <span className="transition-colors duration-300 hover:text-brand-dark cursor-default inline-block">{sectionTitle.split(' ')[0]}</span> {sectionTitle.split(' ').slice(1).join(' ')}
-                </h2>
-                {sectionSubtitle && (
-                    <p className="text-[clamp(18px,2vw,28px)] mt-[1vh] opacity-80 animate-text">
-                        {sectionSubtitle}
-                    </p>
+                {isEditMode ? (
+                    <div className="flex flex-col items-center gap-2">
+                        <EditableText tagName="h2" value={sectionTitle} onSave={() => {}} className="text-[clamp(36px,5vw,70px)] font-extrabold m-0 leading-tight text-dark-coal" />
+                        {sectionSubtitle && <EditableText tagName="p" value={sectionSubtitle} onSave={() => {}} className="text-[clamp(18px,2vw,28px)] mt-[1vh] opacity-80" />}
+                    </div>
+                ) : (
+                    <>
+                        <h2 className="text-[clamp(36px,5vw,70px)] font-extrabold m-0 leading-tight animate-text text-dark-coal">
+                            <span className="transition-colors duration-300 hover:text-brand-dark cursor-default inline-block">{sectionTitle.split(' ')[0]}</span> {sectionTitle.split(' ').slice(1).join(' ')}
+                        </h2>
+                        {sectionSubtitle && (
+                            <p className="text-[clamp(18px,2vw,28px)] mt-[1vh] opacity-80 animate-text">
+                                {sectionSubtitle}
+                            </p>
+                        )}
+                    </>
                 )}
             </div>
             
             {/* Infinite Marquee Container */}
-            <div className="w-full overflow-hidden" dir="ltr">
+            <div className={`w-full ${isEditMode ? 'overflow-x-auto' : 'overflow-hidden'}`} dir="ltr">
                 <div 
                     ref={marqueeRef}
-                    className="flex w-max"
+                    className={`flex ${isEditMode ? 'w-full flex-wrap justify-center gap-6 p-10' : 'w-max'}`}
                 >
-                    {marqueeItems.map((rec, index) => (
+                    {(isEditMode ? reviews : marqueeItems).map((rec, index) => (
                         <div key={`${rec.id}-${index}`} className="px-3"> {/* Spacer Wrapper */}
                             <div 
-                                onClick={() => setSelectedRec(rec)}
+                                onClick={() => !isEditMode && setSelectedRec(rec)}
                                 className={`
                                     relative w-[80vw] md:w-[350px] h-[240px] p-3 shrink-0 cursor-pointer
                                     shadow-[0_10px_30px_rgba(0,0,0,0.05)] hover:shadow-[0_15px_40px_rgba(0,0,0,0.1)] 
@@ -118,13 +126,23 @@ const Recommendations: React.FC<RecommendationsProps> = ({ id, data, title, subt
                                     ${rec.color === 'bg-brand-soft' ? 'bg-[#fff5ec]' : 'bg-white'}
                                 `}
                             >
-                                {/* Quote Icon Removed */}
-
                                 <div className="w-full flex-1 min-h-0 relative rounded-sm overflow-hidden flex items-center justify-center mb-2">
-                                    <img src={rec.image} alt={rec.name} className="w-full h-full object-contain object-center" />
+                                    {isEditMode ? (
+                                        <EditableImage 
+                                            src={rec.image} 
+                                            onUpload={(url) => updateRecommendation(rec.id, { image: url })} 
+                                            aspectRatio="aspect-auto w-full h-full"
+                                        />
+                                    ) : (
+                                        <img src={rec.image} alt={rec.name} className="w-full h-full object-contain object-center" />
+                                    )}
                                 </div>
                                 <div className="shrink-0 w-full border-t border-brand-dark/10 pt-2">
-                                    <h4 className="text-lg font-bold text-dark-coal/90">{rec.name}</h4>
+                                    {isEditMode ? (
+                                        <EditableText tagName="h4" value={rec.name} onSave={(v) => updateRecommendation(rec.id, { name: v })} className="text-lg font-bold text-dark-coal/90" />
+                                    ) : (
+                                        <h4 className="text-lg font-bold text-dark-coal/90">{rec.name}</h4>
+                                    )}
                                 </div>
                             </div>
                         </div>

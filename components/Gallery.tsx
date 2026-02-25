@@ -1,10 +1,9 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useContent } from '../context/ContentContext';
 import { GalleryItem } from '../types';
-
-gsap.registerPlugin(ScrollTrigger);
+import EditableText from './editable/EditableText';
+import EditableImage from './editable/EditableImage';
 
 interface GalleryProps {
     id?: string;
@@ -20,7 +19,7 @@ const Gallery: React.FC<GalleryProps> = ({ id, data, title, subtitle }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isImageLoading, setIsImageLoading] = useState(true);
   
-  const { content } = useContent();
+  const { content, isEditMode, updateGalleryItem } = useContent();
   const galleryItems = data?.items || content.gallery.filter(item => !item.isHidden);
   const sectionTitle = title || "עורכים לכם שולחן";
   const sectionSubtitle = subtitle;
@@ -71,6 +70,7 @@ const Gallery: React.FC<GalleryProps> = ({ id, data, title, subtitle }) => {
   }, [lightboxOpen]);
 
   const openLightbox = (project: GalleryItem) => {
+    if (isEditMode) return; // Disable lightbox in edit mode to allow image replacement
     setCurrentProject(project);
     setCurrentImageIndex(0);
     setIsImageLoading(true);
@@ -86,14 +86,14 @@ const Gallery: React.FC<GalleryProps> = ({ id, data, title, subtitle }) => {
     e.stopPropagation();
     if (!currentProject) return;
     setIsImageLoading(true);
-    setCurrentImageIndex((prev) => (prev + 1) % currentProject.images.length);
+    setCurrentImageIndex((prev: number) => (prev + 1) % currentProject.images.length);
   };
 
   const prevImage = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!currentProject) return;
     setIsImageLoading(true);
-    setCurrentImageIndex((prev) => (prev - 1 + currentProject.images.length) % currentProject.images.length);
+    setCurrentImageIndex((prev: number) => (prev - 1 + currentProject.images.length) % currentProject.images.length);
   };
 
   return (
@@ -110,14 +110,27 @@ const Gallery: React.FC<GalleryProps> = ({ id, data, title, subtitle }) => {
         >
         <div className="max-w-[1400px] mx-auto px-[5vw] w-full">
             <div className="text-center mb-[8vh] pt-0">
-            <h2 className="text-[clamp(36px,5vw,70px)] font-extrabold m-0 leading-tight text-dark-coal animate-text">
-                <span className="transition-colors duration-300 hover:text-brand-dark cursor-default inline-block">{sectionTitle.split(' ')[0]}</span> {sectionTitle.split(' ').slice(1).join(' ')}
-            </h2>
-            <p className="text-[clamp(18px,2vw,28px)] mt-[1vh] opacity-80 animate-text">{sectionSubtitle}</p>
+            {isEditMode ? (
+                <div className="flex flex-col items-center gap-2">
+                    <EditableText tagName="h2" value={sectionTitle} onSave={() => {}} className="text-[clamp(36px,5vw,70px)] font-extrabold m-0 leading-tight text-dark-coal" />
+                    {sectionSubtitle && <EditableText tagName="p" value={sectionSubtitle} onSave={() => {}} className="text-[clamp(18px,2vw,28px)] mt-[1vh] opacity-80" />}
+                </div>
+            ) : (
+                <>
+                    <h2 className="text-[clamp(36px,5vw,70px)] font-extrabold m-0 leading-tight text-dark-coal animate-text">
+                        <span className="transition-colors duration-300 hover:text-brand-dark cursor-default inline-block">{sectionTitle.split(' ')[0]}</span> {sectionTitle.split(' ').slice(1).join(' ')}
+                    </h2>
+                    <p className="text-[clamp(18px,2vw,28px)] mt-[1vh] opacity-80 animate-text">{sectionSubtitle}</p>
+                </>
+            )}
             {sectionNote && (
-                <p className="text-[clamp(16px,1.5vw,22px)] mt-[2vh] font-handwriting text-brand-dark animate-text transform -rotate-2">
-                    {sectionNote}
-                </p>
+                isEditMode ? (
+                    <EditableText tagName="p" value={sectionNote} onSave={() => {}} className="text-[clamp(16px,1.5vw,22px)] mt-[2vh] font-handwriting text-brand-dark transform -rotate-2" />
+                ) : (
+                    <p className="text-[clamp(16px,1.5vw,22px)] mt-[2vh] font-handwriting text-brand-dark animate-text transform -rotate-2">
+                        {sectionNote}
+                    </p>
+                )
             )}
             </div>
 
@@ -134,13 +147,25 @@ const Gallery: React.FC<GalleryProps> = ({ id, data, title, subtitle }) => {
                             ${item.size === 'small' ? 'md:col-span-1 md:row-span-1' : ''}
                         `}
                     >
-                        <div 
-                            className="absolute inset-0 bg-cover bg-center"
-                            style={{ backgroundImage: `url('${item.thumbnail}')` }}
-                        />
+                        {isEditMode ? (
+                            <EditableImage 
+                                src={item.thumbnail} 
+                                onUpload={(url) => updateGalleryItem(item.id, { thumbnail: url })} 
+                                aspectRatio="aspect-auto w-full h-full"
+                            />
+                        ) : (
+                            <div 
+                                className="absolute inset-0 bg-cover bg-center"
+                                style={{ backgroundImage: `url('${item.thumbnail}')` }}
+                            />
+                        )}
                         <div className="absolute inset-0 bg-brand-dark/80 opacity-0 transition-opacity duration-300 group-hover:opacity-100 flex flex-col items-center justify-center text-white p-6 text-center">
                             <span className="text-4xl font-light mb-2">+</span>
-                            <h3 className="text-2xl font-bold">{item.title}</h3>
+                            {isEditMode ? (
+                                <EditableText tagName="h3" value={item.title} onSave={(v) => updateGalleryItem(item.id, { title: v })} className="text-2xl font-bold" />
+                            ) : (
+                                <h3 className="text-2xl font-bold">{item.title}</h3>
+                            )}
                         </div>
                     </div>
                 ))}
@@ -202,7 +227,7 @@ const Gallery: React.FC<GalleryProps> = ({ id, data, title, subtitle }) => {
                         </div>
                         
                         <div className="flex gap-2 mt-[2vh] md:mt-0 overflow-x-auto pb-2">
-                            {currentProject.images.map((imgObj, idx) => (
+                            {currentProject.images.map((imgObj: any, idx: number) => (
                                 <div 
                                     key={idx} 
                                     onClick={(e) => { e.stopPropagation(); if (idx !== currentImageIndex) { setIsImageLoading(true); setCurrentImageIndex(idx); } }}

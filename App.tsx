@@ -7,11 +7,15 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ContentProvider, useContent } from './context/ContentContext';
 import SectionRenderer from './components/SectionRenderer';
 import AdminPanel from './components/AdminPanel';
+import AdminToolbar from './components/editable/AdminToolbar';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const MainContent = () => {
-    const { content, isAdmin, showAdminPanel, setShowAdminPanel, login } = useContent();
+    const { 
+        content, isAdmin, setIsEditMode, 
+        showAdminPanel, setShowAdminPanel, login 
+    } = useContent();
     const [showPasswordModal, setShowPasswordModal] = React.useState(false);
     const [passwordInput, setPasswordInput] = React.useState('');
     const [loginError, setLoginError] = React.useState(false);
@@ -20,6 +24,12 @@ const MainContent = () => {
         e.preventDefault();
         const success = login(passwordInput);
         if (success) {
+            const action = (window as any)._afterLoginAction;
+            if (action === 'edit') {
+                setIsEditMode(true);
+            } else {
+                setShowAdminPanel(true);
+            }
             setShowPasswordModal(false);
             setPasswordInput('');
             setLoginError(false);
@@ -68,40 +78,74 @@ const MainContent = () => {
 
             {/* Password Modal */}
             {showPasswordModal && (
-                <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[10000] flex items-center justify-center p-4">
-                    <div className="bg-white p-8 rounded-lg shadow-2xl w-full max-w-md relative animate-[fadeIn_0.3s_ease-out]">
+                <div className="fixed inset-0 bg-dark-coal/40 backdrop-blur-md z-[10000] flex items-center justify-center p-4">
+                    <div className="bg-white p-12 rounded-none shadow-2xl w-full max-w-md relative animate-[fadeIn_0.5s_cubic-bezier(0.16,1,0.3,1)] border border-brand-light/20">
                         <button 
                             onClick={() => { setShowPasswordModal(false); setPasswordInput(''); setLoginError(false); }}
-                            className="absolute top-4 left-4 text-gray-400 hover:text-gray-600"
+                            className="absolute top-6 left-6 text-dark-coal/40 hover:text-dark-coal transition-colors duration-300"
                         >
-                            ✕
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                         </button>
-                        <h3 className="text-2xl font-bold text-center mb-6 text-dark-coal">כניסה למערכת ניהול</h3>
-                        <form onSubmit={handleLoginSubmit} className="space-y-4">
-                            <div>
+                        
+                        <div className="text-center mb-10">
+                            <h3 className="text-4xl font-extrabold text-dark-coal mb-2 tracking-tight">כניסת מנהלת</h3>
+                            <div className="w-12 h-1 bg-brand-dark mx-auto"></div>
+                        </div>
+
+                        <form onSubmit={handleLoginSubmit} className="space-y-6">
+                            <div className="relative group">
                                 <input 
                                     type="password" 
                                     value={passwordInput}
                                     onChange={(e) => setPasswordInput(e.target.value)}
                                     placeholder="סיסמה"
-                                    className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:border-brand-dark text-right"
+                                    className="w-full p-4 bg-gray-50 border-b-2 border-gray-200 focus:outline-none focus:border-brand-dark text-right transition-all duration-300 placeholder-gray-400"
                                     autoFocus
                                 />
+                                <div className="absolute bottom-0 right-0 w-0 h-0.5 bg-brand-dark transition-all duration-500 group-focus-within:w-full"></div>
                             </div>
-                            {loginError && <p className="text-red-500 text-sm text-center">סיסמה שגויה</p>}
-                            <button 
-                                type="submit"
-                                className="w-full bg-brand-dark text-white py-3 rounded font-bold hover:bg-black transition-colors"
-                            >
-                                כניסה
-                            </button>
+                            
+                            {loginError && (
+                                <p className="text-red-500 text-sm text-center animate-pulse font-bold">
+                                    סיסמה שגויה, נסי שוב
+                                </p>
+                            )}
+                            
+                            <div className="grid grid-cols-2 gap-4">
+                                <button 
+                                    type="submit"
+                                    onClick={() => {
+                                        // We'll set a flag to open edit mode after login
+                                        (window as any)._afterLoginAction = 'edit';
+                                    }}
+                                    className="bg-brand-dark text-white py-4 font-bold text-sm tracking-widest hover:bg-black transition-all duration-500 shadow-xl"
+                                >
+                                    מצב עריכה
+                                </button>
+                                <button 
+                                    type="submit"
+                                    onClick={() => {
+                                        (window as any)._afterLoginAction = 'panel';
+                                    }}
+                                    className="bg-dark-coal text-white py-4 font-bold text-sm tracking-widest hover:bg-brand-dark transition-all duration-500 shadow-xl"
+                                >
+                                    לוח בקרה
+                                </button>
+                            </div>
                         </form>
+                        
+                        <p className="text-[10px] text-center text-gray-400 mt-8 uppercase tracking-widest">
+                            Add Value © 2026 | Secure Access
+                        </p>
                     </div>
                 </div>
             )}
 
             {/* Global Admin Panel */}
             <AdminPanel isOpen={showAdminPanel && isAdmin} onClose={() => setShowAdminPanel(false)} />
+            
+            {/* Floating Admin Toolbar */}
+            <AdminToolbar />
         </div>
     );
 };

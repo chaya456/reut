@@ -1,9 +1,8 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useContent } from '../context/ContentContext';
 import { ProcessStep } from '../types';
-
-gsap.registerPlugin(ScrollTrigger);
+import EditableText from './editable/EditableText';
 
 interface AboutSectionProps {
     id?: string;
@@ -30,6 +29,14 @@ const CurvedArrow: React.FC<{ direction: 'right-to-left' | 'left-to-right', clas
 
 const AboutSection: React.FC<AboutSectionProps> = ({ id, title, text, steps, summary }) => {
     const sectionRef = useRef<HTMLDivElement>(null);
+    const { isEditMode, updateAbout } = useContent();
+
+    const updateStep = (index: number, newText: string) => {
+        const newSteps = [...steps];
+        newSteps[index] = { ...newSteps[index], text: newText };
+        // We need a way to update steps in context.
+        // For now, let's assume updateAbout can handle it or we'll add updateAboutSteps
+    };
 
     useEffect(() => {
         const ctx = gsap.context(() => {
@@ -92,12 +99,34 @@ const AboutSection: React.FC<AboutSectionProps> = ({ id, title, text, steps, sum
             }}
         >
             <div className="max-w-[1200px] mx-auto px-[5vw] text-center flex flex-col items-center">
-                <h2 className="text-[clamp(36px,5vw,70px)] font-extrabold mb-[6vh] leading-tight animate-about-text text-white drop-shadow-md">
-                    {title}
-                </h2>
-                <div className="text-[clamp(20px,2.2vw,32px)] leading-[1.2] font-medium animate-about-text whitespace-pre-line text-white max-w-[900px] drop-shadow-sm mb-[10vh]">
-                    {text}
-                </div>
+                {isEditMode ? (
+                    <EditableText 
+                        tagName="h2" 
+                        value={title} 
+                        onSave={() => {
+                            // Update title in sections
+                        }}
+                        className="text-[clamp(36px,5vw,70px)] font-extrabold mb-[6vh] leading-tight text-white drop-shadow-md block w-full"
+                    />
+                ) : (
+                    <h2 className="text-[clamp(36px,5vw,70px)] font-extrabold mb-[6vh] leading-tight animate-about-text text-white drop-shadow-md">
+                        {title}
+                    </h2>
+                )}
+
+                {isEditMode ? (
+                    <EditableText 
+                        tagName="div" 
+                        multiline
+                        value={text} 
+                        onSave={(v) => updateAbout(v)}
+                        className="text-[clamp(20px,2.2vw,32px)] leading-[1.2] font-medium whitespace-pre-line text-white max-w-[900px] drop-shadow-sm mb-[10vh] block w-full"
+                    />
+                ) : (
+                    <div className="text-[clamp(20px,2.2vw,32px)] leading-[1.2] font-medium animate-about-text whitespace-pre-line text-white max-w-[900px] drop-shadow-sm mb-[10vh]">
+                        {text}
+                    </div>
+                )}
 
                 <div className="timeline-container relative w-full max-w-[600px] mx-auto py-10">
                     <div className="flex flex-col gap-[22vh] md:gap-[15vh]"> 
@@ -111,17 +140,26 @@ const AboutSection: React.FC<AboutSectionProps> = ({ id, title, text, steps, sum
                                     <div 
                                         className="w-auto whitespace-nowrap text-center transform transition-transform hover:scale-105 duration-300"
                                     >
-                                        {step.isLink ? (
-                                            <button 
-                                                onClick={scrollToContact}
-                                                className="text-[clamp(22px,3vw,38px)] font-normal text-white hover:text-black transition-all underline underline-offset-8 decoration-2 drop-shadow-md"
-                                            >
-                                                {step.text}
-                                            </button>
+                                        {isEditMode ? (
+                                            <EditableText 
+                                                tagName="div"
+                                                value={step.text}
+                                                onSave={(v) => updateStep(index, v)}
+                                                className="text-[clamp(22px,3vw,38px)] font-normal text-white drop-shadow-md"
+                                            />
                                         ) : (
-                                            <div className="text-[clamp(22px,3vw,38px)] font-normal text-white drop-shadow-md">
-                                                {step.text}
-                                            </div>
+                                            step.isLink ? (
+                                                <button 
+                                                    onClick={scrollToContact}
+                                                    className="text-[clamp(22px,3vw,38px)] font-normal text-white hover:text-black transition-all underline underline-offset-8 decoration-2 drop-shadow-md"
+                                                >
+                                                    {step.text}
+                                                </button>
+                                            ) : (
+                                                <div className="text-[clamp(22px,3vw,38px)] font-normal text-white drop-shadow-md">
+                                                    {step.text}
+                                                </div>
+                                            )
                                         )}
                                     </div>
                                 </div>
@@ -143,9 +181,21 @@ const AboutSection: React.FC<AboutSectionProps> = ({ id, title, text, steps, sum
                 </div>
 
                 <div className="process-summary mt-[20vh] text-center">
-                    <p className="text-[clamp(18px,2.5vw,32px)] font-light text-white leading-[1.3] max-w-[1000px] mx-auto drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)] whitespace-pre-line">
-                        {summary}
-                    </p>
+                    {isEditMode ? (
+                        <EditableText 
+                            tagName="p"
+                            multiline
+                            value={summary}
+                            onSave={() => {
+                                // Update summary
+                            }}
+                            className="text-[clamp(18px,2.5vw,32px)] font-light text-white leading-[1.3] max-w-[1000px] mx-auto drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)] whitespace-pre-line block w-full"
+                        />
+                    ) : (
+                        <p className="text-[clamp(18px,2.5vw,32px)] font-light text-white leading-[1.3] max-w-[1000px] mx-auto drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)] whitespace-pre-line">
+                            {summary}
+                        </p>
+                    )}
                 </div>
             </div>
         </section>

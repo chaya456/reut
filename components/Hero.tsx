@@ -4,6 +4,7 @@ import gsap from 'gsap';
 import Logo from './Logo';
 import { useContent } from '../context/ContentContext';
 import { HeroContent } from '../types';
+import EditableText from './editable/EditableText';
 
 interface HeroProps {
     data?: HeroContent;
@@ -12,7 +13,7 @@ interface HeroProps {
 const Hero: React.FC<HeroProps> = ({ data }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [mousePos, setMousePos] = useState({ x: '50%', y: '50%' });
-  const { content } = useContent();
+  const { content, isEditMode, updateHero } = useContent();
   const heroData = data || content.hero;
 
   // Helper to split text into characters
@@ -53,9 +54,6 @@ const Hero: React.FC<HeroProps> = ({ data }) => {
         });
 
         // --- 2. Text Animation ---
-        // Need to wait for react render of new text, so we use a slight delay or just target class
-        // Re-run animation if text changes significantly? 
-        // For simplicity in CMS mode, we just run once on mount.
         const chars = document.querySelectorAll('.hero-char');
         gsap.fromTo(chars, 
           { y: 80, opacity: 0, scale: 0.9 },
@@ -76,7 +74,7 @@ const Hero: React.FC<HeroProps> = ({ data }) => {
     }, containerRef);
 
     return () => ctx.revert();
-  }, [heroData]); // Re-run if hero content changes
+  }, [heroData]); 
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!containerRef.current) return;
@@ -141,33 +139,49 @@ const Hero: React.FC<HeroProps> = ({ data }) => {
 
                 {/* 2. Text Block */}
                 <div className="text-right w-full">
-                    <h1 className="hero-title text-[clamp(48px,9vw,130px)] font-extrabold leading-[0.9] mb-[2vh] drop-shadow-md text-white cursor-default">
-                        <div className="block overflow-hidden">
-                            {splitText(heroData.titleLine1 + " ")}
-                            <span className="transition-colors duration-300 hover:text-brand-dark cursor-default inline-block">
-                                {splitText(heroData.titleLine2)}
-                            </span>
+                    {isEditMode ? (
+                        <div className="space-y-2 mb-4">
+                            <EditableText tagName="h1" className="text-4xl font-bold text-white block" value={heroData.titleLine1} onSave={(v) => updateHero({ titleLine1: v })} />
+                            <EditableText tagName="h1" className="text-4xl font-bold text-brand-dark block" value={heroData.titleLine2} onSave={(v) => updateHero({ titleLine2: v })} />
+                            <EditableText tagName="h1" className="text-4xl font-bold text-white block" value={heroData.titleLine3} onSave={(v) => updateHero({ titleLine3: v })} />
                         </div>
-                        <div className="block overflow-hidden">
-                            {splitText(heroData.titleLine3)}
-                        </div>
-                    </h1>
+                    ) : (
+                        <h1 className="hero-title text-[clamp(48px,9vw,130px)] font-extrabold leading-[0.9] mb-[2vh] drop-shadow-md text-white cursor-default">
+                            <div className="block overflow-hidden">
+                                {splitText(heroData.titleLine1 + " ")}
+                                <span className="transition-colors duration-300 hover:text-brand-dark cursor-default inline-block">
+                                    {splitText(heroData.titleLine2)}
+                                </span>
+                            </div>
+                            <div className="block overflow-hidden">
+                                {splitText(heroData.titleLine3)}
+                            </div>
+                        </h1>
+                    )}
 
                     {/* Subtitle */}
                     <div className="overflow-hidden mb-[3vh]">
-                        <h2 className="hero-subtitle text-[clamp(18px,2.5vw,36px)] font-light text-brand-dark drop-shadow-md pointer-events-none tracking-wide">
-                        {heroData.subtitle}
-                        </h2>
+                        {isEditMode ? (
+                            <EditableText tagName="h2" className="text-xl text-brand-dark block" value={heroData.subtitle} onSave={(v) => updateHero({ subtitle: v })} />
+                        ) : (
+                            <h2 className="hero-subtitle text-[clamp(18px,2.5vw,36px)] font-light text-brand-dark drop-shadow-md pointer-events-none tracking-wide">
+                            {heroData.subtitle}
+                            </h2>
+                        )}
                     </div>
 
-                    {/* Button - Hint text removed */}
+                    {/* Button */}
                     <div className="hero-tagline relative z-50 inline-flex flex-col items-center">
-                        <button 
-                            onClick={scrollToContact}
-                            className="text-[clamp(16px,1.5vw,22px)] font-medium px-[4vw] py-[2vh] bg-brand-dark border-2 border-brand-dark rounded-none text-white transition-all duration-300 hover:bg-white hover:text-brand-dark shadow-lg backdrop-blur-sm cursor-pointer transform hover:scale-105"
-                        >
-                        {heroData.buttonText}
-                        </button>
+                        {isEditMode ? (
+                            <EditableText tagName="span" className="px-6 py-3 bg-brand-dark text-white font-bold" value={heroData.buttonText} onSave={(v) => updateHero({ buttonText: v })} />
+                        ) : (
+                            <button 
+                                onClick={scrollToContact}
+                                className="text-[clamp(16px,1.5vw,22px)] font-medium px-[4vw] py-[2vh] bg-brand-dark border-2 border-brand-dark rounded-none text-white transition-all duration-300 hover:bg-white hover:text-brand-dark shadow-lg backdrop-blur-sm cursor-pointer transform hover:scale-105"
+                            >
+                            {heroData.buttonText}
+                            </button>
+                        )}
                     </div>
                 </div>
 

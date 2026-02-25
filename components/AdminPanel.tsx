@@ -19,9 +19,10 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
   const [activeTab, setActiveTab] = useState<'hero' | 'about' | 'value' | 'gallery' | 'recommendations'>('hero');
   const [editingItem, setEditingItem] = useState<any>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Check if Sanity is configured
-  const isConfigured = !!import.meta.env.VITE_SANITY_PROJECT_ID;
+  const isConfigured = !!import.meta.env.VITE_SANITY_TOKEN;
 
   if (!isOpen) return null;
 
@@ -53,6 +54,21 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
       alert('שגיאה בהעלאת התמונה, אנא נסה שנית');
     } finally {
       setIsUploading(false);
+    }
+  };
+
+  const handleManualSave = async () => {
+    setIsSaving(true);
+    try {
+      // The context already has a debounced save, but we can trigger one manually
+      // for immediate feedback
+      const { saveContentToSanity } = await import('../services/sanityService');
+      await saveContentToSanity(content);
+      alert('השינויים נשמרו בהצלחה ב-Sanity');
+    } catch (err) {
+      alert('שגיאה בשמירה ל-Sanity');
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -203,7 +219,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                                                 אין תמונה
                                             </div>
                                         )}
-                                        <input type="file" onChange={(e) => handleImageUpload(e, (base64) => setEditingItem({...editingItem, before: base64}))} className="text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-soft file:text-brand-dark hover:file:bg-brand-light" />
+                                        <input type="file" onChange={(e) => handleImageUpload(e, (url) => setEditingItem({...editingItem, before: url}))} className="text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-soft file:text-brand-dark hover:file:bg-brand-light" />
                                     </div>
                                 </div>
                                 <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
@@ -221,7 +237,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                                                 אין תמונה
                                             </div>
                                         )}
-                                        <input type="file" onChange={(e) => handleImageUpload(e, (base64) => setEditingItem({...editingItem, after: base64}))} className="text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-soft file:text-brand-dark hover:file:bg-brand-light" />
+                                        <input type="file" onChange={(e) => handleImageUpload(e, (url) => setEditingItem({...editingItem, after: url}))} className="text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-soft file:text-brand-dark hover:file:bg-brand-light" />
                                     </div>
                                 </div>
                             </div>
@@ -308,7 +324,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                                         <div className="w-24 h-24 bg-gray-200 rounded border border-gray-300 flex items-center justify-center text-gray-400 text-xs text-center p-1">אין תמונה</div>
                                     )}
                                     <div className="flex-1">
-                                        <input type="file" onChange={(e) => handleImageUpload(e, (base64) => setEditingItem({...editingItem, thumbnail: base64}))} className="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-soft file:text-brand-dark hover:file:bg-brand-light" />
+                                        <input type="file" onChange={(e) => handleImageUpload(e, (url) => setEditingItem({...editingItem, thumbnail: url}))} className="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-soft file:text-brand-dark hover:file:bg-brand-light" />
                                         <p className="text-xs text-gray-500 mt-2">מומלץ להעלות תמונה מרובעת או ביחס של 4:5.</p>
                                     </div>
                                 </div>
@@ -348,7 +364,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                                 </div>
                                 <div className="bg-blue-50 p-3 rounded border border-blue-100 inline-block w-full">
                                     <label className="block text-xs font-bold text-blue-800 mb-1">הוספת תמונות נוספות:</label>
-                                    <input type="file" multiple onChange={(e) => handleImageUpload(e, (base64) => setEditingItem({...editingItem, images: [...(editingItem.images || []), { url: base64, description: '' }]}))} className="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-white file:text-blue-700 hover:file:bg-blue-100" />
+                                    <input type="file" multiple onChange={(e) => handleImageUpload(e, (url) => setEditingItem({...editingItem, images: [...(editingItem.images || []), { url: url, description: '' }]}))} className="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-white file:text-blue-700 hover:file:bg-blue-100" />
                                 </div>
                             </div>
 
@@ -446,7 +462,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                                         <div className="h-32 w-32 bg-gray-200 rounded border border-gray-300 flex items-center justify-center text-gray-400 text-xs text-center p-2">אין תמונה</div>
                                     )}
                                     <div className="flex-1">
-                                        <input type="file" onChange={(e) => handleImageUpload(e, (base64) => setEditingItem({...editingItem, image: base64}))} className="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-soft file:text-brand-dark hover:file:bg-brand-light" />
+                                        <input type="file" onChange={(e) => handleImageUpload(e, (url) => setEditingItem({...editingItem, image: url}))} className="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-soft file:text-brand-dark hover:file:bg-brand-light" />
                                         <p className="text-xs text-gray-500 mt-2">מומלץ להעלות צילום מסך ברור.</p>
                                     </div>
                                 </div>
@@ -488,13 +504,26 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                 </div>
             )}
 
-            <div className="mt-8 pt-6 border-t flex justify-end">
-                <button 
-                    onClick={onClose} 
-                    className="bg-dark-coal text-white px-8 py-3 rounded-lg font-bold hover:bg-gray-800 transition-colors shadow-lg"
-                >
-                    סגירה ושמירת שינויים
-                </button>
+            <div className="mt-8 pt-6 border-t flex justify-between items-center">
+                <div className="flex items-center gap-2 text-sm text-gray-500">
+                    <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                    כל השינויים נשמרים אוטומטית
+                </div>
+                <div className="flex gap-4">
+                    <button 
+                        onClick={handleManualSave}
+                        disabled={isSaving}
+                        className="bg-brand-soft text-brand-dark px-6 py-3 rounded-lg font-bold hover:bg-brand-light transition-colors shadow-md disabled:opacity-50"
+                    >
+                        {isSaving ? 'שומר...' : 'שמור עכשיו ל-Sanity'}
+                    </button>
+                    <button 
+                        onClick={onClose} 
+                        className="bg-dark-coal text-white px-8 py-3 rounded-lg font-bold hover:bg-gray-800 transition-colors shadow-lg"
+                    >
+                        סגירה
+                    </button>
+                </div>
             </div>
 
         </div>
