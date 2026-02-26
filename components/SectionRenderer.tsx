@@ -5,6 +5,7 @@ import ValueSection from './ValueSection';
 import Gallery from './Gallery';
 import Recommendations from './Recommendations';
 import AboutSection from './AboutSection';
+import Marquee from './Marquee';
 
 interface SectionRendererProps {
   section: Section;
@@ -19,7 +20,12 @@ const SectionRenderer: React.FC<SectionRendererProps> = ({ section }) => {
       case 'comparison':
         return <ValueSection id={section.id} data={section.data} title={section.title} subtitle={section.subtitle} />;
       case 'about':
-        return <AboutSection id={section.id} title={section.title || ''} text={section.data.text} steps={section.data.steps} summary={section.data.summary} />;
+        return (
+          <>
+            <AboutSection id={section.id} title={section.title || ''} text={section.data.text} steps={section.data.steps} summary={section.data.summary} />
+            <Marquee />
+          </>
+        );
       case 'gallery':
         return <Gallery id={section.id} data={section.data} title={section.title} subtitle={section.subtitle} />;
       case 'testimonial':

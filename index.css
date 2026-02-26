@@ -65,3 +65,13 @@ body {
     background-size: 400% 400%;
     animation: dynamic-peach 15s ease infinite;
 }
+
+@keyframes scroll-right {
+    0% { transform: translateX(-50%); }
+    100% { transform: translateX(0%); }
+}
+
+.animate-scroll-right {
+    animation: scroll-right 40s linear infinite;
+    will-change: transform;
+}

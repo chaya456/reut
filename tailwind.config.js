@@ -14,6 +14,15 @@ export default {
       },
       fontFamily: {
         sans: ['Assistant', 'sans-serif'],
+      },
+      animation: {
+        'marquee': 'marquee 40s linear infinite',
+      },
+      keyframes: {
+        marquee: {
+          '0%': { transform: 'translateX(-50%)' },
+          '100%': { transform: 'translateX(0%)' },
+        }
       }
     },
   },
