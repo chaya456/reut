@@ -43,7 +43,7 @@ const MainContent = () => {
     const contentSections = content.sections.filter(s => s.type !== 'hero');
 
     return (
-        <div className="min-h-screen bg-brand-soft font-sans">
+        <div className="min-h-screen bg-brand-soft font-sans overflow-x-hidden w-full max-w-[100vw]">
             <Navbar />
             
             {/* Hero Sections (Fixed Background) */}
@@ -52,7 +52,7 @@ const MainContent = () => {
             ))}
 
             {/* Main Scrollable Content */}
-            <main className="relative z-20 mt-[100vh] bg-brand-soft shadow-[0_-50px_100px_rgba(0,0,0,0.1)]">
+            <main className="relative z-20 mt-[100vh] bg-brand-soft shadow-[0_-50px_100px_rgba(0,0,0,0.1)] overflow-x-hidden">
                 {contentSections.map(section => (
                     <SectionRenderer key={section.id} section={section} isAdmin={isAdmin} />
                 ))}
