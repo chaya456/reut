@@ -8,12 +8,13 @@ import { ContentProvider, useContent } from './context/ContentContext';
 import SectionRenderer from './components/SectionRenderer';
 import AdminPanel from './components/AdminPanel';
 import AdminToolbar from './components/editable/AdminToolbar';
-import ProductPage from './components/ProductPage';
 import ProductsDirectory from './components/ProductsDirectory';
+import NewsletterModal from './components/NewsletterModal';
+import { products } from './data/products';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const MainContent = () => {
+const MainContent = ({ productSlug }: { productSlug?: string }) => {
     const { 
         content, isAdmin, setIsEditMode, 
         showAdminPanel, setShowAdminPanel, login 
@@ -21,6 +22,16 @@ const MainContent = () => {
     const [showPasswordModal, setShowPasswordModal] = React.useState(false);
     const [passwordInput, setPasswordInput] = React.useState('');
     const [loginError, setLoginError] = React.useState(false);
+
+    const product = productSlug ? products.find(p => p.id === productSlug) : null;
+
+    useEffect(() => {
+        if (product) {
+            document.title = `${product.seoTitle} | רעות מחמלי - ערך מוסף`;
+        } else {
+            document.title = `רעות מחמלי - ערך מוסף`;
+        }
+    }, [product]);
 
     const handleLoginSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -59,6 +70,20 @@ const MainContent = () => {
                     <SectionRenderer key={section.id} section={section} isAdmin={isAdmin} />
                 ))}
                 
+                {/* SEO Product Block - Visually integrated at the bottom for Googlebot */}
+                {product && (
+                    <section className="py-16 px-[5vw] bg-white border-t border-brand-light/20 relative z-30">
+                        <div className="max-w-[800px] mx-auto text-center">
+                            <h2 className="text-3xl md:text-4xl font-extrabold text-dark-coal mb-4">{product.seoTitle}</h2>
+                            <p className="text-xl font-medium text-brand-dark mb-6">{product.description}</p>
+                            <div className="text-lg text-dark-coal/80 space-y-4">
+                                <p>מחפשים להוסיף ערך מוסף ל{product.baseName}? אצלנו ברעות מחמלי מתמחים במיתוג אישי, חריטות לייזר מדויקות והטבעות בחום על מגוון רחב של מוצרים, כולל {product.baseName}.</p>
+                                <p>בין אם מדובר במתנה אישית ומרגשת, מוצר קד"מ לעסק, או מזכרת לאירוע מיוחד - אנחנו כאן כדי להפוך כל {product.baseName} לייחודי ובלתי נשכח. אנו משתמשים במכשור החדשני ביותר כדי להבטיח תוצאה מושלמת, אסתטית ועמידה לאורך זמן.</p>
+                            </div>
+                        </div>
+                    </section>
+                )}
+
                 <Footer />
             </main>
 
@@ -148,6 +173,9 @@ const MainContent = () => {
             
             {/* Floating Admin Toolbar */}
             <AdminToolbar />
+
+            {/* Newsletter Modal */}
+            <NewsletterModal />
         </div>
     );
 };
@@ -175,7 +203,7 @@ const App: React.FC = () => {
     if (currentPath.startsWith('/product/')) {
       const encodedSlug = currentPath.split('/product/')[1];
       const slug = decodeURIComponent(encodedSlug);
-      return <ProductPage slug={slug} />;
+      return <MainContent productSlug={slug} />;
     }
     
     return <MainContent />;
