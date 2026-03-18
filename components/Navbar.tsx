@@ -26,6 +26,12 @@ const Navbar: React.FC = () => {
 
   const scrollToSection = (id: string) => {
     setIsOpen(false);
+    
+    if (window.location.pathname !== '/') {
+      window.location.href = id === 'home' ? '/' : `/#${id}`;
+      return;
+    }
+
     if (id === 'home') {
         window.scrollTo({ top: 0, behavior: 'smooth' });
         return;

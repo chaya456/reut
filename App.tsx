@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import gsap from 'gsap';
@@ -8,6 +8,8 @@ import { ContentProvider, useContent } from './context/ContentContext';
 import SectionRenderer from './components/SectionRenderer';
 import AdminPanel from './components/AdminPanel';
 import AdminToolbar from './components/editable/AdminToolbar';
+import ProductPage from './components/ProductPage';
+import ProductsDirectory from './components/ProductsDirectory';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -151,14 +153,37 @@ const MainContent = () => {
 };
 
 const App: React.FC = () => {
+  const [currentPath, setCurrentPath] = useState(window.location.pathname);
+
   useEffect(() => {
     // Refresh ScrollTrigger when app mounts/updates
     ScrollTrigger.refresh();
+    
+    // Handle popstate for back/forward navigation
+    const handleLocationChange = () => {
+      setCurrentPath(window.location.pathname);
+    };
+    window.addEventListener('popstate', handleLocationChange);
+    return () => window.removeEventListener('popstate', handleLocationChange);
   }, []);
+
+  const renderRoute = () => {
+    if (currentPath === '/products') {
+      return <ProductsDirectory />;
+    }
+    
+    if (currentPath.startsWith('/product/')) {
+      const encodedSlug = currentPath.split('/product/')[1];
+      const slug = decodeURIComponent(encodedSlug);
+      return <ProductPage slug={slug} />;
+    }
+    
+    return <MainContent />;
+  };
 
   return (
     <ContentProvider>
-        <MainContent />
+        {renderRoute()}
     </ContentProvider>
   );
 };

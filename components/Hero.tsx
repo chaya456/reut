@@ -107,7 +107,7 @@ const Hero: React.FC<HeroProps> = ({ data }) => {
         {/* BACKGROUND LAYERS */}
         <div className="absolute inset-0 w-full h-full z-0">
             <img 
-                src="https://i.postimg.cc/pL7M6mVG/hry.jpg" 
+                src="https://i.postimg.cc/qMBsF3gX/'hry-l'tr.jpg" 
                 alt="After" 
                 className="w-full h-full object-cover object-left" 
             />
@@ -121,7 +121,7 @@ const Hero: React.FC<HeroProps> = ({ data }) => {
             }}
         >
             <img 
-                src="https://i.postimg.cc/HLy1DTj3/lpny.jpg" 
+                src="https://i.postimg.cc/L64tW1hv/lpny-l'tr.jpg" 
                 alt="Before" 
                 className="w-full h-full object-cover object-left"
             />

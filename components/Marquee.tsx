@@ -1,10 +1,5 @@
 import React from 'react';
-
-const items = [
-  "כפות עץ", "פלאפון", "מצלמה", "נגן", "אזניות", "פקק שעם", "כוס מאג מתכת", "צנצנות תבלינים", "קופסאות צעצועים", "תעודת לידה על שמיכי", "כפכפים", "מעמד לפלאפון", "ראש מטען", "פותחן בקבוק", "סכין לעוגה", "אטבים", "עפרונות", "שעונים", "מחזיק ספרים למדף", "חגורת עור", "תיק איפור", "סרט לשיער", "מחברת", "סרגל", "מחשבון", "מספריים לחלאקה", "מחק", "מחשב נייד", "כונן חיצוני", "דיסק אונקי", "קוביות משחק", "גיטרה", "קופסא לאזניות", "אבנים", "כיסוי עיינים", "חיתוך קופסא"
-];
-
-const text = items.join(" | ") + " | ";
+import { products } from '../data/products';
 
 const Marquee: React.FC = () => {
   return (
@@ -18,8 +13,28 @@ const Marquee: React.FC = () => {
       }}
     >
       <div className="flex w-max animate-scroll-right">
-        <span className="text-lg md:text-2xl font-light tracking-widest whitespace-nowrap">{text}</span>
-        <span className="text-lg md:text-2xl font-light tracking-widest whitespace-nowrap">{text}</span>
+        {/* First set of items */}
+        <div className="flex items-center whitespace-nowrap">
+          {products.map((p, i) => (
+            <React.Fragment key={`set1-${i}`}>
+              <span className="text-lg md:text-2xl font-light tracking-widest px-2">
+                {p.seoTitle}
+              </span>
+              <span className="text-lg md:text-2xl font-light tracking-widest px-2">|</span>
+            </React.Fragment>
+          ))}
+        </div>
+        {/* Second set of items for seamless loop */}
+        <div className="flex items-center whitespace-nowrap">
+          {products.map((p, i) => (
+            <React.Fragment key={`set2-${i}`}>
+              <span className="text-lg md:text-2xl font-light tracking-widest px-2">
+                {p.seoTitle}
+              </span>
+              <span className="text-lg md:text-2xl font-light tracking-widest px-2">|</span>
+            </React.Fragment>
+          ))}
+        </div>
       </div>
     </div>
   );

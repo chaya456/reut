@@ -194,6 +194,11 @@ const Footer: React.FC = () => {
                 {!isSuccess && (
                     <p className="text-center text-white/20 text-xs mt-0 mb-4">האתר בהרצה, יתכנו חסרים וליקויים, מצאת משו? ספרי לנו</p>
                 )}
+
+                {/* SEO Products Link */}
+                <div className="text-center mt-2 opacity-10 hover:opacity-100 transition-opacity">
+                    <a href="/products" className="text-[10px] text-white">למוצרים שלנו</a>
+                </div>
             </div>
         </footer>
         <style>{`@keyframes fadeIn { from { opacity: 0; transform: translate(-50%, 10px); } to { opacity: 1; transform: translate(-50%, 0); } }`}</style>
