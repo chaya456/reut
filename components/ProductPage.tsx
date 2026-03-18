@@ -41,7 +41,7 @@ const ProductPage: React.FC<ProductPageProps> = ({ slug }) => {
     <div className="min-h-screen bg-brand-soft font-sans flex flex-col">
       <Navbar />
       
-      <main className="flex-grow pt-[20vh] pb-[35vw] px-[5vw] max-w-[1000px] mx-auto w-full relative z-20">
+      <main className="flex-grow pt-[20vh] pb-[60vw] md:pb-[40vw] lg:pb-[35vw] px-[5vw] max-w-[1000px] mx-auto w-full relative z-20">
         <div className="mb-6">
           <a href="/" className="text-brand-dark hover:text-dark-coal font-medium flex items-center gap-2 transition-colors w-fit">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

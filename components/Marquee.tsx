@@ -18,7 +18,7 @@ const Marquee: React.FC = () => {
           {products.map((p, i) => (
             <React.Fragment key={`set1-${i}`}>
               <span className="text-lg md:text-2xl font-light tracking-widest px-2">
-                {p.seoTitle}
+                {p.baseName}
               </span>
               <span className="text-lg md:text-2xl font-light tracking-widest px-2">|</span>
             </React.Fragment>
@@ -29,7 +29,7 @@ const Marquee: React.FC = () => {
           {products.map((p, i) => (
             <React.Fragment key={`set2-${i}`}>
               <span className="text-lg md:text-2xl font-light tracking-widest px-2">
-                {p.seoTitle}
+                {p.baseName}
               </span>
               <span className="text-lg md:text-2xl font-light tracking-widest px-2">|</span>
             </React.Fragment>
