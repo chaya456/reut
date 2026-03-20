@@ -114,37 +114,16 @@ const AboutSection: React.FC<AboutSectionProps> = ({ id, title, text, steps, sum
                     </h2>
                 )}
 
-                <div className="text-right text-white w-full max-w-[650px] mb-[8vh] text-[clamp(18px,1.8vw,22px)] leading-snug font-medium drop-shadow-sm animate-about-text space-y-4">
-                    <p>
-                        נעים להכיר, אני רעות<br/>
-                        מעצבת יצירתית עם ניסיון של עשור.
-                    </p>
-                    <p>
-                        אוהבת להעביר את העיצוב מהמסך אל החומר, ליצור חיבור אמיתי למוצר<br/>
-                        ולהפוך כל פרט לייחודי וקולע – עד שאפשר למשש את היופי בידיים
-                    </p>
-                    <p>
-                        בעסק שלי, אני הופכת את הפרטים הקטנים לערך גדול
-                    </p>
-                    <p>
-                        ממתגת באמצעות מכשור מגוון, מתקדם וחדשני כל מה ש(לא) זז –<br/>
-                        עם התמחות מיוחדת בחריטת לייזר
-                    </p>
-                    <p>
-                        יש לכם מוצר שמחכה לקבל ערך? בואו נעשה את זה ביחד:)
-                    </p>
-                </div>
-
                 {isEditMode ? (
                     <EditableText 
                         tagName="div" 
                         multiline
                         value={text} 
                         onSave={(v) => updateAbout(v)}
-                        className="text-[clamp(20px,2.2vw,32px)] leading-[1.2] font-medium whitespace-pre-line text-white max-w-[900px] drop-shadow-sm mb-[10vh] block w-full text-center"
+                        className="text-[clamp(20px,2.2vw,32px)] leading-tight font-medium whitespace-pre-line text-white max-w-[800px] drop-shadow-sm mb-[10vh] block w-full text-right"
                     />
                 ) : (
-                    <div className="text-[clamp(20px,2.2vw,32px)] leading-[1.2] font-medium animate-about-text whitespace-pre-line text-white max-w-[900px] drop-shadow-sm mb-[10vh] text-center">
+                    <div className="text-[clamp(20px,2.2vw,32px)] leading-tight font-medium animate-about-text whitespace-pre-line text-white max-w-[800px] drop-shadow-sm mb-[10vh] text-right">
                         {text}
                     </div>
                 )}

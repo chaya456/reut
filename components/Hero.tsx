@@ -105,12 +105,11 @@ const Hero: React.FC<HeroProps> = ({ data }) => {
         onMouseMove={handleMouseMove}
       >
         {/* BACKGROUND LAYERS */}
-        <div className="absolute inset-0 w-full h-full z-0" style={{ transform: 'translateZ(0)', backfaceVisibility: 'hidden' }}>
+        <div className="absolute inset-0 w-full h-full z-0">
             <img 
                 src="https://i.postimg.cc/cHrJ308q/after.jpg" 
                 alt="After" 
                 className="w-full h-full object-cover object-center" 
-                style={{ transform: 'translateZ(0)' }}
             />
         </div>
 
@@ -118,16 +117,13 @@ const Hero: React.FC<HeroProps> = ({ data }) => {
             className="absolute inset-0 w-full h-full z-10 pointer-events-none"
             style={{
                 maskImage: `radial-gradient(circle 300px at ${mousePos.x} ${mousePos.y}, transparent 0%, black 100%)`,
-                WebkitMaskImage: `radial-gradient(circle 300px at ${mousePos.x} ${mousePos.y}, transparent 0%, black 100%)`,
-                transform: 'translateZ(0)',
-                backfaceVisibility: 'hidden'
+                WebkitMaskImage: `radial-gradient(circle 300px at ${mousePos.x} ${mousePos.y}, transparent 0%, black 100%)`
             }}
         >
             <img 
                 src="https://i.postimg.cc/KzRYTxgh/befor.jpg" 
                 alt="Before" 
                 className="w-full h-full object-cover object-center"
-                style={{ transform: 'translateZ(0)' }}
             />
         </div>
 
