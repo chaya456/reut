@@ -120,10 +120,10 @@ const AboutSection: React.FC<AboutSectionProps> = ({ id, title, text, steps, sum
                         multiline
                         value={text} 
                         onSave={(v) => updateAbout(v)}
-                        className="text-[clamp(20px,2.2vw,32px)] leading-tight font-medium whitespace-pre-line text-white max-w-[800px] drop-shadow-sm mb-[10vh] block w-full text-right"
+                        className="text-[clamp(20px,2.2vw,26px)] leading-tight font-medium whitespace-pre-line text-white max-w-[800px] drop-shadow-sm mb-[10vh] block w-full text-center"
                     />
                 ) : (
-                    <div className="text-[clamp(20px,2.2vw,32px)] leading-tight font-medium animate-about-text whitespace-pre-line text-white max-w-[800px] drop-shadow-sm mb-[10vh] text-right">
+                    <div className="text-[clamp(20px,2.2vw,26px)] leading-tight font-medium animate-about-text whitespace-pre-line text-white max-w-[800px] drop-shadow-sm mb-[10vh] text-center">
                         {text}
                     </div>
                 )}
@@ -145,18 +145,18 @@ const AboutSection: React.FC<AboutSectionProps> = ({ id, title, text, steps, sum
                                                 tagName="div"
                                                 value={step.text}
                                                 onSave={(v) => updateStep(index, v)}
-                                                className="text-[clamp(22px,3vw,38px)] font-normal text-white drop-shadow-md"
+                                                className="text-[clamp(20px,2.2vw,26px)] font-normal text-white drop-shadow-md"
                                             />
                                         ) : (
                                             step.isLink ? (
                                                 <button 
                                                     onClick={scrollToContact}
-                                                    className="text-[clamp(22px,3vw,38px)] font-normal text-white hover:text-black transition-all underline underline-offset-8 decoration-2 drop-shadow-md"
+                                                    className="text-[clamp(20px,2.2vw,26px)] font-normal text-white hover:text-black transition-all underline underline-offset-8 decoration-2 drop-shadow-md"
                                                 >
                                                     {step.text}
                                                 </button>
                                             ) : (
-                                                <div className="text-[clamp(22px,3vw,38px)] font-normal text-white drop-shadow-md">
+                                                <div className="text-[clamp(20px,2.2vw,26px)] font-normal text-white drop-shadow-md">
                                                     {step.text}
                                                 </div>
                                             )
@@ -189,10 +189,10 @@ const AboutSection: React.FC<AboutSectionProps> = ({ id, title, text, steps, sum
                             onSave={() => {
                                 // Update summary
                             }}
-                            className="text-[clamp(18px,2.5vw,32px)] font-light text-white leading-[1.3] max-w-[1000px] mx-auto drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)] whitespace-pre-line block w-full"
+                            className="text-[clamp(20px,2.2vw,26px)] font-light text-white leading-[1.3] max-w-[1000px] mx-auto drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)] whitespace-pre-line block w-full"
                         />
                     ) : (
-                        <p className="text-[clamp(18px,2.5vw,32px)] font-light text-white leading-[1.3] max-w-[1000px] mx-auto drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)] whitespace-pre-line">
+                        <p className="text-[clamp(20px,2.2vw,26px)] font-light text-white leading-[1.3] max-w-[1000px] mx-auto drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)] whitespace-pre-line">
                             {summary}
                         </p>
                     )}

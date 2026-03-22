@@ -91,7 +91,7 @@ const Recommendations: React.FC<RecommendationsProps> = ({ id, data, title, subt
             
             {/* About Intro Section */}
             <div className="max-w-[850px] w-full mx-auto px-[5vw] py-[2vh] text-center mb-[10vh] relative z-20 text-dark-coal">
-                <p className="mb-2 text-[clamp(18px,2vw,24px)] leading-snug animate-text">
+                <p className="mb-2 text-[clamp(20px,2.2vw,26px)] leading-snug animate-text">
                     <span className="font-bold">נעים להכיר, אני רעות</span><br/>
                     מעצבת יצירתית עם ניסיון של עשור<br/>
                     אוהבת להעביר את העיצוב מהמסך אל החומר<br/>
@@ -99,16 +99,16 @@ const Recommendations: React.FC<RecommendationsProps> = ({ id, data, title, subt
                     עד שאפשר למשש את היופי בידיים.
                 </p>
                 
-                <p className="mb-2 text-[clamp(18px,2vw,24px)] leading-snug animate-text">
+                <p className="mb-2 text-[clamp(20px,2.2vw,26px)] leading-snug animate-text">
                     <span className="font-bold">בעסק שלי, אני הופכת את הפרטים הקטנים לערך גדול</span>
                 </p>
                 
-                <p className="mb-2 text-[clamp(18px,2vw,24px)] leading-snug animate-text">
+                <p className="mb-2 text-[clamp(20px,2.2vw,26px)] leading-snug animate-text">
                     ממתגת באמצעות מכשור מגוון, מתקדם וחדשני כל מה ש(לא) זז<br/>
                     עם התמחות מיוחדת בחריטת לייזר
                 </p>
                 
-                <p className="text-[clamp(18px,2vw,24px)] leading-snug animate-text">
+                <p className="text-[clamp(20px,2.2vw,26px)] leading-snug animate-text">
                     <span className="text-[#FCA872] font-bold">יש לכם מוצר שמחכה לקבל ערך? בואו נעשה את זה ביחד:)</span>
                 </p>
             </div>
