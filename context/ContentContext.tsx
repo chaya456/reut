@@ -144,7 +144,7 @@ const defaultContent: AppContent = {
               steps: [
                   { text: 'חולמים חלום' },
                   { text: 'מתאימים מוצר' },
-                  { text: 'משתפים אותנו', isLink: true },
+                  { text: 'צרו קשר למיתוג וחריטה אישית', isLink: true },
                   { text: 'בודקים אפשרויות' },
                   { text: 'מעצבים עבורכם' },
                   { text: 'מגשימים לכם חלום' }

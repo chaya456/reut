@@ -206,7 +206,7 @@ const ValueSection: React.FC<ValueSectionProps> = ({ id, data, title, subtitle }
                     aspectRatio="aspect-auto w-full h-full"
                 />
             ) : (
-                <img src={activeItem.after} alt="After" className="w-full h-full object-cover" draggable={false} />
+                <img src={activeItem.after} alt={`${sectionTitle} - אחרי מיתוג וחריטה`} className="w-full h-full object-cover" draggable={false} />
             )}
           </div>
           
@@ -222,7 +222,7 @@ const ValueSection: React.FC<ValueSectionProps> = ({ id, data, title, subtitle }
                     aspectRatio="aspect-auto w-full h-full"
                 />
             ) : (
-                <img src={activeItem.before} alt="Before" className="w-full h-full object-cover" draggable={false} />
+                <img src={activeItem.before} alt={`${sectionTitle} - לפני מיתוג וחריטה`} className="w-full h-full object-cover" draggable={false} />
             )}
           </div>
 
@@ -283,8 +283,8 @@ const ValueSection: React.FC<ValueSectionProps> = ({ id, data, title, subtitle }
                                     ${activeItem.id === item.id ? 'border-brand-dark ring-2 ring-brand-light' : 'border-transparent hover:border-brand-dark'}
                                 `}
                             >
-                                <img src={item.before} className="w-full h-full object-cover absolute inset-0 group-hover:opacity-0 transition-opacity" alt="Before" />
-                                <img src={item.after} className="w-full h-full object-cover absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity" alt="After" />
+                                <img src={item.before} className="w-full h-full object-cover absolute inset-0 group-hover:opacity-0 transition-opacity" alt={`${sectionTitle} - לפני`} />
+                                <img src={item.after} className="w-full h-full object-cover absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity" alt={`${sectionTitle} - אחרי`} />
                             </div>
                         </div>
                     ))}

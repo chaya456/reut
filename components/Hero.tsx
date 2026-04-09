@@ -108,7 +108,7 @@ const Hero: React.FC<HeroProps> = ({ data }) => {
         <div className="absolute inset-0 w-full h-full z-0">
             <img 
                 src="https://i.postimg.cc/cHrJ308q/after.jpg" 
-                alt="After" 
+                alt="חריטה ומיתוג על מוצרים - אחרי" 
                 className="w-full h-full object-cover object-center" 
             />
         </div>
@@ -122,7 +122,7 @@ const Hero: React.FC<HeroProps> = ({ data }) => {
         >
             <img 
                 src="https://i.postimg.cc/KzRYTxgh/befor.jpg" 
-                alt="Before" 
+                alt="חריטה ומיתוג על מוצרים - לפני" 
                 className="w-full h-full object-cover object-center"
             />
         </div>

@@ -154,9 +154,10 @@ const Gallery: React.FC<GalleryProps> = ({ id, data, title, subtitle }) => {
                                 aspectRatio="aspect-auto w-full h-full"
                             />
                         ) : (
-                            <div 
-                                className="absolute inset-0 bg-cover bg-center"
-                                style={{ backgroundImage: `url('${item.thumbnail}')` }}
+                            <img 
+                                src={item.thumbnail} 
+                                alt={`חריטה ומיתוג אישי - ${item.title}`}
+                                className="absolute inset-0 w-full h-full object-cover"
                             />
                         )}
                         <div className="absolute inset-0 bg-brand-dark/80 opacity-0 transition-opacity duration-300 group-hover:opacity-100 flex flex-col items-center justify-center text-white p-6 text-center">
@@ -198,7 +199,7 @@ const Gallery: React.FC<GalleryProps> = ({ id, data, title, subtitle }) => {
                         <img 
                             key={`${currentProject.id}-${currentImageIndex}`}
                             src={currentProject.images[currentImageIndex].url} 
-                            alt={currentProject.title} 
+                            alt={`חריטה על ${currentProject.title} - ${currentProject.images[currentImageIndex].description || ''}`} 
                             onLoad={() => setIsImageLoading(false)}
                             className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-w-full max-h-[70vh] object-contain shadow-2xl z-10 transition-opacity duration-300 ease-out will-change-opacity ${isImageLoading ? 'opacity-0' : 'opacity-100'}`}
                         />
@@ -233,7 +234,7 @@ const Gallery: React.FC<GalleryProps> = ({ id, data, title, subtitle }) => {
                                     onClick={(e) => { e.stopPropagation(); if (idx !== currentImageIndex) { setIsImageLoading(true); setCurrentImageIndex(idx); } }}
                                     className={`w-[clamp(50px,6vw,80px)] h-[clamp(50px,6vw,80px)] shrink-0 cursor-pointer border-2 transition-all ${idx === currentImageIndex ? 'border-brand-dark opacity-100' : 'border-transparent opacity-50 hover:opacity-80'}`}
                                 >
-                                    <img src={imgObj.url} className="w-full h-full object-cover" alt="thumb" />
+                                    <img src={imgObj.url} className="w-full h-full object-cover" alt={`תצוגה מקדימה - ${currentProject.title}`} />
                                 </div>
                             ))}
                         </div>

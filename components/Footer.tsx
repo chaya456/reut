@@ -156,7 +156,7 @@ const Footer: React.FC = () => {
                 {/* Credits */}
                 <div className="border-t border-white/10 pt-4 mt-2 text-sm md:text-base text-white/60 flex flex-col md:flex-row items-center justify-center gap-4 animate-text-footer relative pb-2">
                     <a 
-                        href="https://meek-licorice-beb232.netlify.app/" 
+                        href="https://erech-musaf.co.il/" 
                         target="_blank" 
                         rel="noopener noreferrer"
                         className="font-semibold text-white/80 hover:text-brand-light transition-colors"
@@ -175,7 +175,7 @@ const Footer: React.FC = () => {
                                 </a>
 
                                 {/* Website Link */}
-                                <a href="https://meek-licorice-beb232.netlify.app/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 hover:text-brand-dark transition-colors p-2 hover:bg-gray-50 border-b border-gray-100">
+                                <a href="https://erech-musaf.co.il/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 hover:text-brand-dark transition-colors p-2 hover:bg-gray-50 border-b border-gray-100">
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
                                     <span className="font-medium">לאתר שלי</span>
                                 </a>
