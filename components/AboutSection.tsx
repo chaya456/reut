@@ -14,10 +14,11 @@ interface AboutSectionProps {
 
 const CurvedArrow: React.FC<{ direction: 'right-to-left' | 'left-to-right', className?: string }> = ({ direction, className }) => {
     return (
-        <div className={`absolute left-1/2 -translate-x-1/2 w-[150px] h-[150px] pointer-events-none ${className}`} style={{ zIndex: 0 }}>
+        <div className={`absolute left-1/2 -translate-x-1/2 pointer-events-none ${className}`} style={{ zIndex: 0 }}>
             <svg 
                 viewBox="0 0 313.33 310.6" 
                 fill="white" 
+                preserveAspectRatio="none"
                 xmlns="http://www.w3.org/2000/svg" 
                 className={`w-full h-full overflow-visible ${direction === 'left-to-right' ? 'scale-x-[-1]' : ''}`}
             >
@@ -129,7 +130,7 @@ const AboutSection: React.FC<AboutSectionProps> = ({ id, title, text, steps, sum
                 )}
 
                 <div className="timeline-container relative w-full max-w-[600px] mx-auto py-10">
-                    <div className="flex flex-col gap-[22vh] md:gap-[15vh]"> 
+                    <div className="flex flex-col gap-[120px] md:gap-[150px]"> 
                         {steps.map((step, index) => (
                             <div 
                                 key={index}
@@ -138,7 +139,7 @@ const AboutSection: React.FC<AboutSectionProps> = ({ id, title, text, steps, sum
                                 {/* Step Text Container */}
                                 <div className={`w-full flex ${index % 2 === 0 ? 'justify-start' : 'justify-end'}`}>
                                     <div 
-                                        className="w-auto whitespace-nowrap text-center transform transition-transform hover:scale-105 duration-300"
+                                        className="w-auto max-w-[280px] md:max-w-none text-center transform transition-transform hover:scale-105 duration-300"
                                     >
                                         {isEditMode ? (
                                             <EditableText 
@@ -169,9 +170,9 @@ const AboutSection: React.FC<AboutSectionProps> = ({ id, title, text, steps, sum
                                     <CurvedArrow 
                                         direction={index % 2 === 0 ? 'left-to-right' : 'right-to-left'} 
                                         className={`
-                                            top-[110%] 
+                                            top-[100%] mt-[10px] md:mt-[20px]
                                             left-1/2 -translate-x-1/2
-                                            w-[250px] h-[150px]
+                                            w-[120px] md:w-[180px] h-[70px] md:h-[100px]
                                         `}
                                     />
                                 )}
