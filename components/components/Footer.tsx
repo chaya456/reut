@@ -156,7 +156,7 @@ const Footer: React.FC = () => {
                 {/* Credits */}
                 <div className="border-t border-white/10 pt-4 mt-2 text-sm md:text-base text-white/60 flex flex-col md:flex-row items-center justify-center gap-4 animate-text-footer relative pb-2">
                     <a 
-                        href="https://erech-musaf.co.il/" 
+                        href="https://cg-yetsira.netlify.app/" 
                         target="_blank" 
                         rel="noopener noreferrer"
                         className="font-semibold text-white/80 hover:text-brand-light transition-colors"

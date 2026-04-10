@@ -5,6 +5,7 @@ import Logo from './Logo';
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState('home');
 
   // Detect scroll to change navbar styling
   useEffect(() => {
@@ -13,6 +14,44 @@ const Navbar: React.FC = () => {
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Scrollspy logic
+  useEffect(() => {
+    const observerOptions = {
+      root: null,
+      rootMargin: '-40% 0px -40% 0px', // Trigger when section is roughly in the middle
+      threshold: 0
+    };
+
+    const observerCallback = (entries: IntersectionObserverEntry[]) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setActiveSection(entry.target.id);
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(observerCallback, observerOptions);
+
+    const sectionIds = ['home', 'about-main', 'comparison-main', 'gallery-main', 'testimonials-main', 'contact'];
+    sectionIds.forEach((id) => {
+      const element = document.getElementById(id);
+      if (element) observer.observe(element);
+    });
+
+    // Special case for home (hero) if it's at the top
+    const handleHomeScroll = () => {
+        if (window.scrollY < 100) {
+            setActiveSection('home');
+        }
+    };
+    window.addEventListener('scroll', handleHomeScroll);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('scroll', handleHomeScroll);
+    };
   }, []);
 
   const links = [
@@ -70,10 +109,14 @@ const Navbar: React.FC = () => {
                 <button 
                     key={link.name}
                     onClick={() => scrollToSection(link.id)}
-                    className="text-[clamp(16px,1.1vw,22px)] font-medium text-dark-coal transition-all duration-300 relative group hover:text-brand-dark"
+                    className={`text-[clamp(16px,1.1vw,22px)] font-medium transition-all duration-300 relative group ${
+                        activeSection === link.id ? 'text-brand-dark' : 'text-dark-coal hover:text-brand-dark'
+                    }`}
                 >
                     {link.name}
-                    <span className="absolute -bottom-1 right-0 w-0 h-0.5 bg-brand-dark transition-all duration-300 group-hover:w-full"></span>
+                    <span className={`absolute -bottom-1 right-0 h-0.5 bg-brand-dark transition-all duration-300 ${
+                        activeSection === link.id ? 'w-full' : 'w-0 group-hover:w-full'
+                    }`}></span>
                 </button>
             ))}
         </div>
@@ -136,7 +179,9 @@ const Navbar: React.FC = () => {
                 <button 
                     key={link.name}
                     onClick={() => scrollToSection(link.id)}
-                    className={`text-[clamp(20px,5vw,24px)] font-bold text-dark-coal hover:text-brand-dark transition-all duration-300 transform w-full text-right border-b border-gray-100 pb-2 ${isOpen ? 'translate-x-0 opacity-100' : 'translate-x-8 opacity-0'}`}
+                    className={`text-[clamp(20px,5vw,24px)] font-bold transition-all duration-300 transform w-full text-right border-b border-gray-100 pb-2 ${
+                        activeSection === link.id ? 'text-brand-dark' : 'text-dark-coal hover:text-brand-dark'
+                    } ${isOpen ? 'translate-x-0 opacity-100' : 'translate-x-8 opacity-0'}`}
                     style={{ transitionDelay: `${index * 50 + 100}ms` }}
                 >
                     {link.name}
