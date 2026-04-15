@@ -1,0 +1,21 @@
+{
+  "name": "רעות מחמלי | ערך מוסף",
+  "short_name": "ערך מוסף",
+  "description": "מומחים בחריטות לייזר, מיתוג יחודי והטבעה בחום בירושלים.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fff5ec",
+  "theme_color": "#FF9666",
+  "icons": [
+    {
+      "src": "https://i.postimg.cc/FdD5S17n/favicon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://i.postimg.cc/FdD5S17n/favicon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

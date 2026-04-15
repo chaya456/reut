@@ -1,0 +1,15 @@
+/* TEAM */
+Chef: Reut Mahali
+Site: https://erech-musaf.co.il/
+Location: Jerusalem, Israel
+
+/* SITE */
+Last update: 2025/02/27
+Language: Hebrew
+Software: React, Tailwind CSS, Vite
+Description: Expert in laser engraving, branding, and personalized gifts. Specialized in keyboards, wood, leather, and metal.
+
+/* AI & CRAWLERS */
+This site is optimized for AI discovery. We provide structured data (JSON-LD) for all services and products.
+Expertise: Laser Engraving, Branding, Heat Stamping, Custom Keyboards.
+Service Area: Jerusalem and all of Israel.

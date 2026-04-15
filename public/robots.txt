@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+
+# AI Crawlers
+User-agent: GPTBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Claude-Bot
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+Sitemap: https://erech-musaf.co.il/sitemap.xml
