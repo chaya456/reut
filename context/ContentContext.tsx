@@ -27,7 +27,9 @@ const initialValueItems: ValueItem[] = [
     { id: 21, before: "https://i.postimg.cc/8PcgNQcg/21BEFORE.png", after: "https://i.postimg.cc/8ktg2Pp8/21AFTER.jpg" },
     { id: 22, before: "https://i.postimg.cc/XNQ6R7jj/22BEFORE.jpg", after: "https://i.postimg.cc/J7PCf4r8/22AFTER.jpg" },
     { id: 23, before: "https://i.postimg.cc/BQbf496R/23BEFORE.jpg", after: "https://i.postimg.cc/3JNQY5Nh/23AFTER.jpg" },
-    { id: 24, before: "https://i.postimg.cc/k4Cdm26H/24BEFORE.png", after: "https://i.postimg.cc/zXvY8ZvJ/24AFTER.png" }
+    { id: 24, before: "https://i.postimg.cc/k4Cdm26H/24BEFORE.png", after: "https://i.postimg.cc/zXvY8ZvJ/24AFTER.png" },
+    { id: 25, before: "https://i.postimg.cc/Pr61MgXR/%27nybh-lpny.jpg", after: "https://i.postimg.cc/YqXQx5rP/%27nybh-%27hry.jpg" },
+    { id: 26, before: "https://i.postimg.cc/qRX36YD2/mwrys-lpny.jpg", after: "https://i.postimg.cc/pTYF57cD/mwrys-%27hry.jpg" }
 ];
 
 const initialGalleryItems: GalleryItem[] = [
@@ -97,9 +99,12 @@ const initialRecommendations: Recommendation[] = [
       { id: 3, name: "פרומי", image: "https://i.postimg.cc/s2Qhh0rk/hmlzh-prwmy.png", color: "bg-white" },
       { id: 4, name: "רוחמה", image: "https://i.postimg.cc/8CJ66nGQ/hmlzh-rwhmh.png", color: "bg-brand-soft" },
       { id: 5, name: "רחלי", image: "https://i.postimg.cc/s2Qhh0zC/hmlzh-rhly.png", color: "bg-white" },
-      { id: 6, name: "חני", image: "https://i.postimg.cc/8C49sr9y/hmlzh-hny.jpg", color: "bg-brand-soft" },
-      { id: 7, name: "מירב", image: "https://i.postimg.cc/YSRZjmZb/hmlzh-myrb.jpg", color: "bg-white" },
+      { id: 6, name: "כבי", image: "https://i.postimg.cc/SNNmh56j/kby.png", color: "bg-brand-soft" },
+      { id: 7, name: "בנות הדסה", image: "https://i.postimg.cc/288CDJQ5/myrb-bnwt-hdsh.png", color: "bg-white" },
       { id: 8, name: "ריקי", image: "https://i.postimg.cc/1zB24N27/hmlzh-ryqy.jpg", color: "bg-brand-soft" },
+      { id: 9, name: "נחמן", image: "https://i.postimg.cc/dttJYX2h/nhmn-stl-%27syry-htqwwh.png", color: "bg-white" },
+      { id: 10, name: "סוסי זאפ", image: "https://i.postimg.cc/SNNmh56Q/swsy-zwp.png", color: "bg-brand-soft" },
+      { id: 11, name: "תהילה", image: "https://i.postimg.cc/wTT9pPXy/thylh-%27whl-%27sr.png", color: "bg-white" },
 ];
 
 const defaultContent: AppContent = {

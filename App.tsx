@@ -10,6 +10,7 @@ import AdminPanel from './components/AdminPanel';
 import AdminToolbar from './components/editable/AdminToolbar';
 import ProductsDirectory from './components/ProductsDirectory';
 import NewsletterModal from './components/NewsletterModal';
+import CouponModal from './components/CouponModal';
 import { products } from './data/products';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -176,6 +177,9 @@ const MainContent = ({ productSlug }: { productSlug?: string }) => {
 
             {/* Newsletter Modal */}
             <NewsletterModal />
+            
+            {/* Coupon Modal */}
+            <CouponModal />
         </div>
     );
 };

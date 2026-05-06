@@ -80,27 +80,34 @@ const ValueSection: React.FC<ValueSectionProps> = ({ id, data, title, subtitle }
             );
         });
 
-        const particleCount = 60; 
+        const particleCount = 20; // Reduced from 60 to 20 for better performance
+        const particles: HTMLDivElement[] = [];
+
         for (let i = 0; i < particleCount; i++) {
             const particle = document.createElement('div');
-            particle.className = 'absolute rounded-full bg-brand-dark opacity-0 pointer-events-none';
+            particle.className = 'absolute rounded-full bg-brand-dark opacity-0 pointer-events-none z-0';
             const size = Math.random() * 3 + 1; 
             particle.style.width = `${size}px`;
             particle.style.height = `${size}px`;
             particle.style.left = `${Math.random() * 100}%`;
-            particle.style.top = `${Math.random() * -20}%`;
+            particle.style.top = `${Math.random() * -10}%`;
             sectionRef.current?.appendChild(particle);
+            particles.push(particle);
 
             gsap.to(particle, {
-                y: "120vh", 
+                y: "110vh", 
                 x: `random(-20, 20)`,
-                opacity: `random(0.3, 0.8)`, 
-                duration: `random(5, 12)`, 
+                opacity: `random(0.2, 0.5)`, 
+                duration: `random(8, 15)`, 
                 delay: `random(0, 10)`, 
                 repeat: -1, 
                 ease: "none", 
             });
         }
+
+        return () => {
+            particles.forEach(p => p.remove());
+        };
     }, sectionRef);
     return () => ctx.revert();
   }, []);
@@ -206,7 +213,7 @@ const ValueSection: React.FC<ValueSectionProps> = ({ id, data, title, subtitle }
                     aspectRatio="aspect-auto w-full h-full"
                 />
             ) : (
-                <img src={activeItem.after} alt={`${sectionTitle} - אחרי מיתוג וחריטה`} className="w-full h-full object-cover" draggable={false} />
+                <img src={activeItem.after} alt={`${sectionTitle} - אחרי מיתוג וחריטה`} className="w-full h-full object-cover" draggable={false} loading="lazy" />
             )}
           </div>
           
@@ -222,7 +229,7 @@ const ValueSection: React.FC<ValueSectionProps> = ({ id, data, title, subtitle }
                     aspectRatio="aspect-auto w-full h-full"
                 />
             ) : (
-                <img src={activeItem.before} alt={`${sectionTitle} - לפני מיתוג וחריטה`} className="w-full h-full object-cover" draggable={false} />
+                <img src={activeItem.before} alt={`${sectionTitle} - לפני מיתוג וחריטה`} className="w-full h-full object-cover" draggable={false} loading="lazy" />
             )}
           </div>
 
@@ -283,8 +290,8 @@ const ValueSection: React.FC<ValueSectionProps> = ({ id, data, title, subtitle }
                                     ${activeItem.id === item.id ? 'border-brand-dark ring-2 ring-brand-light' : 'border-transparent hover:border-brand-dark'}
                                 `}
                             >
-                                <img src={item.before} className="w-full h-full object-cover absolute inset-0 group-hover:opacity-0 transition-opacity" alt={`${sectionTitle} - לפני`} />
-                                <img src={item.after} className="w-full h-full object-cover absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity" alt={`${sectionTitle} - אחרי`} />
+                                <img src={item.before} className="w-full h-full object-cover absolute inset-0 group-hover:opacity-0 transition-opacity" alt={`${sectionTitle} - לפני`} loading="lazy" />
+                                <img src={item.after} className="w-full h-full object-cover absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity" alt={`${sectionTitle} - אחרי`} loading="lazy" />
                             </div>
                         </div>
                     ))}

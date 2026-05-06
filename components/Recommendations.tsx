@@ -159,7 +159,7 @@ const Recommendations: React.FC<RecommendationsProps> = ({ id, data, title, subt
                                             aspectRatio="aspect-auto w-full h-full"
                                         />
                                     ) : (
-                                        <img src={rec.image} alt={`המלצה על חריטה ומיתוג - ${rec.name}`} className="w-full h-full object-contain object-center" />
+                                        <img src={rec.image} alt={`המלצה על חריטה ומיתוג - ${rec.name}`} className="w-full h-full object-contain object-center" loading="lazy" />
                                     )}
                                 </div>
                                 <div className="shrink-0 w-full border-t border-brand-dark/10 pt-2">

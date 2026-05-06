@@ -9,10 +9,20 @@ const NewsletterModal: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   useEffect(() => {
-    // Show modal after 7 seconds
-    const timer = setTimeout(() => { setIsOpen(true); }, 7000);
+    // Show modal after 10 seconds (delayed to allow coupon to show first)
+    const timer = setTimeout(() => { 
+        const hasSeenNewsletter = sessionStorage.getItem('hasSeenNewsletter');
+        if (!hasSeenNewsletter) {
+            setIsOpen(true); 
+        }
+    }, 10000);
     return () => clearTimeout(timer);
   }, []);
+
+  const handleClose = () => {
+    setIsOpen(false);
+    sessionStorage.setItem('hasSeenNewsletter', 'true');
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,7 +43,7 @@ const NewsletterModal: React.FC = () => {
         });
 
         // Assume success (no-cors makes response opaque)
-        setIsOpen(false);
+        handleClose();
         setName('');
         setEmail('');
         
@@ -49,11 +59,11 @@ const NewsletterModal: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
-      <div className="absolute inset-0 bg-dark-coal/20 backdrop-blur-sm transition-opacity duration-500" onClick={() => setIsOpen(false)}></div>
+      <div className="absolute inset-0 bg-dark-coal/20 backdrop-blur-sm transition-opacity duration-500" onClick={handleClose}></div>
 
       <div className="relative bg-white/50 backdrop-blur-xl border border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.1)] max-w-[min(800px,90vw)] w-full flex flex-col md:flex-row overflow-hidden animate-[popIn_0.8s_cubic-bezier(0.16,1,0.3,1)] ring-1 ring-white/50">
         
-        <button onClick={() => setIsOpen(false)} className="absolute top-4 right-4 z-20 text-dark-coal/60 hover:text-dark-coal transition-colors duration-300 text-xl bg-white/40 hover:bg-white/60 w-8 h-8 flex items-center justify-center rounded-full backdrop-blur-md" aria-label="Close">✕</button>
+        <button onClick={handleClose} className="absolute top-4 right-4 z-20 text-dark-coal/60 hover:text-dark-coal transition-colors duration-300 text-xl bg-white/40 hover:bg-white/60 w-8 h-8 flex items-center justify-center rounded-full backdrop-blur-md" aria-label="Close">✕</button>
 
         <div className="w-full md:w-[45%] h-[20vh] md:h-auto relative">
              <img src="https://i.postimg.cc/Jz0y86zL/tmwnt-hlwn-qwpz.jpg" alt="הצצה לקולקציה" className="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity duration-500" />

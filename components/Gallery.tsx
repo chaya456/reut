@@ -158,6 +158,7 @@ const Gallery: React.FC<GalleryProps> = ({ id, data, title, subtitle }) => {
                                 src={item.thumbnail} 
                                 alt={`חריטה ומיתוג אישי - ${item.title}`}
                                 className="absolute inset-0 w-full h-full object-cover"
+                                loading="lazy"
                             />
                         )}
                         <div className="absolute inset-0 bg-brand-dark/80 opacity-0 transition-opacity duration-300 group-hover:opacity-100 flex flex-col items-center justify-center text-white p-6 text-center">
