@@ -51,7 +51,7 @@ const CouponModal: React.FC = () => {
         <div className="p-8 text-center relative z-10">
             <div className="mb-6 inline-flex flex-col items-center">
                 <div className="w-8 h-[1px] bg-dark-coal mb-1"></div>
-                <span className="text-dark-coal uppercase tracking-[0.2em] text-[10px] font-bold">הטבה בלעדית</span>
+                <span className="text-dark-coal uppercase tracking-[0.05em] text-[11px] font-bold">שת"פ מיוחד עם בנק מרכנתיל</span>
                 <div className="w-8 h-[1px] bg-dark-coal mt-1"></div>
             </div>
             
@@ -64,7 +64,7 @@ const CouponModal: React.FC = () => {
             <p className="text-base text-dark-coal/80 mb-6 leading-relaxed font-medium">
                 להזמנות עד 400 ש"ח
                 <br />
-                <span className="block mt-3 text-xl font-bold text-dark-coal tracking-normal">קוד קופון מרכנתיל 30</span>
+                <span className="block mt-3 text-xl font-bold text-dark-coal tracking-normal">קוד קופון: מרכנתיל30</span>
             </p>
             
             <div className="flex flex-col gap-3">

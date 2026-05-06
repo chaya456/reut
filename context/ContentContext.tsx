@@ -102,8 +102,8 @@ const initialRecommendations: Recommendation[] = [
       { id: 6, name: "כבי", image: "https://i.postimg.cc/SNNmh56j/kby.png", color: "bg-brand-soft" },
       { id: 7, name: "בנות הדסה", image: "https://i.postimg.cc/288CDJQ5/myrb-bnwt-hdsh.png", color: "bg-white" },
       { id: 8, name: "ריקי", image: "https://i.postimg.cc/1zB24N27/hmlzh-ryqy.jpg", color: "bg-brand-soft" },
-      { id: 9, name: "נחמן", image: "https://i.postimg.cc/dttJYX2h/nhmn-stl-%27syry-htqwwh.png", color: "bg-white" },
-      { id: 10, name: "סוסי זאפ", image: "https://i.postimg.cc/SNNmh56Q/swsy-zwp.png", color: "bg-brand-soft" },
+      { id: 9, name: 'נחמן סטאל מנכ"ל אסירי התקוה', image: "https://i.postimg.cc/dttJYX2h/nhmn-stl-%27syry-htqwwh.png", color: "bg-white" },
+      { id: 10, name: "שושי צוף גרפיקה", image: "https://i.postimg.cc/SNNmh56Q/swsy-zwp.png", color: "bg-brand-soft" },
       { id: 11, name: "תהילה", image: "https://i.postimg.cc/wTT9pPXy/thylh-%27whl-%27sr.png", color: "bg-white" },
 ];
 
