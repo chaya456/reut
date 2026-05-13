@@ -184,6 +184,8 @@ const MainContent = ({ productSlug }: { productSlug?: string }) => {
     );
 };
 
+import { AccessibilityStatement, PrivacyPolicy, TermsOfUse } from './components/LegalPage';
+
 const App: React.FC = () => {
   const [currentPath, setCurrentPath] = useState(window.location.pathname);
 
@@ -208,6 +210,18 @@ const App: React.FC = () => {
       const encodedSlug = currentPath.split('/product/')[1];
       const slug = decodeURIComponent(encodedSlug);
       return <MainContent productSlug={slug} />;
+    }
+
+    if (currentPath === '/accessibility') {
+      return <AccessibilityStatement />;
+    }
+
+    if (currentPath === '/privacy') {
+      return <PrivacyPolicy />;
+    }
+
+    if (currentPath === '/terms') {
+      return <TermsOfUse />;
     }
     
     return <MainContent />;

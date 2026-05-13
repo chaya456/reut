@@ -76,8 +76,19 @@ const Navbar: React.FC = () => {
         return;
     }
 
-    // Special case for Contact: Scroll to the form/content area, not the header
-    const targetId = id === 'contact' ? 'contact-form-fields' : id;
+    // Special case for Contact: Open Gmail directly
+    if (id === 'contact') {
+        const emailRecipient = "c0548496967@gmail.com";
+        const emailSubject = "גם אני רוצה אתר עם תוצאות";
+        const emailBody = `היי
+ראיתי את האתר של רעות
+אני רוצה אתר שיביא תוצאות`;
+        const gmailLink = `https://mail.google.com/mail/?view=cm&fs=1&to=${emailRecipient}&su=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+        window.open(gmailLink, '_blank');
+        return;
+    }
+
+    const targetId = id;
     const element = document.getElementById(targetId);
     
     // If exact target not found (e.g. contact-form-fields missing), try original ID
