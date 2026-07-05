@@ -9,6 +9,7 @@ import SectionRenderer from './components/SectionRenderer';
 import AdminPanel from './components/AdminPanel';
 import AdminToolbar from './components/editable/AdminToolbar';
 import ProductsDirectory from './components/ProductsDirectory';
+import PriceCalculator from './components/PriceCalculator';
 import NewsletterModal from './components/NewsletterModal';
 import { products } from './data/products';
 
@@ -200,6 +201,10 @@ const App: React.FC = () => {
   const renderRoute = () => {
     if (currentPath === '/products') {
       return <ProductsDirectory />;
+    }
+
+    if (currentPath === '/calculator') {
+      return <PriceCalculator />;
     }
     
     if (currentPath.startsWith('/product/')) {

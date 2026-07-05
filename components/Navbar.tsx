@@ -60,12 +60,19 @@ const Navbar: React.FC = () => {
     { name: 'ערך מוסף', id: 'comparison-main' },
     { name: 'גלריה', id: 'gallery-main' },
     { name: 'המלצות', id: 'testimonials-main' },
+    { name: 'מחשבון מחירים', id: 'calculator' },
     { name: 'צור קשר', id: 'contact' },
   ];
 
   const scrollToSection = (id: string) => {
     setIsOpen(false);
-    
+
+    // Price calculator: navigate to its own route
+    if (id === 'calculator') {
+      window.location.href = '/calculator';
+      return;
+    }
+
     if (window.location.pathname !== '/') {
       window.location.href = id === 'home' ? '/' : `/#${id}`;
       return;

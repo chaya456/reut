@@ -89,6 +89,25 @@ export interface ProcessStep {
 
 export type Section = HeroSection | ComparisonSection | GallerySection | TestimonialSection | AboutSection;
 
+export interface PricingMaterial {
+  id: string;
+  name: string;
+  method: 'xtool' | 'cricut';
+  first: number;   // מילה ראשונה + אלמנט מתנה
+  upTo5: number;   // עד 5 מילים / לוגו וקטורי
+  extra: number;   // כל מילה נוספת (מהמילה השישית)
+  large: number;   // כתב גדול - מחיר למילה
+}
+
+export interface PricingData {
+  materials: PricingMaterial[];
+  image6: number;        // חריטת תמונה / דמות עד 6 ס"מ
+  image10: number;       // חריטת תמונה / דמות עד 10 ס"מ
+  keyboard: number;      // חריטת מקלדת
+  hourlyRate: number;    // עיצוב מיוחד - מחיר לשעה
+  bulkThreshold: number; // מעל כמות זו = הצעה מותאמת אישית
+}
+
 export interface AppContent {
   hero: HeroContent;
   valueSection: ValueItem[];
@@ -96,4 +115,5 @@ export interface AppContent {
   gallery: GalleryItem[];
   recommendations: Recommendation[];
   sections: Section[];
+  pricing?: PricingData;
 }

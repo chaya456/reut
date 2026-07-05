@@ -4,6 +4,7 @@ import { useContent } from '../context/ContentContext';
 import { GalleryItem } from '../types';
 import EditableText from './editable/EditableText';
 import EditableImage from './editable/EditableImage';
+import LazyImage from './LazyImage';
 
 interface GalleryProps {
     id?: string;
@@ -154,11 +155,10 @@ const Gallery: React.FC<GalleryProps> = ({ id, data, title, subtitle }) => {
                                 aspectRatio="aspect-auto w-full h-full"
                             />
                         ) : (
-                            <img 
-                                src={item.thumbnail} 
+                            <LazyImage
+                                src={item.thumbnail}
                                 alt={`חריטה ומיתוג אישי - ${item.title}`}
                                 className="absolute inset-0 w-full h-full object-cover"
-                                loading="lazy"
                             />
                         )}
                         <div className="absolute inset-0 bg-brand-dark/80 opacity-0 transition-opacity duration-300 group-hover:opacity-100 flex flex-col items-center justify-center text-white p-6 text-center">

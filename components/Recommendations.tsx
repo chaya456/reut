@@ -5,6 +5,7 @@ import { useContent } from '../context/ContentContext';
 import { Recommendation } from '../types';
 import EditableText from './editable/EditableText';
 import EditableImage from './editable/EditableImage';
+import LazyImage from './LazyImage';
 
 interface RecommendationsProps {
     id?: string;
@@ -108,9 +109,26 @@ const Recommendations: React.FC<RecommendationsProps> = ({ id, data, title, subt
                     עם התמחות מיוחדת בחריטת לייזר
                 </p>
                 
-                <p className="text-[clamp(20px,2.2vw,26px)] leading-snug animate-text">
-                    <span className="text-[#FCA872] font-bold">יש לכם מוצר שמחכה לקבל ערך? בואו נעשה את זה ביחד:)</span>
+                <p className="text-[clamp(20px,2.2vw,26px)] leading-snug animate-text mb-[3vh]">
+                    <span className="text-[#FCA872] font-bold">יש לכם מוצר שמחכה לקבל ערך? בואו למחשבון החכם ונחשב את זה ביחד:)</span>
                 </p>
+
+                <a
+                    href="/calculator"
+                    className="animate-text inline-flex items-center gap-3 bg-brand-dark text-white px-8 py-4 rounded-full font-bold text-[clamp(18px,1.8vw,22px)] shadow-lg hover:bg-dark-coal hover:scale-105 transition-all duration-300"
+                >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="4" y="2" width="16" height="20" rx="2"></rect>
+                        <line x1="8" y1="6" x2="16" y2="6"></line>
+                        <line x1="8" y1="10" x2="10" y2="10"></line>
+                        <line x1="12" y1="10" x2="14" y2="10"></line>
+                        <line x1="8" y1="14" x2="10" y2="14"></line>
+                        <line x1="12" y1="14" x2="14" y2="14"></line>
+                        <line x1="8" y1="18" x2="10" y2="18"></line>
+                        <line x1="12" y1="18" x2="14" y2="18"></line>
+                    </svg>
+                    למחשבון החכם
+                </a>
             </div>
 
             <div className="max-w-[1400px] w-full mx-auto px-[5vw] text-center mb-[6vh] relative z-20">
@@ -159,7 +177,7 @@ const Recommendations: React.FC<RecommendationsProps> = ({ id, data, title, subt
                                             aspectRatio="aspect-auto w-full h-full"
                                         />
                                     ) : (
-                                        <img src={rec.image} alt={`המלצה על חריטה ומיתוג - ${rec.name}`} className="w-full h-full object-contain object-center" loading="lazy" />
+                                        <LazyImage src={rec.image} alt={`המלצה על חריטה ומיתוג - ${rec.name}`} className="w-full h-full object-contain object-center" />
                                     )}
                                 </div>
                                 <div className="shrink-0 w-full border-t border-brand-dark/10 pt-2">

@@ -5,6 +5,7 @@ import { useContent } from '../context/ContentContext';
 import { ValueItem } from '../types';
 import EditableText from './editable/EditableText';
 import EditableImage from './editable/EditableImage';
+import LazyImage from './LazyImage';
 
 interface ValueSectionProps {
     id?: string;
@@ -62,8 +63,9 @@ const ValueSection: React.FC<ValueSectionProps> = ({ id, data, title, subtitle }
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Safe carousel items logic (duplicate for loop if needed, but handle empty)
-  const carouselItems = galleryData.length > 0 ? [...galleryData, ...galleryData] : [];
+  // Carousel items — no duplication (duplicating doubled the number of images the
+  // browser had to download; the arrows already clamp to the real range).
+  const carouselItems = galleryData;
   const maxIndex = Math.max(0, carouselItems.length - itemsPerView);
 
   useEffect(() => {
@@ -290,8 +292,8 @@ const ValueSection: React.FC<ValueSectionProps> = ({ id, data, title, subtitle }
                                     ${activeItem.id === item.id ? 'border-brand-dark ring-2 ring-brand-light' : 'border-transparent hover:border-brand-dark'}
                                 `}
                             >
-                                <img src={item.before} className="w-full h-full object-cover absolute inset-0 group-hover:opacity-0 transition-opacity" alt={`${sectionTitle} - לפני`} loading="lazy" />
-                                <img src={item.after} className="w-full h-full object-cover absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity" alt={`${sectionTitle} - אחרי`} loading="lazy" />
+                                <LazyImage src={item.before} className="w-full h-full object-cover absolute inset-0 group-hover:opacity-0 transition-opacity" alt={`${sectionTitle} - לפני`} />
+                                <LazyImage src={item.after} className="w-full h-full object-cover absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity" alt={`${sectionTitle} - אחרי`} />
                             </div>
                         </div>
                     ))}

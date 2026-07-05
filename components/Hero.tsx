@@ -106,10 +106,12 @@ const Hero: React.FC<HeroProps> = ({ data }) => {
       >
         {/* BACKGROUND LAYERS */}
         <div className="absolute inset-0 w-full h-full z-0">
-            <img 
-                src="https://i.postimg.cc/cHrJ308q/after.jpg" 
-                alt="חריטה ומיתוג על מוצרים - אחרי" 
-                className="w-full h-full object-cover object-center" 
+            <img
+                src="https://i.postimg.cc/cHrJ308q/after.jpg"
+                alt="חריטה ומיתוג על מוצרים - אחרי"
+                className="w-full h-full object-cover object-center"
+                fetchPriority="high"
+                decoding="async"
             />
         </div>
 

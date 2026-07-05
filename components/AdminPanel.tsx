@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { useContent } from '../context/ContentContext';
+import { useContent, defaultPricing } from '../context/ContentContext';
 
 interface AdminPanelProps {
   isOpen: boolean;
@@ -13,10 +13,12 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
       addGalleryItem, updateGalleryItem, deleteGalleryItem,
       addRecommendation, updateRecommendation, deleteRecommendation,
       addValueItem, updateValueItem, deleteValueItem,
-      resetContent, logout, saveNow
+      updatePricing, resetContent, logout, saveNow
   } = useContent();
 
-  const [activeTab, setActiveTab] = useState<'hero' | 'about' | 'value' | 'gallery' | 'recommendations'>('hero');
+  const pricing = content.pricing || defaultPricing;
+
+  const [activeTab, setActiveTab] = useState<'hero' | 'about' | 'value' | 'gallery' | 'recommendations' | 'pricing'>('hero');
   const [editingItem, setEditingItem] = useState<any>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -59,6 +61,13 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
     const ok = await saveNow();
     setIsSaving(false);
     alert(ok ? 'השינויים נשמרו בהצלחה' : 'שגיאה בשמירה. ודאי שאת מחוברת ונסי שוב.');
+  };
+
+  // עדכון שדה מחיר של חומר מסוים במחירון
+  const updateMaterialPrice = (id: string, field: 'first' | 'upTo5' | 'extra' | 'large', value: number) => {
+    updatePricing({
+      materials: pricing.materials.map(m => m.id === id ? { ...m, [field]: value } : m),
+    });
   };
 
   return (
@@ -109,11 +118,17 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
             >
                 גלריה
             </button>
-            <button 
+            <button
                 onClick={() => { setActiveTab('recommendations'); setEditingItem(null); }}
                 className={`px-6 py-4 font-bold transition-colors whitespace-nowrap ${activeTab === 'recommendations' ? 'bg-white text-brand-dark border-t-4 border-brand-dark' : 'text-gray-500 hover:bg-gray-100'}`}
             >
                 המלצות
+            </button>
+            <button
+                onClick={() => { setActiveTab('pricing'); setEditingItem(null); }}
+                className={`px-6 py-4 font-bold transition-colors whitespace-nowrap ${activeTab === 'pricing' ? 'bg-white text-brand-dark border-t-4 border-brand-dark' : 'text-gray-500 hover:bg-gray-100'}`}
+            >
+                מחירון
             </button>
         </div>
 
@@ -489,6 +504,77 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                                 </div>
                             </div>
                         ))}
+                    </div>
+                </div>
+            )}
+
+            {/* PRICING EDITOR */}
+            {activeTab === 'pricing' && (
+                <div className="space-y-6">
+                    <div className="bg-blue-50 p-4 rounded-lg border border-blue-100 text-sm text-blue-800">
+                        <strong>הנחיות:</strong> כאן ניתן לעדכן את המחירים המופיעים במחשבון התמחור באתר. הזיני את המחיר בשקלים. השינויים נשמרים אוטומטית ומתעדכנים מיד במחשבון.
+                    </div>
+
+                    {/* טבלת חומרים */}
+                    <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 overflow-x-auto">
+                        <h3 className="font-bold text-xl mb-4 border-b pb-2 text-brand-dark">מחירי חריטה / חיתוך לפי חומר (₪)</h3>
+                        <table className="w-full text-sm min-w-[560px]">
+                            <thead>
+                                <tr className="text-gray-600 border-b border-gray-200">
+                                    <th className="text-right p-2 font-bold">חומר</th>
+                                    <th className="p-2 font-bold">מילה + אלמנט</th>
+                                    <th className="p-2 font-bold">עד 5 מילים / לוגו</th>
+                                    <th className="p-2 font-bold">מילה נוספת</th>
+                                    <th className="p-2 font-bold">כתב גדול (למילה)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {pricing.materials.map(m => (
+                                    <tr key={m.id} className="border-b border-gray-100 hover:bg-gray-50">
+                                        <td className="p-2 text-right">
+                                            <div className="font-bold text-gray-900">{m.name}</div>
+                                            <div className="text-[11px] text-gray-400">{m.method === 'xtool' ? 'לייזר' : 'קריקט'}</div>
+                                        </td>
+                                        {(['first', 'upTo5', 'extra', 'large'] as const).map(field => (
+                                            <td key={field} className="p-2">
+                                                <input
+                                                    type="number"
+                                                    min={0}
+                                                    value={m[field]}
+                                                    onChange={e => updateMaterialPrice(m.id, field, Number(e.target.value) || 0)}
+                                                    className="w-20 p-2 border border-gray-300 rounded bg-white text-gray-900 text-center focus:ring-2 focus:ring-brand-dark focus:outline-none"
+                                                />
+                                            </td>
+                                        ))}
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {/* מחירים קבועים */}
+                    <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                        <h3 className="font-bold text-xl mb-4 border-b pb-2 text-brand-dark">מחירים קבועים ושירותים (₪)</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {([
+                                { key: 'image6', label: 'חריטת תמונה / דמות - עד 6 ס"מ' },
+                                { key: 'image10', label: 'חריטת תמונה / דמות - עד 10 ס"מ' },
+                                { key: 'keyboard', label: 'חריטת מקלדת' },
+                                { key: 'hourlyRate', label: 'עיצוב מיוחד - מחיר לשעה' },
+                                { key: 'bulkThreshold', label: 'כמות שמעליה מוצגת "הצעה מותאמת אישית"' },
+                            ] as { key: 'image6' | 'image10' | 'keyboard' | 'hourlyRate' | 'bulkThreshold'; label: string }[]).map(item => (
+                                <div key={item.key}>
+                                    <label className="block text-sm font-bold text-gray-700 mb-1">{item.label}</label>
+                                    <input
+                                        type="number"
+                                        min={0}
+                                        value={pricing[item.key]}
+                                        onChange={e => updatePricing({ [item.key]: Number(e.target.value) || 0 })}
+                                        className="w-full p-3 border border-gray-300 rounded bg-white text-gray-900 focus:ring-2 focus:ring-brand-dark focus:outline-none"
+                                    />
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
             )}

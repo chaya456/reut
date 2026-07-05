@@ -1,7 +1,28 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { AppContent, GalleryItem, Recommendation, ValueItem } from '../types';
+import { AppContent, GalleryItem, PricingData, Recommendation, ValueItem } from '../types';
 import { saveContentToSanity, loadContentFromSanity, verifyPassword } from '../services/sanityService';
+
+// מחירון ברירת מחדל - מבוסס על קובץ "תמחור רעות".
+// ניתן לעריכה מלוח הבקרה (טאב "מחירון"). המחירים נשמרים ל-Sanity יחד עם שאר התוכן.
+export const defaultPricing: PricingData = {
+  materials: [
+    { id: 'wood',     name: 'עץ',      method: 'xtool',  first: 30, upTo5: 60,  extra: 15, large: 60 },
+    { id: 'silicone', name: 'סיליקון', method: 'xtool',  first: 30, upTo5: 60,  extra: 15, large: 60 },
+    { id: 'metal',    name: 'מתכת',    method: 'xtool',  first: 45, upTo5: 90,  extra: 20, large: 90 },
+    { id: 'plastic',  name: 'פלסטיק',  method: 'xtool',  first: 40, upTo5: 80,  extra: 17, large: 80 },
+    { id: 'food',     name: 'אוכל',     method: 'xtool',  first: 40, upTo5: 80,  extra: 17, large: 80 },
+    { id: 'leather',  name: 'עור',      method: 'xtool',  first: 30, upTo5: 60,  extra: 15, large: 60 },
+    { id: 'paper',    name: 'נייר',     method: 'cricut', first: 35, upTo5: 80,  extra: 17, large: 80 },
+    { id: 'vinyl',    name: 'טפט וניל', method: 'cricut', first: 40, upTo5: 90,  extra: 20, large: 90 },
+    { id: 'htv',      name: 'HTV',      method: 'cricut', first: 45, upTo5: 120, extra: 25, large: 120 },
+  ],
+  image6: 120,
+  image10: 250,
+  keyboard: 180,
+  hourlyRate: 250,
+  bulkThreshold: 25,
+};
 
 // Default / Initial Data
 const initialValueItems: ValueItem[] = [
@@ -173,7 +194,8 @@ const defaultContent: AppContent = {
               items: initialRecommendations
           }
       }
-  ]
+  ],
+  pricing: defaultPricing
 };
 
 interface ContentContextType {
@@ -192,6 +214,8 @@ interface ContentContextType {
   addRecommendation: (item: Recommendation) => void;
   updateRecommendation: (id: number, item: Partial<Recommendation>) => void;
   deleteRecommendation: (id: number) => void;
+  // Pricing
+  updatePricing: (data: Partial<PricingData>) => void;
   resetContent: () => void;
   isAdmin: boolean;
   isEditMode: boolean;
@@ -435,6 +459,14 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
     });
   };
 
+  // --- Pricing Logic ---
+  const updatePricing = (data: Partial<PricingData>) => {
+    setContent(prev => ({
+        ...prev,
+        pricing: { ...(prev.pricing || defaultPricing), ...data }
+    }));
+  };
+
   const resetContent = () => {
       if(window.confirm("האם את בטוחה שאת רוצה לאפס את כל הנתונים לברירת המחדל?")) {
         setContent(defaultContent);
@@ -455,6 +487,7 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
         addRecommendation,
         updateRecommendation,
         deleteRecommendation,
+        updatePricing,
         resetContent,
         isAdmin,
         login,
