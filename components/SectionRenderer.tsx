@@ -22,7 +22,7 @@ const SectionRenderer: React.FC<SectionRendererProps> = ({ section }) => {
       case 'about':
         return (
           <>
-            <AboutSection id={section.id} title={section.title || ''} text={section.data.text} steps={section.data.steps} summary={section.data.summary} />
+            <AboutSection id={section.id} title={section.title || ''} text={section.data.text} summary={section.data.summary} />
             <Marquee />
           </>
         );

@@ -11,9 +11,10 @@ import { useContent, defaultPricing } from '../context/ContentContext';
 
 type Method = 'xtool' | 'cricut';
 
+// שמות ידידותיים ללקוח - בלי שמות המכונות
 const METHOD_LABEL: Record<Method, string> = {
-  xtool: 'חריטת לייזר (xtool)',
-  cricut: 'חיתוך (קריקט)',
+  xtool: 'חריטה',
+  cricut: 'חיתוך',
 };
 
 // כתובת המייל לפניית לקוח
@@ -30,6 +31,7 @@ const PriceCalculator: React.FC = () => {
   const [workType, setWorkType] = useState<WorkType>('text');
 
   // --- טקסט / מילים ---
+  const [method, setMethod] = useState<Method>('xtool'); // חריטה / חיתוך
   const [materialId, setMaterialId] = useState<string>(MATERIALS[0].id);
   const [pkg, setPkg] = useState<Package>('upTo5');
   const [words, setWords] = useState<number>(3);
@@ -45,7 +47,20 @@ const PriceCalculator: React.FC = () => {
     document.title = 'מחשבון תמחור | רעות מחמלי - ערך מוסף';
   }, []);
 
-  const material = MATERIALS.find(m => m.id === materialId) || MATERIALS[0];
+  // רק החומרים הרלוונטיים לשיטה שנבחרה (בחיתוך יש פחות חומרים מבחריטה)
+  const materialsForMethod = MATERIALS.filter(m => m.method === method);
+  const material = materialsForMethod.find(m => m.id === materialId) || materialsForMethod[0];
+
+  // מעבר בין חריטה/חיתוך - בוחר אוטומטית את החומר הראשון הזמין לשיטה
+  const changeMethod = (m: Method) => {
+    setMethod(m);
+    const first = MATERIALS.find(mat => mat.method === m);
+    if (first) setMaterialId(first.id);
+  };
+
+  // האם קיימת שיטת חיתוך בכלל (יש חומרים שמתאימים לחיתוך)
+  const hasCricut = MATERIALS.some(m => m.method === 'cricut');
+  const hasXtool = MATERIALS.some(m => m.method === 'xtool');
 
   // חישוב מחיר ליחידה בודדת
   const unitPrice = useMemo(() => {
@@ -75,8 +90,8 @@ const PriceCalculator: React.FC = () => {
     if (workType === 'text') {
       const pkgLabel = pkg === 'first' ? 'מילה אחת + אלמנט מתנה' : pkg === 'large' ? 'כתב גדול' : 'עד 5 מילים / לוגו';
       details =
-        `סוג עבודה: טקסט\n` +
-        `חומר: ${material.name} (${METHOD_LABEL[material.method]})\n` +
+        `סוג עבודה: ${METHOD_LABEL[method]} על טקסט\n` +
+        `חומר: ${material.name}\n` +
         `עיצוב: ${pkgLabel}\n` +
         (pkg !== 'first' ? `מספר מילים: ${Math.max(1, words)}\n` : '');
     } else if (workType === 'image') {
@@ -92,7 +107,7 @@ const PriceCalculator: React.FC = () => {
     const subject = 'פנייה מהמחשבון באתר - הזמנה חדשה';
     const body = `היי רעות,\nהשתמשתי במחשבון באתר וזו ההזמנה שלי:\n\n${details}\n\nנשמח לתאם. תודה!`;
     return `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  }, [workType, material, pkg, words, imageSize, qty, total, isBulk]);
+  }, [workType, method, material, pkg, words, imageSize, qty, total, isBulk]);
 
   return (
     <div className="min-h-screen bg-brand-soft font-sans flex flex-col" dir="rtl">
@@ -148,16 +163,41 @@ const PriceCalculator: React.FC = () => {
           {/* שלב 2 - טקסט */}
           {workType === 'text' && (
             <>
-              {/* חומר */}
+              {/* חריטה / חיתוך */}
+              {hasCricut && hasXtool && (
+                <div>
+                  <label className="block text-sm font-bold text-dark-coal/60 mb-3 tracking-wide">חריטה או חיתוך?</label>
+                  <div className="grid grid-cols-2 gap-3">
+                    {([
+                      { id: 'xtool', label: 'חריטה' },
+                      { id: 'cricut', label: 'חיתוך' },
+                    ] as { id: Method; label: string }[]).map(opt => (
+                      <button
+                        key={opt.id}
+                        onClick={() => changeMethod(opt.id)}
+                        className={`py-4 rounded-xl font-bold text-base transition-all duration-300 border-2 ${
+                          method === opt.id
+                            ? 'bg-brand-dark text-white border-brand-dark shadow-md'
+                            : 'bg-brand-soft text-dark-coal border-transparent hover:border-brand-light'
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* חומר - רק החומרים הרלוונטיים לשיטה שנבחרה */}
               <div>
                 <label className="block text-sm font-bold text-dark-coal/60 mb-3 tracking-wide">על איזה חומר?</label>
-                <div className="grid grid-cols-3 sm:grid-cols-3 gap-3">
-                  {MATERIALS.map(m => (
+                <div className="grid grid-cols-3 gap-3">
+                  {materialsForMethod.map(m => (
                     <button
                       key={m.id}
                       onClick={() => setMaterialId(m.id)}
                       className={`py-3 px-2 rounded-xl font-bold text-sm transition-all duration-300 border-2 ${
-                        materialId === m.id
+                        material.id === m.id
                           ? 'bg-brand-dark text-white border-brand-dark shadow-md'
                           : 'bg-brand-soft text-dark-coal border-transparent hover:border-brand-light'
                       }`}
@@ -166,9 +206,6 @@ const PriceCalculator: React.FC = () => {
                     </button>
                   ))}
                 </div>
-                <p className="text-xs text-dark-coal/50 mt-2">
-                  שיטת עבודה: <span className="font-bold text-brand-dark">{METHOD_LABEL[material.method]}</span>
-                </p>
               </div>
 
               {/* סוג העבודה על הטקסט */}
@@ -176,10 +213,10 @@ const PriceCalculator: React.FC = () => {
                 <label className="block text-sm font-bold text-dark-coal/60 mb-3 tracking-wide">מה כולל העיצוב?</label>
                 <div className="space-y-3">
                   {([
-                    { id: 'first', title: 'מילה אחת + אלמנט מתנה', desc: 'מילה בודדת עם אלמנט קטן (עד רוחב 2 ס"מ)', price: material.first },
-                    { id: 'upTo5', title: 'עד 5 מילים / לוגו', desc: 'משפט קצר או לוגו וקטורי, כל מילה נוספת בתוספת תשלום', price: material.upTo5 },
-                    { id: 'large', title: 'כתב גדול', desc: 'אותיות גדולות — מחיר לכל מילה', price: material.large },
-                  ] as { id: Package; title: string; desc: string; price: number }[]).map(opt => (
+                    { id: 'first', title: 'מילה אחת + אלמנט מתנה', desc: 'מילה בודדת עם אלמנט קטן (עד רוחב 2 ס"מ)' },
+                    { id: 'upTo5', title: 'עד 5 מילים / לוגו', desc: 'משפט קצר או לוגו וקטורי, כל מילה נוספת בתוספת תשלום' },
+                    { id: 'large', title: 'כתב גדול', desc: 'אותיות גדולות — מחיר לכל מילה' },
+                  ] as { id: Package; title: string; desc: string }[]).map(opt => (
                     <button
                       key={opt.id}
                       onClick={() => setPkg(opt.id)}
@@ -221,9 +258,9 @@ const PriceCalculator: React.FC = () => {
               <label className="block text-sm font-bold text-dark-coal/60 mb-3 tracking-wide">גודל התמונה / הדמות</label>
               <div className="grid grid-cols-2 gap-3">
                 {([
-                  { id: '6', label: 'עד 6 ס"מ', price: pricing.image6 },
-                  { id: '10', label: 'עד 10 ס"מ', price: pricing.image10 },
-                ] as { id: '6' | '10'; label: string; price: number }[]).map(opt => (
+                  { id: '6', label: 'עד 6 ס"מ' },
+                  { id: '10', label: 'עד 10 ס"מ' },
+                ] as { id: '6' | '10'; label: string }[]).map(opt => (
                   <button
                     key={opt.id}
                     onClick={() => setImageSize(opt.id)}
@@ -234,7 +271,6 @@ const PriceCalculator: React.FC = () => {
                     }`}
                   >
                     {opt.label}
-                    <span className="block text-sm font-normal opacity-80">{opt.price} ₪</span>
                   </button>
                 ))}
               </div>
@@ -244,7 +280,7 @@ const PriceCalculator: React.FC = () => {
           {/* שלב 2 - מקלדת */}
           {workType === 'keyboard' && (
             <div className="bg-brand-soft rounded-xl p-5 text-center">
-              <p className="text-dark-coal font-medium">חריטת מקלדת מלאה במחיר קבוע של <span className="font-extrabold text-brand-dark">{pricing.keyboard} ₪</span></p>
+              <p className="text-dark-coal font-medium">חריטת מקלדת מלאה במחיר קבוע. בחרו כמות למטה וקבלו את המחיר.</p>
             </div>
           )}
 
@@ -286,17 +322,25 @@ const PriceCalculator: React.FC = () => {
             <p>• אין אחריות על המוצר. הגעה בתיאום מראש, איסוף המוצר באותו היום.</p>
           </div>
 
-          {/* צור קשר - שליחת מייל עם סיכום ההזמנה */}
-          <a
-            href={emailHref}
-            className="flex items-center justify-center gap-3 w-full text-center bg-brand-dark text-white py-4 rounded-xl font-bold text-lg hover:bg-dark-coal transition-all duration-300 shadow-md"
-          >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="2" y="4" width="20" height="16" rx="2"></rect>
-              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
-            </svg>
-            רוצה להזמין? שליחת פנייה במייל
-          </a>
+          {/* הצעת מחיר מותאמת אישית לכמויות (מעל 25 יחידות) + כפתור שליחת מייל */}
+          <div className="bg-brand-soft rounded-2xl p-6 text-center border border-brand-light/40">
+            <p className="font-extrabold text-dark-coal text-lg mb-1">
+              מזמינים מעל {pricing.bulkThreshold} יחידות?
+            </p>
+            <p className="text-sm text-dark-coal/70 mb-5">
+              לכמויות גדולות (תבנית חוזרת) יש הצעת מחיר מותאמת אישית ומשתלמת. השאירו פרטים ונחזור אליכם.
+            </p>
+            <a
+              href={emailHref}
+              className="inline-flex items-center justify-center gap-3 bg-brand-dark text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-dark-coal transition-all duration-300 shadow-md"
+            >
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+              </svg>
+              קבלת הצעת מחיר במייל
+            </a>
+          </div>
         </div>
       </main>
 

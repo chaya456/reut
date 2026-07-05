@@ -82,7 +82,12 @@ const ValueSection: React.FC<ValueSectionProps> = ({ id, data, title, subtitle }
             );
         });
 
-        const particleCount = 20; // Reduced from 60 to 20 for better performance
+        // Floating particles are purely decorative. They run an infinite animation, so
+        // we skip them on mobile and when the user prefers reduced motion, and keep the
+        // count low on desktop — this keeps scrolling smooth on weaker devices.
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const isMobile = window.innerWidth < 768;
+        const particleCount = prefersReducedMotion || isMobile ? 0 : 12;
         const particles: HTMLDivElement[] = [];
 
         for (let i = 0; i < particleCount; i++) {

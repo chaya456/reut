@@ -10,6 +10,7 @@ import AdminPanel from './components/AdminPanel';
 import AdminToolbar from './components/editable/AdminToolbar';
 import ProductsDirectory from './components/ProductsDirectory';
 import PriceCalculator from './components/PriceCalculator';
+import FloatingCalcButton from './components/FloatingCalcButton';
 import NewsletterModal from './components/NewsletterModal';
 import { products } from './data/products';
 
@@ -177,6 +178,9 @@ const MainContent = ({ productSlug }: { productSlug?: string }) => {
 
             {/* Newsletter Modal */}
             <NewsletterModal />
+
+            {/* Floating button to the price calculator (shown across the main site) */}
+            <FloatingCalcButton />
         </div>
     );
 };

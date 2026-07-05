@@ -110,7 +110,6 @@ const Hero: React.FC<HeroProps> = ({ data }) => {
                 src="https://i.postimg.cc/cHrJ308q/after.jpg"
                 alt="חריטה ומיתוג על מוצרים - אחרי"
                 className="w-full h-full object-cover object-center"
-                fetchPriority="high"
                 decoding="async"
             />
         </div>

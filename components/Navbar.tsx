@@ -110,8 +110,8 @@ const Navbar: React.FC = () => {
   return (
     <nav 
       className={`fixed top-0 left-0 right-0 z-[200] transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] dir-rtl ${
-        scrolled 
-            ? 'bg-white/85 backdrop-blur-xl shadow-sm py-[1vh]' 
+        scrolled
+            ? 'bg-white/95 shadow-sm py-[1vh]'
             : 'bg-transparent py-[3vh]'
       }`}
     >
