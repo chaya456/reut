@@ -33,9 +33,9 @@ const MainContent = ({ productSlug }: { productSlug?: string }) => {
         }
     }, [product]);
 
-    const handleLoginSubmit = (e: React.FormEvent) => {
+    const handleLoginSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        const success = login(passwordInput);
+        const success = await login(passwordInput);
         if (success) {
             const action = (window as any)._afterLoginAction;
             if (action === 'edit') {

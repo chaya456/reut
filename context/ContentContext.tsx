@@ -1,7 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { AppContent, GalleryItem, Recommendation, ValueItem } from '../types';
-import { saveContentToSanity, loadContentFromSanity } from '../services/sanityService';
+import { saveContentToSanity, loadContentFromSanity, verifyPassword } from '../services/sanityService';
 
 // Default / Initial Data
 const initialValueItems: ValueItem[] = [
@@ -198,8 +198,9 @@ interface ContentContextType {
   setIsEditMode: (mode: boolean) => void;
   hasUnsavedChanges: boolean;
   publishChanges: () => Promise<void>;
+  saveNow: () => Promise<boolean>;
   cancelChanges: () => void;
-  login: (password: string) => boolean;
+  login: (password: string) => Promise<boolean>;
   logout: () => void;
   showAdminPanel: boolean;
   setShowAdminPanel: (show: boolean) => void;
@@ -211,6 +212,7 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [content, setContent] = useState<AppContent>(defaultContent);
   const [lastPublishedContent, setLastPublishedContent] = useState<AppContent>(defaultContent);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [adminPassword, setAdminPassword] = useState(''); // kept in memory only (never persisted)
   const [isEditMode, setIsEditMode] = useState(false);
   const [showAdminPanel, setShowAdminPanel] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
@@ -252,21 +254,23 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const isDifferent = JSON.stringify(content) !== JSON.stringify(lastPublishedContent);
     setHasUnsavedChanges(isDifferent);
 
-    // Auto-save to Sanity only if NOT in edit mode (immediate sync for admin panel)
-    // In edit mode, we save on blur or publish
-    if (!isEditMode && isDifferent) {
-      const timer = setTimeout(() => {
-        saveContentToSanity(content);
-        setLastPublishedContent(content);
+    // Auto-save to Sanity only if NOT in edit mode (immediate sync for admin panel).
+    // In edit mode, we save on publish. Only a logged-in admin (with password in
+    // memory) can trigger a real save.
+    if (!isEditMode && isDifferent && isAdmin && adminPassword) {
+      const timer = setTimeout(async () => {
+        const ok = await saveContentToSanity(content, adminPassword);
+        if (ok) setLastPublishedContent(content);
       }, 1000);
       return () => clearTimeout(timer);
     }
-  }, [content, isEditMode, lastPublishedContent]);
+  }, [content, isEditMode, lastPublishedContent, isAdmin, adminPassword]);
 
-  const login = (password: string) => {
-      if (password === 'רעות בהצלחה') {
+  const login = async (password: string): Promise<boolean> => {
+      const ok = await verifyPassword(password);
+      if (ok) {
           setIsAdmin(true);
-          // Don't auto-open admin panel, let user choose edit mode or panel
+          setAdminPassword(password); // needed to authorize future saves
           return true;
       }
       return false;
@@ -274,16 +278,30 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const logout = () => {
       setIsAdmin(false);
+      setAdminPassword('');
       setIsEditMode(false);
       setShowAdminPanel(false);
   };
 
   const publishChanges = async () => {
-    await saveContentToSanity(content);
-    setLastPublishedContent(content);
-    setHasUnsavedChanges(false);
-    setIsEditMode(false);
-    alert('השינויים פורסמו בהצלחה!');
+    const ok = await saveContentToSanity(content, adminPassword);
+    if (ok) {
+      setLastPublishedContent(content);
+      setHasUnsavedChanges(false);
+      setIsEditMode(false);
+      alert('השינויים פורסמו בהצלחה!');
+    } else {
+      alert('אירעה שגיאה בפרסום השינויים. ודאי שאת מחוברת ונסי שוב.');
+    }
+  };
+
+  const saveNow = async (): Promise<boolean> => {
+    const ok = await saveContentToSanity(content, adminPassword);
+    if (ok) {
+      setLastPublishedContent(content);
+      setHasUnsavedChanges(false);
+    }
+    return ok;
   };
 
   const cancelChanges = () => {
@@ -447,6 +465,7 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setIsEditMode,
         hasUnsavedChanges,
         publishChanges,
+        saveNow,
         cancelChanges
     }}>
       {children}

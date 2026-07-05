@@ -13,16 +13,13 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
       addGalleryItem, updateGalleryItem, deleteGalleryItem,
       addRecommendation, updateRecommendation, deleteRecommendation,
       addValueItem, updateValueItem, deleteValueItem,
-      resetContent, logout
+      resetContent, logout, saveNow
   } = useContent();
-  
+
   const [activeTab, setActiveTab] = useState<'hero' | 'about' | 'value' | 'gallery' | 'recommendations'>('hero');
   const [editingItem, setEditingItem] = useState<any>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-
-  // Check if Sanity is configured
-  const isConfigured = !!import.meta.env.VITE_SANITY_TOKEN;
 
   if (!isOpen) return null;
 
@@ -59,17 +56,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
 
   const handleManualSave = async () => {
     setIsSaving(true);
-    try {
-      // The context already has a debounced save, but we can trigger one manually
-      // for immediate feedback
-      const { saveContentToSanity } = await import('../services/sanityService');
-      await saveContentToSanity(content);
-      alert('השינויים נשמרו בהצלחה ב-Sanity');
-    } catch (err) {
-      alert('שגיאה בשמירה ל-Sanity');
-    } finally {
-      setIsSaving(false);
-    }
+    const ok = await saveNow();
+    setIsSaving(false);
+    alert(ok ? 'השינויים נשמרו בהצלחה' : 'שגיאה בשמירה. ודאי שאת מחוברת ונסי שוב.');
   };
 
   return (
@@ -82,9 +71,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
         <div className="bg-brand-dark text-white p-6 flex justify-between items-center shrink-0">
             <div className="flex items-center gap-4">
                 <h2 className="text-2xl font-bold">מערכת ניהול אתר - רעות</h2>
-                <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold ${isConfigured ? 'bg-green-500/20 text-green-300' : 'bg-yellow-500/20 text-yellow-300'}`}>
-                    <div className={`w-2 h-2 rounded-full ${isConfigured ? 'bg-green-400 animate-pulse' : 'bg-yellow-400'}`}></div>
-                    {isConfigured ? 'מחובר ל-Sanity' : 'מצב מקומי (ללא Sanity)'}
+                <div className="flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-green-500/20 text-green-300">
+                    <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
+                    מחובר ל-Sanity
                 </div>
             </div>
             <div className="flex gap-4">

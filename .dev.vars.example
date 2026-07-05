@@ -1,0 +1,8 @@
+# Copy this file to `.dev.vars` (without .example) for local testing with:
+#   npx wrangler pages dev -- npm run dev
+# Never commit the real `.dev.vars` file.
+
+SANITY_TOKEN="your-sanity-write-token"
+ADMIN_PASSWORD="choose-a-strong-password"
+SANITY_PROJECT_ID="s42jv3ts"
+SANITY_DATASET="production"

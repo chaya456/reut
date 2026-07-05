@@ -1,88 +1,61 @@
 import { AppContent } from '../types';
 
-const PROJECT_ID = 's42jv3ts';
-const DATASET = 'production';
-const API_VERSION = '2023-05-03';
+// The browser now talks ONLY to our own same-origin API (/api/*).
+// The Sanity token and admin password live on the server (Cloudflare Functions),
+// so they are never exposed in the client bundle.
 
-// פונקציה ששואבת את הטוקן *בזמן אמת* כדי לא לפספס את ה-Apply
-const getActiveToken = () => {
-  const token = import.meta.env.VITE_SANITY_TOKEN;
-  return token ? String(token).replace(/\s+/g, '').trim() : '';
-};
-
-const BASE_URL = `https://${PROJECT_ID}.api.sanity.io/v${API_VERSION}/data`;
-
-export const saveContentToSanity = async (content: AppContent) => {
-  const token = getActiveToken();
-  if (!token) {
-    console.error('❌ חסר טוקן של Sanity');
-    return;
-  }
-  try {
-    const response = await fetch(`${BASE_URL}/mutate/${DATASET}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify({
-        mutations: [
-          {
-            createOrReplace: {
-              _id: 'siteContent',
-              _type: 'siteContent',
-              ...content
-            }
-          }
-        ]
-      })
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`HTTP ${response.status}: ${errorText}`);
-    }
-
-    console.log('✅ נשמר ב-Sanity בהצלחה');
-  } catch (error: any) {
-    console.error('❌ שגיאת שמירה ב-Sanity:', error);
-    if (error.message === 'Failed to fetch') {
-      console.warn('💡 שגיאת CORS: חובה לאשר את כתובת האתר בלוח הבקרה של Sanity (manage.sanity.io)');
-    }
-  }
-};
+const API_BASE = '/api';
 
 export const loadContentFromSanity = async (): Promise<AppContent | null> => {
-  const token = getActiveToken();
-  if (!token) return null; // אם אין טוקן, נשארים במצב מקומי
-
   try {
-    const query = encodeURIComponent('*[_id == "siteContent"][0]');
-    const response = await fetch(`${BASE_URL}/query/${DATASET}?query=${query}`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
-
-    if (!response.ok) return null;
-    const json = await response.json();
-    return json.result || null;
-  } catch (error) {
+    const res = await fetch(`${API_BASE}/content`);
+    if (!res.ok) return null;
+    const json = await res.json();
+    return (json.result as AppContent) || null;
+  } catch {
     return null;
   }
 };
 
-// פונקציית בדיקה שתקפוץ לך על המסך
-export const testConnection = async () => {
-  const token = getActiveToken();
-  if (!token) {
-    alert("❌ חובה ללחוץ על Apply בחלונית ה-Secrets!");
-    return;
+export const saveContentToSanity = async (
+  content: AppContent,
+  password: string
+): Promise<boolean> => {
+  if (!password) {
+    console.error('❌ חסרה סיסמת ניהול לשמירה');
+    return false;
   }
-  const url = `${BASE_URL}/query/${DATASET}?query=count(*[_type == "siteContent"])`;
   try {
-    const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
-    if (res.ok) alert("✅ הקשר עם Sanity נוצר בהצלחה!");
-    else alert("❌ שגיאת התחברות: " + res.status);
-  } catch (e) {
-    alert("❌ שגיאת רשת - בדקי CORS");
+    const res = await fetch(`${API_BASE}/content`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password, content }),
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`HTTP ${res.status}: ${text}`);
+    }
+
+    console.log('✅ נשמר בהצלחה');
+    return true;
+  } catch (error) {
+    console.error('❌ שגיאת שמירה:', error);
+    return false;
+  }
+};
+
+export const verifyPassword = async (password: string): Promise<boolean> => {
+  try {
+    const res = await fetch(`${API_BASE}/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password }),
+    });
+    if (!res.ok) return false;
+    const json = await res.json();
+    return !!json.ok;
+  } catch {
+    return false;
   }
 };
