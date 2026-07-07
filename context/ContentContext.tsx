@@ -1,7 +1,51 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { AppContent, GalleryItem, PricingData, Recommendation, ValueItem } from '../types';
+import { AppContent, CalculatorTexts, GalleryItem, PricingData, Recommendation, ValueItem } from '../types';
 import { saveContentToSanity, loadContentFromSanity, verifyPassword } from '../services/sanityService';
+
+// טקסטים (מלל) ברירת מחדל של מחשבון התמחור.
+// ניתנים לעריכה מלוח הבקרה (טאב "מחשבון") ונשמרים ל-Sanity יחד עם שאר התוכן.
+export const defaultCalculatorTexts: CalculatorTexts = {
+  backLink: 'חזרה לעמוד הראשי',
+  title: 'מחשבון תמחור',
+  subtitle: 'בחרו את סוג העבודה, החומר וכמות המילים — ותקבלו הערכת מחיר מיידית.',
+  methodLabel: 'חריטה או חיתוך?',
+  methodEngrave: 'חריטה',
+  methodCut: 'חיתוך',
+  typeLabel: 'מה תרצו לעשות?',
+  typeText: 'טקסט / מילים',
+  typeImage: 'תמונה / דמות',
+  typeKeyboard: 'חריטת מקלדת',
+  materialLabel: 'על איזה חומר?',
+  designLabel: 'מה כולל העיצוב?',
+  pkgFirstTitle: 'מילה אחת + אלמנט מתנה',
+  pkgFirstDesc: 'מילה בודדת עם אלמנט קטן (עד רוחב 2 ס"מ)',
+  pkgUpTo5Title: 'עד 5 מילים / לוגו',
+  pkgUpTo5Desc: 'משפט קצר או לוגו וקטורי, כל מילה נוספת בתוספת תשלום',
+  pkgLargeTitle: 'כתב גדול',
+  pkgLargeDesc: 'אותיות גדולות (עד רוחב 10 ס"מ למילה)',
+  wordsLabel: 'כמה מילים?',
+  wordsHint: '(עד 5 מילים במחיר הבסיס)',
+  imageSizeLabel: 'גודל התמונה / הדמות',
+  imageSize6: 'עד 6 ס"מ',
+  imageSize10: 'עד 10 ס"מ',
+  keyboardNote: 'חריטת מקלדת מלאה במחיר קבוע. בחרו כמות למטה וקבלו את המחיר.',
+  quantityLabel: 'כמה יחידות?',
+  resultLabel: 'הערכת מחיר',
+  customQuoteTitle: 'הצעת מחיר מותאמת אישית',
+  customQuoteDesc: 'החומר הזה מתומחר בנפרד לפי המוצר. צרו קשר ונשמח לתת לכם הצעה מותאמת אישית.',
+  customQuoteButton: 'צרו קשר לקבלת הצעת מחיר',
+  bulkResultTitle: 'מעל 25 יחידות',
+  bulkResultDesc: 'להזמנות בכמות גדולה (תבנית חוזרת) מגיעה הצעת מחיר מותאמת אישית — פנו לרעות לקבלת הצעה משתלמת.',
+  bulkTitle: 'מזמינים מעל 25 יחידות?',
+  bulkDesc: 'לכמויות גדולות בתבנית חוזרת יש הצעת מחיר מותאמת אישית ומשתלמת. השאירו פרטים ונחזור אליכם.',
+  bulkButton: 'קבלת הצעת מחיר מותאמת אישית',
+  note1: 'המחיר להערכה בלבד. הצעת מחיר סופית תינתן על ידי רעות.',
+  note2: 'התמחור כולל עיצוב בסיסי מתוך דוגמאות קיימות (פונט, גודל ואלמנט). עיצוב מיוחד יתומחר לפי זמן עבודה, 250 ₪ לשעה.',
+  note3: 'המחיר אינו כולל מוצר, ניתן לרכוש מוצר בתוספת עמלת שירות.',
+  note4: 'אין אחריות על המוצר.',
+  note5: 'הגעה בתיאום מראש, איסוף באותו היום.',
+};
 
 // מחירון ברירת מחדל - מבוסס על קובץ "תמחור רעות".
 // ניתן לעריכה מלוח הבקרה (טאב "מחירון"). המחירים נשמרים ל-Sanity יחד עם שאר התוכן.
@@ -11,6 +55,7 @@ export const defaultPricing: PricingData = {
     { id: 'silicone', name: 'סיליקון', method: 'xtool',  first: 30, upTo5: 60,  extra: 15, large: 60 },
     { id: 'metal',    name: 'מתכת',    method: 'xtool',  first: 45, upTo5: 90,  extra: 20, large: 90 },
     { id: 'plastic',  name: 'פלסטיק',  method: 'xtool',  first: 40, upTo5: 80,  extra: 17, large: 80 },
+    { id: 'food',     name: 'אוכל',     method: 'xtool',  first: 0,  upTo5: 0,   extra: 0,  large: 0, customQuote: true },
     { id: 'leather',  name: 'עור',      method: 'xtool',  first: 30, upTo5: 60,  extra: 15, large: 60 },
     { id: 'paper',    name: 'נייר',     method: 'cricut', first: 35, upTo5: 80,  extra: 17, large: 80 },
     { id: 'vinyl',    name: 'טפט וניל', method: 'cricut', first: 40, upTo5: 90,  extra: 20, large: 90 },
@@ -194,7 +239,8 @@ const defaultContent: AppContent = {
           }
       }
   ],
-  pricing: defaultPricing
+  pricing: defaultPricing,
+  calculator: defaultCalculatorTexts
 };
 
 interface ContentContextType {
@@ -215,6 +261,8 @@ interface ContentContextType {
   deleteRecommendation: (id: number) => void;
   // Pricing
   updatePricing: (data: Partial<PricingData>) => void;
+  // Calculator texts
+  updateCalculatorText: (data: Partial<CalculatorTexts>) => void;
   resetContent: () => void;
   isAdmin: boolean;
   isEditMode: boolean;
@@ -466,6 +514,14 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }));
   };
 
+  // --- Calculator Texts Logic ---
+  const updateCalculatorText = (data: Partial<CalculatorTexts>) => {
+    setContent(prev => ({
+        ...prev,
+        calculator: { ...(prev.calculator || defaultCalculatorTexts), ...data }
+    }));
+  };
+
   const resetContent = () => {
       if(window.confirm("האם את בטוחה שאת רוצה לאפס את כל הנתונים לברירת המחדל?")) {
         setContent(defaultContent);
@@ -487,6 +543,7 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
         updateRecommendation,
         deleteRecommendation,
         updatePricing,
+        updateCalculatorText,
         resetContent,
         isAdmin,
         login,

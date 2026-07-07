@@ -97,6 +97,7 @@ export interface PricingMaterial {
   upTo5: number;   // עד 5 מילים / לוגו וקטורי
   extra: number;   // כל מילה נוספת (מהמילה השישית)
   large: number;   // כתב גדול - מחיר למילה
+  customQuote?: boolean; // חומר ללא מחיר קבוע - מציג "צרו קשר להצעת מחיר מותאמת אישית"
 }
 
 export interface PricingData {
@@ -108,6 +109,49 @@ export interface PricingData {
   bulkThreshold: number; // מעל כמות זו = הצעה מותאמת אישית
 }
 
+// כל הטקסטים (מלל) של מחשבון התמחור - ניתנים לעריכה מלוח הבקרה (טאב "מחשבון").
+export interface CalculatorTexts {
+  backLink: string;
+  title: string;
+  subtitle: string;
+  methodLabel: string;
+  methodEngrave: string;
+  methodCut: string;
+  typeLabel: string;
+  typeText: string;
+  typeImage: string;
+  typeKeyboard: string;
+  materialLabel: string;
+  designLabel: string;
+  pkgFirstTitle: string;
+  pkgFirstDesc: string;
+  pkgUpTo5Title: string;
+  pkgUpTo5Desc: string;
+  pkgLargeTitle: string;
+  pkgLargeDesc: string;
+  wordsLabel: string;
+  wordsHint: string;
+  imageSizeLabel: string;
+  imageSize6: string;
+  imageSize10: string;
+  keyboardNote: string;
+  quantityLabel: string;
+  resultLabel: string;
+  customQuoteTitle: string;
+  customQuoteDesc: string;
+  customQuoteButton: string;
+  bulkResultTitle: string;
+  bulkResultDesc: string;
+  bulkTitle: string;
+  bulkDesc: string;
+  bulkButton: string;
+  note1: string;
+  note2: string;
+  note3: string;
+  note4: string;
+  note5: string;
+}
+
 export interface AppContent {
   hero: HeroContent;
   valueSection: ValueItem[];
@@ -116,4 +160,5 @@ export interface AppContent {
   recommendations: Recommendation[];
   sections: Section[];
   pricing?: PricingData;
+  calculator?: CalculatorTexts;
 }

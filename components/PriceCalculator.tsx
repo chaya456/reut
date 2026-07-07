@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import Navbar from './Navbar';
 import Footer from './Footer';
-import { useContent, defaultPricing } from '../context/ContentContext';
+import { useContent, defaultPricing, defaultCalculatorTexts } from '../context/ContentContext';
 
 /**
  * מחשבון תמחור ללקוח - מבוסס על קובץ "תמחור רעות".
@@ -27,6 +27,8 @@ const PriceCalculator: React.FC = () => {
   const { content } = useContent();
   const pricing = content.pricing || defaultPricing;
   const MATERIALS = pricing.materials.length ? pricing.materials : defaultPricing.materials;
+  // כל המלל שמוצג במחשבון - ניתן לעריכה מלוח הבקרה (טאב "מחשבון")
+  const t = { ...defaultCalculatorTexts, ...(content.calculator || {}) };
 
   const [workType, setWorkType] = useState<WorkType>('text');
 
@@ -85,6 +87,8 @@ const PriceCalculator: React.FC = () => {
   const qty = Math.max(1, quantity);
   const total = unitPrice * qty;
   const isBulk = qty > pricing.bulkThreshold;
+  // חומר שדורש הצעת מחיר אישית (למשל אוכל) - אין מחיר מחושב, מפנים ליצירת קשר
+  const isCustomQuote = workType === 'text' && !!material?.customQuote;
 
   // קישור מייל עם סיכום ההזמנה שהלקוח בחר
   const emailHref = useMemo(() => {
@@ -102,15 +106,19 @@ const PriceCalculator: React.FC = () => {
       details = `סוג עבודה: חריטת מקלדת\n`;
     }
     details += `כמות: ${qty}\n`;
-    details += isBulk
-      ? `\nמדובר בכמות גדולה — אשמח להצעת מחיר מותאמת אישית.`
-      : `\nהערכת מחיר מהמחשבון: ${total.toLocaleString('he-IL')} ₪`;
+    if (isCustomQuote) {
+      details += `\nלחומר זה (${material.name}) אשמח להצעת מחיר מותאמת אישית.`;
+    } else if (isBulk) {
+      details += `\nמדובר בכמות גדולה — אשמח להצעת מחיר מותאמת אישית.`;
+    } else {
+      details += `\nהערכת מחיר מהמחשבון: ${total.toLocaleString('he-IL')} ₪`;
+    }
 
     const subject = 'פנייה מהמחשבון באתר - הזמנה חדשה';
     const body = `היי רעות,\nהשתמשתי במחשבון באתר וזו ההזמנה שלי:\n\n${details}\n\nנשמח לתאם. תודה!`;
     // חלון כתיבת מייל של Gmail (נפתח בדפדפן) - אמין יותר מ-mailto שדורש תוכנת מייל מותקנת.
     return `https://mail.google.com/mail/?view=cm&fs=1&to=${CONTACT_EMAIL}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  }, [workType, method, material, pkg, words, imageSize, qty, total, isBulk]);
+  }, [workType, method, material, pkg, words, imageSize, qty, total, isBulk, isCustomQuote]);
 
   return (
     <div className="min-h-screen bg-brand-soft font-sans flex flex-col" dir="rtl">
@@ -123,17 +131,17 @@ const PriceCalculator: React.FC = () => {
               <line x1="5" y1="12" x2="19" y2="12"></line>
               <polyline points="12 5 19 12 12 19"></polyline>
             </svg>
-            חזרה לעמוד הראשי
+            {t.backLink}
           </a>
         </div>
 
         <div className="text-center mb-10">
           <h1 className="text-[clamp(34px,5vw,56px)] font-extrabold text-dark-coal mb-3">
-            מחשבון תמחור
+            {t.title}
           </h1>
           <div className="w-16 h-1 bg-brand-dark mx-auto mb-4"></div>
           <p className="text-lg text-dark-coal/70 max-w-[620px] mx-auto">
-            בחרו את סוג העבודה, החומר וכמות המילים — ותקבלו הערכת מחיר מיידית.
+            {t.subtitle}
           </p>
         </div>
 
@@ -142,11 +150,11 @@ const PriceCalculator: React.FC = () => {
           {/* שלב 1: חריטה או חיתוך */}
           {hasCricut && hasXtool && (
             <div>
-              <label className="block text-sm font-bold text-dark-coal/60 mb-3 tracking-wide">חריטה או חיתוך?</label>
+              <label className="block text-sm font-bold text-dark-coal/60 mb-3 tracking-wide">{t.methodLabel}</label>
               <div className="grid grid-cols-2 gap-3">
                 {([
-                  { id: 'xtool', label: 'חריטה' },
-                  { id: 'cricut', label: 'חיתוך' },
+                  { id: 'xtool', label: t.methodEngrave },
+                  { id: 'cricut', label: t.methodCut },
                 ] as { id: Method; label: string }[]).map(opt => (
                   <button
                     key={opt.id}
@@ -167,12 +175,12 @@ const PriceCalculator: React.FC = () => {
           {/* שלב 2: מה תרצו לעשות? — תמונה/דמות ומקלדת קיימים רק בחריטה */}
           {method === 'xtool' && (
             <div>
-              <label className="block text-sm font-bold text-dark-coal/60 mb-3 tracking-wide">מה תרצו לעשות?</label>
+              <label className="block text-sm font-bold text-dark-coal/60 mb-3 tracking-wide">{t.typeLabel}</label>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {([
-                  { id: 'text', label: 'טקסט / מילים' },
-                  { id: 'image', label: 'תמונה / דמות' },
-                  { id: 'keyboard', label: 'חריטת מקלדת' },
+                  { id: 'text', label: t.typeText },
+                  { id: 'image', label: t.typeImage },
+                  { id: 'keyboard', label: t.typeKeyboard },
                 ] as { id: WorkType; label: string }[]).map(opt => (
                   <button
                     key={opt.id}
@@ -195,7 +203,7 @@ const PriceCalculator: React.FC = () => {
             <>
               {/* חומר - רק החומרים הרלוונטיים לשיטה שנבחרה */}
               <div>
-                <label className="block text-sm font-bold text-dark-coal/60 mb-3 tracking-wide">על איזה חומר?</label>
+                <label className="block text-sm font-bold text-dark-coal/60 mb-3 tracking-wide">{t.materialLabel}</label>
                 <div className="grid grid-cols-3 gap-3">
                   {materialsForMethod.map(m => (
                     <button
@@ -213,14 +221,16 @@ const PriceCalculator: React.FC = () => {
                 </div>
               </div>
 
+              {!isCustomQuote && (
+              <>
               {/* סוג העבודה על הטקסט */}
               <div>
-                <label className="block text-sm font-bold text-dark-coal/60 mb-3 tracking-wide">מה כולל העיצוב?</label>
+                <label className="block text-sm font-bold text-dark-coal/60 mb-3 tracking-wide">{t.designLabel}</label>
                 <div className="space-y-3">
                   {([
-                    { id: 'first', title: 'מילה אחת + אלמנט מתנה', desc: 'מילה בודדת עם אלמנט קטן (עד רוחב 2 ס"מ)' },
-                    { id: 'upTo5', title: 'עד 5 מילים / לוגו', desc: 'משפט קצר או לוגו וקטורי, כל מילה נוספת בתוספת תשלום' },
-                    { id: 'large', title: 'כתב גדול', desc: 'אותיות גדולות (עד רוחב 10 ס"מ למילה)' },
+                    { id: 'first', title: t.pkgFirstTitle, desc: t.pkgFirstDesc },
+                    { id: 'upTo5', title: t.pkgUpTo5Title, desc: t.pkgUpTo5Desc },
+                    { id: 'large', title: t.pkgLargeTitle, desc: t.pkgLargeDesc },
                   ] as { id: Package; title: string; desc: string }[]).map(opt => (
                     <button
                       key={opt.id}
@@ -249,10 +259,12 @@ const PriceCalculator: React.FC = () => {
               {pkg !== 'first' && (
                 <div>
                   <label className="block text-sm font-bold text-dark-coal/60 mb-3 tracking-wide">
-                    כמה מילים? {pkg === 'upTo5' && <span className="font-normal">(עד 5 מילים במחיר הבסיס)</span>}
+                    {t.wordsLabel} {pkg === 'upTo5' && <span className="font-normal">{t.wordsHint}</span>}
                   </label>
                   <NumberStepper value={words} setValue={setWords} min={1} />
                 </div>
+              )}
+              </>
               )}
             </>
           )}
@@ -260,11 +272,11 @@ const PriceCalculator: React.FC = () => {
           {/* שלב 2 - תמונה */}
           {workType === 'image' && (
             <div>
-              <label className="block text-sm font-bold text-dark-coal/60 mb-3 tracking-wide">גודל התמונה / הדמות</label>
+              <label className="block text-sm font-bold text-dark-coal/60 mb-3 tracking-wide">{t.imageSizeLabel}</label>
               <div className="grid grid-cols-2 gap-3">
                 {([
-                  { id: '6', label: 'עד 6 ס"מ' },
-                  { id: '10', label: 'עד 10 ס"מ' },
+                  { id: '6', label: t.imageSize6 },
+                  { id: '10', label: t.imageSize10 },
                 ] as { id: '6' | '10'; label: string }[]).map(opt => (
                   <button
                     key={opt.id}
@@ -285,29 +297,48 @@ const PriceCalculator: React.FC = () => {
           {/* שלב 2 - מקלדת */}
           {workType === 'keyboard' && (
             <div className="bg-brand-soft rounded-xl p-5 text-center">
-              <p className="text-dark-coal font-medium">חריטת מקלדת מלאה במחיר קבוע. בחרו כמות למטה וקבלו את המחיר.</p>
+              <p className="text-dark-coal font-medium">{t.keyboardNote}</p>
             </div>
           )}
 
           {/* כמות */}
           <div>
-            <label className="block text-sm font-bold text-dark-coal/60 mb-3 tracking-wide">כמה יחידות?</label>
+            <label className="block text-sm font-bold text-dark-coal/60 mb-3 tracking-wide">{t.quantityLabel}</label>
             <NumberStepper value={quantity} setValue={setQuantity} min={1} />
           </div>
 
           {/* תוצאה */}
           <div className="bg-dark-coal rounded-2xl p-6 md:p-8 text-white">
-            {isBulk ? (
+            {isCustomQuote ? (
               <div className="text-center">
-                <p className="text-lg font-bold mb-1">מעל {pricing.bulkThreshold} יחידות</p>
+                <p className="text-lg font-bold mb-2">{t.customQuoteTitle}</p>
+                <p className="text-white/70 text-sm mb-5">
+                  {t.customQuoteDesc}
+                </p>
+                <a
+                  href={emailHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 bg-white text-dark-coal px-6 py-3 rounded-xl font-bold hover:bg-brand-light transition-colors"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+                  </svg>
+                  {t.customQuoteButton}
+                </a>
+              </div>
+            ) : isBulk ? (
+              <div className="text-center">
+                <p className="text-lg font-bold mb-1">{t.bulkResultTitle}</p>
                 <p className="text-white/70 text-sm">
-                  להזמנות בכמות גדולה (תבנית חוזרת) מגיעה הצעת מחיר מותאמת אישית — פנו לרעות לקבלת הצעה משתלמת.
+                  {t.bulkResultDesc}
                 </p>
               </div>
             ) : (
               <div className="flex items-end justify-between flex-wrap gap-3">
                 <div>
-                  <p className="text-white/60 text-sm mb-1">הערכת מחיר</p>
+                  <p className="text-white/60 text-sm mb-1">{t.resultLabel}</p>
                   <p className="text-5xl font-extrabold tracking-tight">{total.toLocaleString('he-IL')} <span className="text-2xl">₪</span></p>
                 </div>
                 {qty > 1 && (
@@ -321,20 +352,18 @@ const PriceCalculator: React.FC = () => {
 
           {/* הערות */}
           <div className="text-sm text-dark-coal/60 space-y-2 border-t border-brand-light/40 pt-6">
-            <p>• המחיר להערכה בלבד. הצעת מחיר סופית תינתן על ידי רעות.</p>
-            <p>• התמחור כולל עיצוב בסיסי מתוך דוגמאות קיימות (פונט, גודל ואלמנט). עיצוב מיוחד יתומחר לפי זמן עבודה, {pricing.hourlyRate} ₪ לשעה.</p>
-            <p>• המחיר אינו כולל מוצר, ניתן לרכוש מוצר בתוספת עמלת שירות.</p>
-            <p>• אין אחריות על המוצר.</p>
-            <p>• הגעה בתיאום מראש, איסוף באותו היום.</p>
+            {[t.note1, t.note2, t.note3, t.note4, t.note5].filter(Boolean).map((note, i) => (
+              <p key={i}>• {note}</p>
+            ))}
           </div>
 
-          {/* הצעת מחיר מותאמת אישית לכמויות (מעל 25 יחידות) + כפתור שליחת מייל */}
+          {/* הצעת מחיר מותאמת אישית לכמויות גדולות + כפתור שליחת מייל */}
           <div className="bg-brand-soft rounded-2xl p-6 text-center border border-brand-light/40">
             <p className="font-extrabold text-dark-coal text-lg mb-1">
-              מזמינים מעל {pricing.bulkThreshold} יחידות?
+              {t.bulkTitle}
             </p>
             <p className="text-sm text-dark-coal/70 mb-5">
-              לכמויות גדולות בתבנית חוזרת יש הצעת מחיר מותאמת אישית ומשתלמת. השאירו פרטים ונחזור אליכם.
+              {t.bulkDesc}
             </p>
             <a
               href={emailHref}
@@ -346,7 +375,7 @@ const PriceCalculator: React.FC = () => {
                 <rect x="2" y="4" width="20" height="16" rx="2"></rect>
                 <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
               </svg>
-              קבלת הצעת מחיר מותאמת אישית
+              {t.bulkButton}
             </a>
           </div>
         </div>

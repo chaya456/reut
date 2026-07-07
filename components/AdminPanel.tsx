@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
-import { useContent, defaultPricing } from '../context/ContentContext';
+import { useContent, defaultPricing, defaultCalculatorTexts } from '../context/ContentContext';
+import { CalculatorTexts } from '../types';
 
 interface AdminPanelProps {
   isOpen: boolean;
@@ -13,12 +14,13 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
       addGalleryItem, updateGalleryItem, deleteGalleryItem,
       addRecommendation, updateRecommendation, deleteRecommendation,
       addValueItem, updateValueItem, deleteValueItem,
-      updatePricing, resetContent, logout, saveNow
+      updatePricing, updateCalculatorText, resetContent, logout, saveNow
   } = useContent();
 
   const pricing = content.pricing || defaultPricing;
+  const calc = { ...defaultCalculatorTexts, ...(content.calculator || {}) };
 
-  const [activeTab, setActiveTab] = useState<'hero' | 'about' | 'value' | 'gallery' | 'recommendations' | 'pricing'>('hero');
+  const [activeTab, setActiveTab] = useState<'hero' | 'about' | 'value' | 'gallery' | 'recommendations' | 'pricing' | 'calculator'>('hero');
   const [editingItem, setEditingItem] = useState<any>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -129,6 +131,12 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                 className={`px-6 py-4 font-bold transition-colors whitespace-nowrap ${activeTab === 'pricing' ? 'bg-white text-brand-dark border-t-4 border-brand-dark' : 'text-gray-500 hover:bg-gray-100'}`}
             >
                 מחירון
+            </button>
+            <button
+                onClick={() => { setActiveTab('calculator'); setEditingItem(null); }}
+                className={`px-6 py-4 font-bold transition-colors whitespace-nowrap ${activeTab === 'calculator' ? 'bg-white text-brand-dark border-t-4 border-brand-dark' : 'text-gray-500 hover:bg-gray-100'}`}
+            >
+                מחשבון (טקסטים)
             </button>
         </div>
 
@@ -535,17 +543,23 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                                             <div className="font-bold text-gray-900">{m.name}</div>
                                             <div className="text-[11px] text-gray-400">{m.method === 'xtool' ? 'לייזר' : 'קריקט'}</div>
                                         </td>
-                                        {(['first', 'upTo5', 'extra', 'large'] as const).map(field => (
-                                            <td key={field} className="p-2">
-                                                <input
-                                                    type="number"
-                                                    min={0}
-                                                    value={m[field]}
-                                                    onChange={e => updateMaterialPrice(m.id, field, Number(e.target.value) || 0)}
-                                                    className="w-20 p-2 border border-gray-300 rounded bg-white text-gray-900 text-center focus:ring-2 focus:ring-brand-dark focus:outline-none"
-                                                />
+                                        {m.customQuote ? (
+                                            <td colSpan={4} className="p-2 text-center text-gray-500 text-sm italic">
+                                                הצעת מחיר מותאמת אישית (ללא מחיר קבוע)
                                             </td>
-                                        ))}
+                                        ) : (
+                                            (['first', 'upTo5', 'extra', 'large'] as const).map(field => (
+                                                <td key={field} className="p-2">
+                                                    <input
+                                                        type="number"
+                                                        min={0}
+                                                        value={m[field]}
+                                                        onChange={e => updateMaterialPrice(m.id, field, Number(e.target.value) || 0)}
+                                                        className="w-20 p-2 border border-gray-300 rounded bg-white text-gray-900 text-center focus:ring-2 focus:ring-brand-dark focus:outline-none"
+                                                    />
+                                                </td>
+                                            ))
+                                        )}
                                     </tr>
                                 ))}
                             </tbody>
@@ -576,6 +590,96 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                             ))}
                         </div>
                     </div>
+                </div>
+            )}
+
+            {/* CALCULATOR TEXTS EDITOR */}
+            {activeTab === 'calculator' && (
+                <div className="max-w-3xl mx-auto space-y-6">
+                    <div className="bg-blue-50 p-4 rounded-lg border border-blue-100 text-sm text-blue-800">
+                        <strong>הנחיות:</strong> כאן ניתן לערוך את כל הטקסטים שמופיעים במחשבון התמחור באתר. השינויים נשמרים אוטומטית ומתעדכנים מיד במחשבון. (המחירים עצמם נערכים בטאב "מחירון".)
+                    </div>
+
+                    {([
+                        { group: 'כותרות ראשיות', fields: [
+                            { k: 'title', l: 'כותרת ראשית' },
+                            { k: 'subtitle', l: 'משפט פתיחה', m: true },
+                            { k: 'backLink', l: 'קישור חזרה לעמוד הראשי' },
+                        ] },
+                        { group: 'שלבי בחירה', fields: [
+                            { k: 'methodLabel', l: 'כותרת - חריטה או חיתוך' },
+                            { k: 'methodEngrave', l: 'כפתור "חריטה"' },
+                            { k: 'methodCut', l: 'כפתור "חיתוך"' },
+                            { k: 'typeLabel', l: 'כותרת - מה תרצו לעשות' },
+                            { k: 'typeText', l: 'כפתור "טקסט / מילים"' },
+                            { k: 'typeImage', l: 'כפתור "תמונה / דמות"' },
+                            { k: 'typeKeyboard', l: 'כפתור "חריטת מקלדת"' },
+                            { k: 'materialLabel', l: 'כותרת - בחירת חומר' },
+                            { k: 'quantityLabel', l: 'כותרת - כמות יחידות' },
+                        ] },
+                        { group: 'אפשרויות עיצוב (טקסט)', fields: [
+                            { k: 'designLabel', l: 'כותרת - מה כולל העיצוב' },
+                            { k: 'pkgFirstTitle', l: 'אפשרות 1 - כותרת' },
+                            { k: 'pkgFirstDesc', l: 'אפשרות 1 - תיאור', m: true },
+                            { k: 'pkgUpTo5Title', l: 'אפשרות 2 - כותרת' },
+                            { k: 'pkgUpTo5Desc', l: 'אפשרות 2 - תיאור', m: true },
+                            { k: 'pkgLargeTitle', l: 'אפשרות 3 - כותרת' },
+                            { k: 'pkgLargeDesc', l: 'אפשרות 3 - תיאור', m: true },
+                            { k: 'wordsLabel', l: 'כותרת - כמה מילים' },
+                            { k: 'wordsHint', l: 'הערת מילים (בסוגריים)' },
+                        ] },
+                        { group: 'תמונה ומקלדת', fields: [
+                            { k: 'imageSizeLabel', l: 'כותרת - גודל תמונה' },
+                            { k: 'imageSize6', l: 'אפשרות גודל 1' },
+                            { k: 'imageSize10', l: 'אפשרות גודל 2' },
+                            { k: 'keyboardNote', l: 'טקסט מקלדת', m: true },
+                        ] },
+                        { group: 'תיבת התוצאה', fields: [
+                            { k: 'resultLabel', l: 'תווית "הערכת מחיר"' },
+                            { k: 'customQuoteTitle', l: 'הצעה אישית - כותרת' },
+                            { k: 'customQuoteDesc', l: 'הצעה אישית - תיאור', m: true },
+                            { k: 'customQuoteButton', l: 'הצעה אישית - כפתור' },
+                            { k: 'bulkResultTitle', l: 'כמות גדולה - כותרת' },
+                            { k: 'bulkResultDesc', l: 'כמות גדולה - תיאור', m: true },
+                        ] },
+                        { group: 'הצעת מחיר לכמויות גדולות', fields: [
+                            { k: 'bulkTitle', l: 'כותרת' },
+                            { k: 'bulkDesc', l: 'תיאור', m: true },
+                            { k: 'bulkButton', l: 'טקסט הכפתור' },
+                        ] },
+                        { group: 'הערות בתחתית המחשבון', fields: [
+                            { k: 'note1', l: 'הערה 1', m: true },
+                            { k: 'note2', l: 'הערה 2', m: true },
+                            { k: 'note3', l: 'הערה 3', m: true },
+                            { k: 'note4', l: 'הערה 4', m: true },
+                            { k: 'note5', l: 'הערה 5', m: true },
+                        ] },
+                    ] as { group: string; fields: { k: keyof CalculatorTexts; l: string; m?: boolean }[] }[]).map(section => (
+                        <div key={section.group} className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                            <h3 className="font-bold text-xl mb-4 border-b pb-2 text-brand-dark">{section.group}</h3>
+                            <div className="space-y-4">
+                                {section.fields.map(f => (
+                                    <div key={f.k}>
+                                        <label className="block text-sm font-bold text-gray-700 mb-1">{f.l}</label>
+                                        {f.m ? (
+                                            <textarea
+                                                value={calc[f.k]}
+                                                onChange={e => updateCalculatorText({ [f.k]: e.target.value } as Partial<CalculatorTexts>)}
+                                                className="w-full p-3 border border-gray-300 rounded bg-white text-gray-900 focus:ring-2 focus:ring-brand-dark focus:outline-none min-h-[70px] text-right"
+                                            />
+                                        ) : (
+                                            <input
+                                                type="text"
+                                                value={calc[f.k]}
+                                                onChange={e => updateCalculatorText({ [f.k]: e.target.value } as Partial<CalculatorTexts>)}
+                                                className="w-full p-3 border border-gray-300 rounded bg-white text-gray-900 focus:ring-2 focus:ring-brand-dark focus:outline-none text-right"
+                                            />
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    ))}
                 </div>
             )}
 
