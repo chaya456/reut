@@ -51,11 +51,13 @@ const PriceCalculator: React.FC = () => {
   const materialsForMethod = MATERIALS.filter(m => m.method === method);
   const material = materialsForMethod.find(m => m.id === materialId) || materialsForMethod[0];
 
-  // מעבר בין חריטה/חיתוך - בוחר אוטומטית את החומר הראשון הזמין לשיטה
+  // מעבר בין חריטה/חיתוך - בוחר אוטומטית את החומר הראשון הזמין לשיטה.
+  // בחיתוך יש רק טקסט (תמונה/דמות ומקלדת קיימים רק בחריטה), לכן חוזרים לטקסט.
   const changeMethod = (m: Method) => {
     setMethod(m);
     const first = MATERIALS.find(mat => mat.method === m);
     if (first) setMaterialId(first.id);
+    if (m === 'cricut') setWorkType('text');
   };
 
   // האם קיימת שיטת חיתוך בכלל (יש חומרים שמתאימים לחיתוך)
@@ -106,7 +108,8 @@ const PriceCalculator: React.FC = () => {
 
     const subject = 'פנייה מהמחשבון באתר - הזמנה חדשה';
     const body = `היי רעות,\nהשתמשתי במחשבון באתר וזו ההזמנה שלי:\n\n${details}\n\nנשמח לתאם. תודה!`;
-    return `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    // חלון כתיבת מייל של Gmail (נפתח בדפדפן) - אמין יותר מ-mailto שדורש תוכנת מייל מותקנת.
+    return `https://mail.google.com/mail/?view=cm&fs=1&to=${CONTACT_EMAIL}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   }, [workType, method, material, pkg, words, imageSize, qty, total, isBulk]);
 
   return (
@@ -136,58 +139,60 @@ const PriceCalculator: React.FC = () => {
 
         <div className="bg-white rounded-2xl shadow-sm border border-brand-light/30 p-6 md:p-10 space-y-8">
 
-          {/* שלב 1: סוג עבודה */}
-          <div>
-            <label className="block text-sm font-bold text-dark-coal/60 mb-3 tracking-wide">מה תרצו לעשות?</label>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              {([
-                { id: 'text', label: 'טקסט / מילים' },
-                { id: 'image', label: 'תמונה / דמות' },
-                { id: 'keyboard', label: 'חריטת מקלדת' },
-              ] as { id: WorkType; label: string }[]).map(opt => (
-                <button
-                  key={opt.id}
-                  onClick={() => setWorkType(opt.id)}
-                  className={`py-4 px-3 rounded-xl font-bold text-base transition-all duration-300 border-2 ${
-                    workType === opt.id
-                      ? 'bg-brand-dark text-white border-brand-dark shadow-md'
-                      : 'bg-brand-soft text-dark-coal border-transparent hover:border-brand-light'
-                  }`}
-                >
-                  {opt.label}
-                </button>
-              ))}
+          {/* שלב 1: חריטה או חיתוך */}
+          {hasCricut && hasXtool && (
+            <div>
+              <label className="block text-sm font-bold text-dark-coal/60 mb-3 tracking-wide">חריטה או חיתוך?</label>
+              <div className="grid grid-cols-2 gap-3">
+                {([
+                  { id: 'xtool', label: 'חריטה' },
+                  { id: 'cricut', label: 'חיתוך' },
+                ] as { id: Method; label: string }[]).map(opt => (
+                  <button
+                    key={opt.id}
+                    onClick={() => changeMethod(opt.id)}
+                    className={`py-4 rounded-xl font-bold text-base transition-all duration-300 border-2 ${
+                      method === opt.id
+                        ? 'bg-brand-dark text-white border-brand-dark shadow-md'
+                        : 'bg-brand-soft text-dark-coal border-transparent hover:border-brand-light'
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* שלב 2 - טקסט */}
+          {/* שלב 2: מה תרצו לעשות? — תמונה/דמות ומקלדת קיימים רק בחריטה */}
+          {method === 'xtool' && (
+            <div>
+              <label className="block text-sm font-bold text-dark-coal/60 mb-3 tracking-wide">מה תרצו לעשות?</label>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {([
+                  { id: 'text', label: 'טקסט / מילים' },
+                  { id: 'image', label: 'תמונה / דמות' },
+                  { id: 'keyboard', label: 'חריטת מקלדת' },
+                ] as { id: WorkType; label: string }[]).map(opt => (
+                  <button
+                    key={opt.id}
+                    onClick={() => setWorkType(opt.id)}
+                    className={`py-4 px-3 rounded-xl font-bold text-base transition-all duration-300 border-2 ${
+                      workType === opt.id
+                        ? 'bg-brand-dark text-white border-brand-dark shadow-md'
+                        : 'bg-brand-soft text-dark-coal border-transparent hover:border-brand-light'
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* טקסט / מילים */}
           {workType === 'text' && (
             <>
-              {/* חריטה / חיתוך */}
-              {hasCricut && hasXtool && (
-                <div>
-                  <label className="block text-sm font-bold text-dark-coal/60 mb-3 tracking-wide">חריטה או חיתוך?</label>
-                  <div className="grid grid-cols-2 gap-3">
-                    {([
-                      { id: 'xtool', label: 'חריטה' },
-                      { id: 'cricut', label: 'חיתוך' },
-                    ] as { id: Method; label: string }[]).map(opt => (
-                      <button
-                        key={opt.id}
-                        onClick={() => changeMethod(opt.id)}
-                        className={`py-4 rounded-xl font-bold text-base transition-all duration-300 border-2 ${
-                          method === opt.id
-                            ? 'bg-brand-dark text-white border-brand-dark shadow-md'
-                            : 'bg-brand-soft text-dark-coal border-transparent hover:border-brand-light'
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
               {/* חומר - רק החומרים הרלוונטיים לשיטה שנבחרה */}
               <div>
                 <label className="block text-sm font-bold text-dark-coal/60 mb-3 tracking-wide">על איזה חומר?</label>
@@ -215,7 +220,7 @@ const PriceCalculator: React.FC = () => {
                   {([
                     { id: 'first', title: 'מילה אחת + אלמנט מתנה', desc: 'מילה בודדת עם אלמנט קטן (עד רוחב 2 ס"מ)' },
                     { id: 'upTo5', title: 'עד 5 מילים / לוגו', desc: 'משפט קצר או לוגו וקטורי, כל מילה נוספת בתוספת תשלום' },
-                    { id: 'large', title: 'כתב גדול', desc: 'אותיות גדולות — מחיר לכל מילה' },
+                    { id: 'large', title: 'כתב גדול', desc: 'אותיות גדולות (עד רוחב 10 ס"מ למילה)' },
                   ] as { id: Package; title: string; desc: string }[]).map(opt => (
                     <button
                       key={opt.id}
@@ -317,9 +322,10 @@ const PriceCalculator: React.FC = () => {
           {/* הערות */}
           <div className="text-sm text-dark-coal/60 space-y-2 border-t border-brand-light/40 pt-6">
             <p>• המחיר להערכה בלבד. הצעת מחיר סופית תינתן על ידי רעות.</p>
-            <p>• כולל עיצוב בסיסי מתוך דף דוגמאות (פונט, גודל, סוג אלמנט). עיצוב מיוחד מתומחר לפי זמן עבודה ({pricing.hourlyRate} ₪ לשעה).</p>
-            <p>• המחיר אינו כולל את המוצר עצמו. ניתן לרכוש מוצר בתוספת עמלת שירות.</p>
-            <p>• אין אחריות על המוצר. הגעה בתיאום מראש, איסוף המוצר באותו היום.</p>
+            <p>• התמחור כולל עיצוב בסיסי מתוך דוגמאות קיימות (פונט, גודל ואלמנט). עיצוב מיוחד יתומחר לפי זמן עבודה, {pricing.hourlyRate} ₪ לשעה.</p>
+            <p>• המחיר אינו כולל מוצר, ניתן לרכוש מוצר בתוספת עמלת שירות.</p>
+            <p>• אין אחריות על המוצר.</p>
+            <p>• הגעה בתיאום מראש, איסוף באותו היום.</p>
           </div>
 
           {/* הצעת מחיר מותאמת אישית לכמויות (מעל 25 יחידות) + כפתור שליחת מייל */}
@@ -328,23 +334,25 @@ const PriceCalculator: React.FC = () => {
               מזמינים מעל {pricing.bulkThreshold} יחידות?
             </p>
             <p className="text-sm text-dark-coal/70 mb-5">
-              לכמויות גדולות (תבנית חוזרת) יש הצעת מחיר מותאמת אישית ומשתלמת. השאירו פרטים ונחזור אליכם.
+              לכמויות גדולות בתבנית חוזרת יש הצעת מחיר מותאמת אישית ומשתלמת. השאירו פרטים ונחזור אליכם.
             </p>
             <a
               href={emailHref}
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-3 bg-brand-dark text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-dark-coal transition-all duration-300 shadow-md"
             >
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="2" y="4" width="20" height="16" rx="2"></rect>
                 <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
               </svg>
-              קבלת הצעת מחיר במייל
+              קבלת הצעת מחיר מותאמת אישית
             </a>
           </div>
         </div>
       </main>
 
-      <Footer />
+      <Footer hideContactForm />
     </div>
   );
 };

@@ -11,7 +11,6 @@ export const defaultPricing: PricingData = {
     { id: 'silicone', name: 'סיליקון', method: 'xtool',  first: 30, upTo5: 60,  extra: 15, large: 60 },
     { id: 'metal',    name: 'מתכת',    method: 'xtool',  first: 45, upTo5: 90,  extra: 20, large: 90 },
     { id: 'plastic',  name: 'פלסטיק',  method: 'xtool',  first: 40, upTo5: 80,  extra: 17, large: 80 },
-    { id: 'food',     name: 'אוכל',     method: 'xtool',  first: 40, upTo5: 80,  extra: 17, large: 80 },
     { id: 'leather',  name: 'עור',      method: 'xtool',  first: 30, upTo5: 60,  extra: 15, large: 60 },
     { id: 'paper',    name: 'נייר',     method: 'cricut', first: 35, upTo5: 80,  extra: 17, large: 80 },
     { id: 'vinyl',    name: 'טפט וניל', method: 'cricut', first: 40, upTo5: 90,  extra: 20, large: 90 },

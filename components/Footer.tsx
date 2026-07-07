@@ -6,7 +6,12 @@ import { CONTACT_CONFIG } from '../formConfig';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const Footer: React.FC = () => {
+interface FooterProps {
+  /** מסתיר את טופס "ככה נערכים" (הצעת מחיר) — משמש בעמוד המחשבון, שם הטופס מיותר. */
+  hideContactForm?: boolean;
+}
+
+const Footer: React.FC<FooterProps> = ({ hideContactForm = false }) => {
   const footerRef = useRef<HTMLDivElement>(null);
   
   // Form State
@@ -93,6 +98,8 @@ const Footer: React.FC = () => {
             style={{ clipPath: 'polygon(0 20vw, 100% 0, 100% 100%, 0 100%)', paddingTop: '25vw', paddingBottom: '20px' }}
         >
             <div className="max-w-[1000px] mx-auto px-[5vw]">
+                {!hideContactForm && (
+                <>
                 {/* Title */}
                 <h2 className="text-[clamp(32px,5vw,70px)] font-extrabold mb-[2vh] leading-tight animate-text-footer md:whitespace-nowrap">
                     <span className="transition-colors duration-300 hover:text-brand-dark cursor-default inline-block">ככה</span> נערכים
@@ -147,6 +154,8 @@ const Footer: React.FC = () => {
                         </form>
                     )}
                 </div>
+                </>
+                )}
 
                 <div className="text-center text-white/40 text-xs mt-2 mb-8 animate-text-footer">
                     גאולה, ירושלים | אופציה למשלוחים
