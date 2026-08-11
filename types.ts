@@ -152,6 +152,16 @@ export interface CalculatorTexts {
   note5: string;
 }
 
+// חלונית "ניוז" קופצת בכניסה לאתר. כל השדות ניתנים לעריכה מלוח הבקרה (טאב "חלונית קופצת")
+// ונשמרים ל-Sanity יחד עם שאר התוכן. רעות מדליקה/מכבה אותה ומעדכנת תמונה+טקסט בכל פעם.
+export interface NewsPopupContent {
+  enabled: boolean;    // האם להציג את החלונית באתר
+  image: string;       // כתובת התמונה
+  title: string;       // כותרת
+  text: string;        // טקסט הגוף (תומך במעברי שורה)
+  buttonText: string;  // טקסט הכפתור ליצירת קשר. ריק = ללא כפתור
+}
+
 export interface AppContent {
   hero: HeroContent;
   valueSection: ValueItem[];
@@ -161,4 +171,5 @@ export interface AppContent {
   sections: Section[];
   pricing?: PricingData;
   calculator?: CalculatorTexts;
+  newsPopup?: NewsPopupContent;
 }

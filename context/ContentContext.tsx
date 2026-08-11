@@ -1,6 +1,6 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { AppContent, CalculatorTexts, GalleryItem, PricingData, Recommendation, ValueItem } from '../types';
+import { AppContent, CalculatorTexts, GalleryItem, NewsPopupContent, PricingData, Recommendation, ValueItem } from '../types';
 import { saveContentToSanity, loadContentFromSanity, verifyPassword } from '../services/sanityService';
 
 // טקסטים (מלל) ברירת מחדל של מחשבון התמחור.
@@ -66,6 +66,16 @@ export const defaultPricing: PricingData = {
   keyboard: 180,
   hourlyRate: 250,
   bulkThreshold: 25,
+};
+
+// ברירת מחדל לחלונית ה"ניוז" הקופצת. מכובה כברירת מחדל — רעות מדליקה אותה מלוח הבקרה
+// (טאב "חלונית קופצת") כשיש ניוז חדש, ומכבה בין העדכונים.
+export const defaultNewsPopup: NewsPopupContent = {
+  enabled: false,
+  image: '',
+  title: 'מה חדש אצלנו',
+  text: 'יצא ניוז חדש!\nהשאירו פרטים ונחזור אליכם עם כל הפרטים.',
+  buttonText: 'להשארת פרטים',
 };
 
 // Default / Initial Data
@@ -240,7 +250,8 @@ const defaultContent: AppContent = {
       }
   ],
   pricing: defaultPricing,
-  calculator: defaultCalculatorTexts
+  calculator: defaultCalculatorTexts,
+  newsPopup: defaultNewsPopup
 };
 
 interface ContentContextType {
@@ -263,6 +274,8 @@ interface ContentContextType {
   updatePricing: (data: Partial<PricingData>) => void;
   // Calculator texts
   updateCalculatorText: (data: Partial<CalculatorTexts>) => void;
+  // News popup
+  updateNewsPopup: (data: Partial<NewsPopupContent>) => void;
   resetContent: () => void;
   isAdmin: boolean;
   isEditMode: boolean;
@@ -522,6 +535,14 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }));
   };
 
+  // --- News Popup Logic ---
+  const updateNewsPopup = (data: Partial<NewsPopupContent>) => {
+    setContent(prev => ({
+        ...prev,
+        newsPopup: { ...(prev.newsPopup || defaultNewsPopup), ...data }
+    }));
+  };
+
   const resetContent = () => {
       if(window.confirm("האם את בטוחה שאת רוצה לאפס את כל הנתונים לברירת המחדל?")) {
         setContent(defaultContent);
@@ -544,6 +565,7 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
         deleteRecommendation,
         updatePricing,
         updateCalculatorText,
+        updateNewsPopup,
         resetContent,
         isAdmin,
         login,

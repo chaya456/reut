@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { useContent, defaultPricing, defaultCalculatorTexts } from '../context/ContentContext';
+import { useContent, defaultPricing, defaultCalculatorTexts, defaultNewsPopup } from '../context/ContentContext';
 import { CalculatorTexts } from '../types';
 
 interface AdminPanelProps {
@@ -14,13 +14,14 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
       addGalleryItem, updateGalleryItem, deleteGalleryItem,
       addRecommendation, updateRecommendation, deleteRecommendation,
       addValueItem, updateValueItem, deleteValueItem,
-      updatePricing, updateCalculatorText, resetContent, logout, saveNow
+      updatePricing, updateCalculatorText, updateNewsPopup, resetContent, logout, saveNow
   } = useContent();
 
   const pricing = content.pricing || defaultPricing;
   const calc = { ...defaultCalculatorTexts, ...(content.calculator || {}) };
+  const newsPopup = { ...defaultNewsPopup, ...(content.newsPopup || {}) };
 
-  const [activeTab, setActiveTab] = useState<'hero' | 'about' | 'value' | 'gallery' | 'recommendations' | 'pricing' | 'calculator'>('hero');
+  const [activeTab, setActiveTab] = useState<'hero' | 'about' | 'value' | 'gallery' | 'recommendations' | 'pricing' | 'calculator' | 'newsPopup'>('hero');
   const [editingItem, setEditingItem] = useState<any>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -137,6 +138,12 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                 className={`px-6 py-4 font-bold transition-colors whitespace-nowrap ${activeTab === 'calculator' ? 'bg-white text-brand-dark border-t-4 border-brand-dark' : 'text-gray-500 hover:bg-gray-100'}`}
             >
                 מחשבון (טקסטים)
+            </button>
+            <button
+                onClick={() => { setActiveTab('newsPopup'); setEditingItem(null); }}
+                className={`px-6 py-4 font-bold transition-colors whitespace-nowrap ${activeTab === 'newsPopup' ? 'bg-white text-brand-dark border-t-4 border-brand-dark' : 'text-gray-500 hover:bg-gray-100'}`}
+            >
+                חלונית קופצת
             </button>
         </div>
 
@@ -680,6 +687,91 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                             </div>
                         </div>
                     ))}
+                </div>
+            )}
+
+            {/* NEWS POPUP EDITOR */}
+            {activeTab === 'newsPopup' && (
+                <div className="max-w-2xl mx-auto space-y-6">
+                    <div className="bg-blue-50 p-4 rounded-lg border border-blue-100 text-sm text-blue-800">
+                        <strong>הנחיות:</strong> החלונית הקופצת מוצגת למבקרים בכניסה לאתר (פעם אחת לכל ביקור). כאן מעדכנים את התמונה והטקסט של הניוז העדכני, ומדליקים/מכבים אותה בין העדכונים. השינויים נשמרים אוטומטית.
+                    </div>
+
+                    {/* מתג הפעלה */}
+                    <div className={`p-5 rounded-lg border-2 flex items-center justify-between transition-colors ${newsPopup.enabled ? 'bg-green-50 border-green-300' : 'bg-gray-50 border-gray-200'}`}>
+                        <div>
+                            <div className="font-bold text-lg text-gray-900">הצגת החלונית באתר</div>
+                            <div className="text-sm text-gray-500">{newsPopup.enabled ? 'החלונית פעילה ומוצגת למבקרים' : 'החלונית כבויה ולא מוצגת'}</div>
+                        </div>
+                        <button
+                            onClick={() => updateNewsPopup({ enabled: !newsPopup.enabled })}
+                            className={`relative w-16 h-9 rounded-full transition-colors duration-300 shrink-0 ${newsPopup.enabled ? 'bg-green-500' : 'bg-gray-300'}`}
+                            aria-label="הפעלה/כיבוי"
+                        >
+                            <span className={`absolute top-1 w-7 h-7 bg-white rounded-full shadow transition-all duration-300 ${newsPopup.enabled ? 'right-1' : 'right-8'}`}></span>
+                        </button>
+                    </div>
+
+                    {/* תמונה */}
+                    <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                        <h3 className="font-bold text-xl mb-4 border-b pb-2 text-brand-dark">תמונת החלונית</h3>
+                        <div className="flex gap-4 items-start">
+                            {newsPopup.image ? (
+                                <img src={newsPopup.image} alt="תמונת חלונית" className="w-32 h-32 object-cover rounded border border-gray-300 shadow-sm shrink-0" />
+                            ) : (
+                                <div className="w-32 h-32 bg-gray-100 rounded border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-xs text-center p-2 shrink-0">אין תמונה</div>
+                            )}
+                            <div className="flex-1">
+                                <input type="file" onChange={(e) => handleImageUpload(e, (url) => updateNewsPopup({ image: url }))} className="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-soft file:text-brand-dark hover:file:bg-brand-light" />
+                                <p className="text-xs text-gray-500 mt-2">{isUploading ? 'מעלה תמונה...' : 'מומלץ תמונה מרובעת או לאורך. ניתן להשאיר ריק לחלונית טקסט בלבד.'}</p>
+                                {newsPopup.image && (
+                                    <button onClick={() => updateNewsPopup({ image: '' })} className="text-xs text-red-500 hover:text-red-700 mt-2 underline">הסרת התמונה</button>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* טקסטים */}
+                    <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 space-y-4">
+                        <h3 className="font-bold text-xl mb-2 border-b pb-2 text-brand-dark">טקסטים</h3>
+                        <div>
+                            <label className="block text-sm font-bold text-gray-700 mb-1">כותרת</label>
+                            <input type="text" value={newsPopup.title} onChange={e => updateNewsPopup({ title: e.target.value })} className="w-full p-3 border border-gray-300 rounded bg-white text-gray-900 focus:ring-2 focus:ring-brand-dark focus:outline-none text-right" placeholder="לדוגמה: יצא ניוז חדש!" />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-bold text-gray-700 mb-1">טקסט הגוף</label>
+                            <textarea value={newsPopup.text} onChange={e => updateNewsPopup({ text: e.target.value })} className="w-full p-3 border border-gray-300 rounded bg-white text-gray-900 focus:ring-2 focus:ring-brand-dark focus:outline-none min-h-[120px] text-right" placeholder="תוכן הניוז..." />
+                            <p className="text-xs text-gray-500 mt-1">אפשר לרדת שורה עם Enter.</p>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-bold text-gray-700 mb-1">טקסט כפתור השליחה</label>
+                            <input type="text" value={newsPopup.buttonText} onChange={e => updateNewsPopup({ buttonText: e.target.value })} className="w-full p-3 border border-gray-300 rounded bg-white text-gray-900 focus:ring-2 focus:ring-brand-dark focus:outline-none text-right" placeholder="שליחה" />
+                            <p className="text-xs text-gray-500 mt-1">המבקר משאיר שם ומייל בתוך החלונית, והכפתור שולח את הפרטים (מגיעים למערכת הדיוור כמו הניוזלטר).</p>
+                        </div>
+                    </div>
+
+                    {/* תצוגה מקדימה */}
+                    <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                        <h3 className="font-bold text-xl mb-4 border-b pb-2 text-brand-dark">תצוגה מקדימה</h3>
+                        <div className="bg-gray-100 rounded-lg p-6 flex items-center justify-center">
+                            <div className="bg-white/90 shadow-lg max-w-md w-full flex flex-col sm:flex-row overflow-hidden border border-gray-200">
+                                {newsPopup.image && (
+                                    <div className="w-full sm:w-[45%] h-32 sm:h-auto shrink-0">
+                                        <img src={newsPopup.image} alt="preview" className="w-full h-full object-cover" />
+                                    </div>
+                                )}
+                                <div className={`w-full ${newsPopup.image ? 'sm:w-[55%]' : ''} p-5 text-center flex flex-col justify-center items-center`} dir="rtl">
+                                    {newsPopup.title && <h4 className="text-xl font-extrabold text-dark-coal mb-2">{newsPopup.title}</h4>}
+                                    {newsPopup.text && <p className="text-sm text-dark-coal/80 mb-3 whitespace-pre-line">{newsPopup.text}</p>}
+                                    <div className="w-full flex flex-col gap-2">
+                                        <div className="w-full bg-white/70 border-b border-dark-coal/20 text-dark-coal/50 text-sm py-2 px-3 text-right">שם</div>
+                                        <div className="w-full bg-white/70 border-b border-dark-coal/20 text-dark-coal/50 text-sm py-2 px-3 text-right">כתובת מייל</div>
+                                        <span className="w-full bg-brand-dark text-white py-2 px-4 font-bold text-sm">{newsPopup.buttonText || 'שליחה'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             )}
 

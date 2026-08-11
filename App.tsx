@@ -12,6 +12,8 @@ import ProductsDirectory from './components/ProductsDirectory';
 import PriceCalculator from './components/PriceCalculator';
 import FloatingCalcButton from './components/FloatingCalcButton';
 import NewsletterModal from './components/NewsletterModal';
+import NewsPopupModal from './components/NewsPopupModal';
+import Preloader from './components/Preloader';
 import { products } from './data/products';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -176,6 +178,9 @@ const MainContent = ({ productSlug }: { productSlug?: string }) => {
             {/* Floating Admin Toolbar */}
             <AdminToolbar />
 
+            {/* News Popup (admin-editable, entry popup) */}
+            <NewsPopupModal />
+
             {/* Newsletter Modal */}
             <NewsletterModal />
 
@@ -234,6 +239,7 @@ const App: React.FC = () => {
 
   return (
     <ContentProvider>
+        <Preloader />
         {renderRoute()}
     </ContentProvider>
   );
