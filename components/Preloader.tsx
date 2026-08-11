@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import { PRELOADER_DURATION, PRELOADER_FADE, markPreloaderDone } from '../preloaderTiming';
 
-// מסך טעינה קצר (5 שניות) בכניסה לאתר — מציג את הלוגו המונפש בזמן שהתמונות נטענות ברקע,
+// מסך טעינה קצר בכניסה לאתר — מציג את הלוגו המונפש בזמן שהתמונות נטענות ברקע,
 // ואז נעלם בהדרגה. מוצג פעם אחת בכל טעינת עמוד מלאה.
-const DURATION = 5000; // משך הטעינה במילישניות
-const FADE = 600;      // משך אנימציית ההיעלמות
-
 const Preloader: React.FC = () => {
   const [fadingOut, setFadingOut] = useState(false);
   const [hidden, setHidden] = useState(false);
@@ -13,11 +11,13 @@ const Preloader: React.FC = () => {
     // מונעים גלילה בזמן הטעינה
     document.body.style.overflow = 'hidden';
 
-    const fadeTimer = setTimeout(() => setFadingOut(true), DURATION);
+    const fadeTimer = setTimeout(() => setFadingOut(true), PRELOADER_DURATION);
     const hideTimer = setTimeout(() => {
       setHidden(true);
       document.body.style.overflow = '';
-    }, DURATION + FADE);
+      // מסמנים שהטעינה הסתיימה — כדי שהחלוניות הקופצות יתחילו למנות רק עכשיו.
+      markPreloaderDone();
+    }, PRELOADER_DURATION + PRELOADER_FADE);
 
     return () => {
       clearTimeout(fadeTimer);
@@ -43,8 +43,13 @@ const Preloader: React.FC = () => {
         style={{ mixBlendMode: 'multiply' }}
       />
 
+      {/* סלוגן */}
+      <p className="mt-2 text-brand-dark font-extrabold text-[clamp(18px,3.4vw,26px)] tracking-tight">
+        מוסיפה ערך למוצר
+      </p>
+
       {/* פס התקדמות דק שמתמלא לאורך זמן הטעינה */}
-      <div className="mt-8 w-40 h-[3px] bg-brand-light/40 rounded-full overflow-hidden">
+      <div className="mt-7 w-40 h-[3px] bg-brand-light/40 rounded-full overflow-hidden">
         <div className="h-full bg-brand-dark rounded-full animate-[loadBar_5s_linear_forwards]"></div>
       </div>
 

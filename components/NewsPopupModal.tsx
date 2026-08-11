@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useContent, defaultNewsPopup } from '../context/ContentContext';
 import { CONTACT_CONFIG } from '../formConfig';
+import { runAfterPreloader } from '../preloaderTiming';
 
 // חלונית "ניוז" קופצת בכניסה לאתר. התוכן (תמונה, כותרת, טקסט, כפתור) נשלט לגמרי
 // מלוח הבקרה של רעות (טאב "חלונית קופצת") ונשמר ל-Sanity.
@@ -17,13 +18,13 @@ const NewsPopupModal: React.FC = () => {
 
   useEffect(() => {
     // מציגים רק אם החלונית מופעלת מהניהול. פעם אחת לכל ביקור (סשן).
+    // מופיע רק אחרי שמסך הטעינה הסתיים והאתר גלוי (+1.5 שניות).
     if (!popup.enabled) return;
 
-    const timer = setTimeout(() => {
+    return runAfterPreloader(1500, () => {
       const hasSeen = sessionStorage.getItem('hasSeenNewsPopup');
       if (!hasSeen) setIsOpen(true);
-    }, 1500);
-    return () => clearTimeout(timer);
+    });
   }, [popup.enabled]);
 
   const handleClose = () => {

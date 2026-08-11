@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { CONTACT_CONFIG } from '../formConfig';
+import { runAfterPreloader } from '../preloaderTiming';
 
 const NewsletterModal: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -9,14 +10,13 @@ const NewsletterModal: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   useEffect(() => {
-    // Show modal after 10 seconds (delayed to allow coupon to show first)
-    const timer = setTimeout(() => { 
+    // מופיע רק אחרי שמסך הטעינה הסתיים והאתר גלוי (+4 שניות).
+    return runAfterPreloader(4000, () => {
         const hasSeenNewsletter = sessionStorage.getItem('hasSeenNewsletter');
         if (!hasSeenNewsletter) {
-            setIsOpen(true); 
+            setIsOpen(true);
         }
-    }, 10000);
-    return () => clearTimeout(timer);
+    });
   }, []);
 
   const handleClose = () => {
