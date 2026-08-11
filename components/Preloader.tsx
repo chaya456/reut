@@ -34,11 +34,13 @@ const Preloader: React.FC = () => {
       style={{ opacity: fadingOut ? 0 : 1, pointerEvents: fadingOut ? 'none' : 'auto' }}
       aria-hidden="true"
     >
-      {/* הלוגו המונפש */}
+      {/* הלוגו המונפש — mix-blend-mode: multiply מוחק את הרקע הלבן של ה-GIF
+          כך שרקע המותג נראה מבעד ללוגו (במקום ריבוע לבן). */}
       <img
         src="/logo-animated.gif"
         alt="ערך מוסף"
-        className="w-[min(80vw,460px)] h-auto"
+        className="w-[min(42vw,230px)] h-auto"
+        style={{ mixBlendMode: 'multiply' }}
       />
 
       {/* פס התקדמות דק שמתמלא לאורך זמן הטעינה */}
