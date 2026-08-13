@@ -9,4 +9,8 @@ export const CONTACT_CONFIG = {
     
     // טופס ניוזלטר (Modal) - עודכן לטופס החדש (חשבון 2099621)
     newsletterUrl: "https://assets.mailerlite.com/jsonp/2099621/forms/179453676782356455/subscribe",
+
+    // טופס "פניות מהחלונית הקופצת" (Modal) - קבוצה נפרדת כדי שרעות תקבל התראה
+    // על כל פנייה (גם ממייל שכבר רשום לניוזלטר), נפרד מהרשמות לדיוור.
+    newsPopupUrl: "https://assets.mailerlite.com/jsonp/2099621/forms/195615337685714324/subscribe",
 };

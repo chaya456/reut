@@ -42,7 +42,7 @@ const NewsPopupModal: React.FC = () => {
       formData.append('fields[email]', email);
       formData.append('ml-submit', '1');
 
-      await fetch(CONTACT_CONFIG.newsletterUrl, {
+      await fetch(CONTACT_CONFIG.newsPopupUrl, {
         method: 'POST',
         mode: 'no-cors',
         body: formData,
