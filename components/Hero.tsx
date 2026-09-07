@@ -12,9 +12,21 @@ interface HeroProps {
 
 const Hero: React.FC<HeroProps> = ({ data }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [mousePos, setMousePos] = useState({ x: '50%', y: '50%' });
+  const [mousePos, setMousePos] = useState<{ x: string; y: string } | null>(null);
+  // אפקט "לפני/אחרי" בעקבות העכבר רלוונטי רק במכשירים עם עכבר אמיתי.
+  // במגע (טלפון/טאבלט) אין מיקום עכבר, אז בלי הבדיקה הזו הייתה נשארת "חורית" קבועה
+  // באמצע התמונה שמערבבת בין שתי התמונות - בדיוק הבאג שדווח.
+  const [hasHoverSupport, setHasHoverSupport] = useState(false);
   const { content, isEditMode, updateHero } = useContent();
   const heroData = data || content.hero;
+
+  useEffect(() => {
+    const mq = window.matchMedia('(hover: hover) and (pointer: fine)');
+    setHasHoverSupport(mq.matches);
+    const handleChange = (e: MediaQueryListEvent) => setHasHoverSupport(e.matches);
+    mq.addEventListener('change', handleChange);
+    return () => mq.removeEventListener('change', handleChange);
+  }, []);
 
   // Helper to split text into characters
   const splitText = (text: string) => {
@@ -114,19 +126,21 @@ const Hero: React.FC<HeroProps> = ({ data }) => {
             />
         </div>
 
-        <div 
-            className="absolute inset-0 w-full h-full z-10 pointer-events-none"
-            style={{
-                maskImage: `radial-gradient(circle 300px at ${mousePos.x} ${mousePos.y}, transparent 0%, black 100%)`,
-                WebkitMaskImage: `radial-gradient(circle 300px at ${mousePos.x} ${mousePos.y}, transparent 0%, black 100%)`
-            }}
-        >
-            <img 
-                src="https://i.postimg.cc/KzRYTxgh/befor.jpg" 
-                alt="חריטה ומיתוג על מוצרים - לפני" 
-                className="w-full h-full object-cover object-center"
-            />
-        </div>
+        {hasHoverSupport && mousePos && (
+            <div
+                className="absolute inset-0 w-full h-full z-10 pointer-events-none"
+                style={{
+                    maskImage: `radial-gradient(circle 300px at ${mousePos.x} ${mousePos.y}, transparent 0%, black 100%)`,
+                    WebkitMaskImage: `radial-gradient(circle 300px at ${mousePos.x} ${mousePos.y}, transparent 0%, black 100%)`
+                }}
+            >
+                <img
+                    src="https://i.postimg.cc/KzRYTxgh/befor.jpg"
+                    alt="חריטה ומיתוג על מוצרים - לפני"
+                    className="w-full h-full object-cover object-center"
+                />
+            </div>
+        )}
 
         {/* CONTENT LAYER */}
         <div className="absolute inset-0 z-20 pointer-events-auto dir-rtl flex flex-col justify-center px-[5vw]">
