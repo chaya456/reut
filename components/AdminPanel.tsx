@@ -14,6 +14,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
       addGalleryItem, updateGalleryItem, deleteGalleryItem,
       addRecommendation, updateRecommendation, deleteRecommendation,
       addValueItem, updateValueItem, deleteValueItem,
+      addNewsItem, updateNewsItem, deleteNewsItem,
       updatePricing, updateCalculatorText, updateNewsPopup, resetContent, logout, saveNow
   } = useContent();
 
@@ -21,7 +22,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
   const calc = { ...defaultCalculatorTexts, ...(content.calculator || {}) };
   const newsPopup = { ...defaultNewsPopup, ...(content.newsPopup || {}) };
 
-  const [activeTab, setActiveTab] = useState<'hero' | 'about' | 'value' | 'gallery' | 'recommendations' | 'pricing' | 'calculator' | 'newsPopup'>('hero');
+  const [activeTab, setActiveTab] = useState<'hero' | 'about' | 'value' | 'gallery' | 'news' | 'recommendations' | 'pricing' | 'calculator' | 'newsPopup'>('hero');
   const [editingItem, setEditingItem] = useState<any>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -120,6 +121,12 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                 className={`px-6 py-4 font-bold transition-colors whitespace-nowrap ${activeTab === 'gallery' ? 'bg-white text-brand-dark border-t-4 border-brand-dark' : 'text-gray-500 hover:bg-gray-100'}`}
             >
                 גלריה
+            </button>
+            <button
+                onClick={() => { setActiveTab('news'); setEditingItem(null); }}
+                className={`px-6 py-4 font-bold transition-colors whitespace-nowrap ${activeTab === 'news' ? 'bg-white text-brand-dark border-t-4 border-brand-dark' : 'text-gray-500 hover:bg-gray-100'}`}
+            >
+                ניוז
             </button>
             <button
                 onClick={() => { setActiveTab('recommendations'); setEditingItem(null); }}
@@ -434,6 +441,152 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                                 </div>
                             </div>
                         ))}
+                    </div>
+                </div>
+            )}
+
+            {/* NEWS FEED EDITOR (עמוד /news) */}
+            {activeTab === 'news' && (
+                <div className="space-y-6">
+                    <div className="flex justify-between items-center bg-blue-50 p-4 rounded-lg border border-blue-100 text-sm text-blue-800">
+                        <span><strong>הנחיות:</strong> נהלי את לוח הניוז בעמוד "ניוז ועדכונים". כל פריט = תמונה אחת (או יותר) + כותרת + תווית. פריט חדש נוסף לראש הרשימה.</span>
+                        <button
+                            onClick={() => setEditingItem({ id: Date.now(), title: '', tag: 'חדש', cover: '', images: [], isHidden: false, isNew: true })}
+                            className="bg-brand-dark text-white px-4 py-2 rounded-lg font-bold hover:bg-brand-light hover:text-dark-coal transition-colors shadow-sm flex items-center gap-2 shrink-0"
+                        >
+                            <span className="text-xl leading-none">+</span> הוספת ניוז חדש
+                        </button>
+                    </div>
+
+                    {editingItem && (
+                        <div className="bg-white p-6 rounded-lg shadow-xl border-2 border-brand-light mb-8 animate-[fadeIn_0.2s] relative">
+                            <button onClick={() => setEditingItem(null)} className="absolute top-4 left-4 text-gray-400 hover:text-gray-600">✕</button>
+                            <h3 className="font-bold text-xl mb-6 text-brand-dark border-b pb-2">{editingItem.isNew ? 'הוספת ניוז חדש' : 'עריכת ניוז'}</h3>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-1">כותרת</label>
+                                    <input type="text" value={editingItem.title} onChange={e => setEditingItem({...editingItem, title: e.target.value})} className="w-full p-3 border border-gray-300 rounded bg-white text-gray-900 focus:ring-2 focus:ring-brand-dark focus:outline-none text-right" placeholder="לדוגמה: חריטה על מצלמות" />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-1">תווית (מוצגת בפינת הכרטיס)</label>
+                                    <input type="text" value={editingItem.tag} onChange={e => setEditingItem({...editingItem, tag: e.target.value})} className="w-full p-3 border border-gray-300 rounded bg-white text-gray-900 focus:ring-2 focus:ring-brand-dark focus:outline-none text-right" placeholder="לדוגמה: מוצר חדש / מבצע חג" />
+                                </div>
+                            </div>
+
+                            <div className="mb-6 bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                <label className="block text-sm font-bold text-gray-700 mb-2">תמונת הכרטיס (מוצגת בלוח הניוז)</label>
+                                <div className="flex gap-4 items-start">
+                                    {editingItem.cover ? (
+                                        <img src={editingItem.cover} alt="cover" className="w-24 h-28 object-cover rounded border border-gray-300 shadow-sm shrink-0" />
+                                    ) : (
+                                        <div className="w-24 h-28 bg-gray-200 rounded border border-gray-300 flex items-center justify-center text-gray-400 text-xs text-center p-1 shrink-0">אין תמונה</div>
+                                    )}
+                                    <div className="flex-1">
+                                        <input type="file" onChange={(e) => handleImageUpload(e, (url) => setEditingItem({...editingItem, cover: url}))} className="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-soft file:text-brand-dark hover:file:bg-brand-light" />
+                                        <p className="text-xs text-gray-500 mt-2">זו הגרפיקה המלאה של הניוז — נפתחת בלחיצה על הכרטיס.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="mb-6 bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                <label className="block text-sm font-bold text-gray-700 mb-2">תמונת התוצר הסופי (המלבן שמוצג בלוח — אופציונלי)</label>
+                                <div className="flex gap-4 items-start">
+                                    {editingItem.thumb ? (
+                                        <img src={editingItem.thumb} alt="thumb" className="w-32 h-24 object-cover rounded border border-gray-300 shadow-sm shrink-0" />
+                                    ) : (
+                                        <div className="w-32 h-24 bg-gray-200 rounded border border-gray-300 flex items-center justify-center text-gray-400 text-xs text-center p-1 shrink-0">ללא — תוצג הגרפיקה</div>
+                                    )}
+                                    <div className="flex-1">
+                                        <input type="file" onChange={(e) => handleImageUpload(e, (url) => setEditingItem({...editingItem, thumb: url}))} className="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-soft file:text-brand-dark hover:file:bg-brand-light" />
+                                        <p className="text-xs text-gray-500 mt-2">תמונה לרוחב (יחס 4:3) של המוצר המוגמר.</p>
+                                        {editingItem.thumb && (
+                                            <button type="button" onClick={() => setEditingItem({...editingItem, thumb: ''})} className="text-xs text-red-600 hover:underline mt-1">הסרת התמונה</button>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="mb-6">
+                                <label className="block text-sm font-bold text-gray-700 mb-2">תמונות נוספות (אופציונלי - נפתחות בלחיצה על הכרטיס)</label>
+                                <div className="space-y-3 mb-4">
+                                    {editingItem.images?.map((url: string, idx: number) => (
+                                        <div key={idx} className="flex items-center gap-3 bg-white p-3 rounded border border-gray-200 shadow-sm">
+                                            <div className="w-16 h-16 shrink-0 bg-gray-100 rounded overflow-hidden border border-gray-200">
+                                                <img src={url} className="w-full h-full object-cover" />
+                                            </div>
+                                            <span className="flex-1 text-xs text-gray-400 break-all dir-ltr">{url}</span>
+                                            <button
+                                                onClick={() => setEditingItem({...editingItem, images: editingItem.images.filter((_:string, i:number) => i !== idx)})}
+                                                className="bg-red-100 text-red-600 w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-200 transition-colors shrink-0"
+                                                title="הסר תמונה"
+                                            >✕</button>
+                                        </div>
+                                    ))}
+                                    {(!editingItem.images || editingItem.images.length === 0) && (
+                                        <div className="text-center py-4 text-gray-400 bg-gray-50 rounded border border-dashed border-gray-300">
+                                            אין תמונות נוספות. הכרטיס יפתח את תמונת הכרטיס בלבד.
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="bg-blue-50 p-3 rounded border border-blue-100 inline-block w-full">
+                                    <label className="block text-xs font-bold text-blue-800 mb-1">הוספת תמונות נוספות:</label>
+                                    <input type="file" multiple onChange={(e) => handleImageUpload(e, (url) => setEditingItem({...editingItem, images: [...(editingItem.images || []), url]}))} className="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-white file:text-blue-700 hover:file:bg-blue-100" />
+                                </div>
+                            </div>
+
+                            <div className="flex gap-3 justify-end mt-8 pt-4 border-t border-gray-100">
+                                <button onClick={() => setEditingItem(null)} className="px-6 py-2 text-gray-600 hover:bg-gray-100 rounded font-medium transition-colors">ביטול</button>
+                                <button
+                                    disabled={isUploading || !editingItem.cover}
+                                    onClick={() => {
+                                        if(editingItem.isNew) addNewsItem({ id: Date.now(), title: editingItem.title, tag: editingItem.tag, cover: editingItem.cover, thumb: editingItem.thumb || '', images: editingItem.images || [], isHidden: false });
+                                        else updateNewsItem(editingItem.id, { title: editingItem.title, tag: editingItem.tag, cover: editingItem.cover, thumb: editingItem.thumb || '', images: editingItem.images || [] });
+                                        setEditingItem(null);
+                                    }}
+                                    className="px-8 py-2 bg-brand-dark text-white rounded font-bold hover:bg-brand-light hover:text-dark-coal shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    {isUploading ? 'מעלה תמונות...' : (!editingItem.cover ? 'חסרה תמונת כרטיס' : 'שמור ניוז')}
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        {(content.news || []).map(item => (
+                            <div key={item.id} className={`bg-white p-4 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-100 relative group ${item.isHidden ? 'opacity-60 bg-gray-50' : ''}`}>
+                                <div className="h-48 bg-gray-100 rounded-lg mb-3 overflow-hidden relative">
+                                    <img src={item.cover} alt={item.title} className="w-full h-full object-cover object-top" />
+                                    <span className="absolute top-2 right-2 bg-brand-dark text-white px-2 py-0.5 rounded-full text-[11px] font-bold shadow-sm">{item.tag}</span>
+                                    {item.images && item.images.length > 0 && (
+                                        <span className="absolute top-2 left-2 bg-white/90 px-2 py-0.5 rounded text-[11px] font-bold shadow-sm">{item.images.length + 1} תמונות</span>
+                                    )}
+                                    {item.isHidden && (
+                                        <div className="absolute inset-0 bg-black/10 flex items-center justify-center">
+                                            <span className="bg-black/70 text-white px-3 py-1 rounded-full text-sm backdrop-blur-sm">מוסתר</span>
+                                        </div>
+                                    )}
+                                </div>
+                                <h4 className="font-bold text-base mb-3 text-gray-900 truncate">{item.title}</h4>
+
+                                <div className="flex justify-between items-center text-sm pt-3 border-t border-gray-100">
+                                    <div className="flex gap-2">
+                                        <button onClick={() => setEditingItem({...item, images: item.images || [], isNew: false})} className="text-blue-600 hover:text-blue-800 font-bold bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded transition-colors">עריכה</button>
+                                        <button onClick={() => updateNewsItem(item.id, { isHidden: !item.isHidden })} className={`px-3 py-1.5 rounded transition-colors ${item.isHidden ? 'text-green-600 bg-green-50 hover:bg-green-100' : 'text-orange-600 bg-orange-50 hover:bg-orange-100'}`}>
+                                            {item.isHidden ? 'הצג באתר' : 'הסתר'}
+                                        </button>
+                                    </div>
+                                    <button onClick={() => { if(window.confirm('האם למחוק את הניוז לצמיתות?')) deleteNewsItem(item.id) }} className="text-red-500 hover:text-red-700 hover:bg-red-50 px-2 py-1.5 rounded transition-colors" title="מחיקה">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                        {(!content.news || content.news.length === 0) && (
+                            <div className="col-span-full text-center py-10 text-gray-400 bg-gray-50 rounded-lg border border-dashed border-gray-300">
+                                אין ניוזים עדיין. הוסיפי ניוז חדש עם הכפתור למעלה.
+                            </div>
+                        )}
                     </div>
                 </div>
             )}

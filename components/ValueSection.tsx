@@ -6,6 +6,7 @@ import { ValueItem } from '../types';
 import EditableText from './editable/EditableText';
 import EditableImage from './editable/EditableImage';
 import LazyImage from './LazyImage';
+import SectionCTA from './SectionCTA';
 
 interface ValueSectionProps {
     id?: string;
@@ -66,7 +67,11 @@ const ValueSection: React.FC<ValueSectionProps> = ({ id, data, title, subtitle }
   // Carousel items — no duplication (duplicating doubled the number of images the
   // browser had to download; the arrows already clamp to the real range).
   const carouselItems = galleryData;
-  const maxIndex = Math.max(0, carouselItems.length - itemsPerView);
+
+  // 3 תמונות שמוצגות בצד (לצד התמונה הגדולה), עם גלישה מעגלית ברשימה.
+  const visibleThumbs = carouselItems.length
+    ? Array.from({ length: Math.min(3, carouselItems.length) }, (_, k) => carouselItems[(carouselIndex + k) % carouselItems.length])
+    : [];
 
   useEffect(() => {
     if (!sectionRef.current) return;
@@ -135,8 +140,8 @@ const ValueSection: React.FC<ValueSectionProps> = ({ id, data, title, subtitle }
     }
   }, [carouselIndex, itemsPerView]);
 
-  const handleNext = () => setCarouselIndex((prev: number) => prev >= maxIndex ? 0 : prev + 1);
-  const handlePrev = () => setCarouselIndex((prev: number) => prev <= 0 ? maxIndex : prev - 1);
+  const handleNext = () => setCarouselIndex((prev: number) => carouselItems.length ? (prev + 1) % carouselItems.length : 0);
+  const handlePrev = () => setCarouselIndex((prev: number) => carouselItems.length ? (prev - 1 + carouselItems.length) % carouselItems.length : 0);
 
   const handleMainNext = () => {
     const currentIndex = galleryData.findIndex(item => item.id === activeItem.id);
@@ -180,15 +185,15 @@ const ValueSection: React.FC<ValueSectionProps> = ({ id, data, title, subtitle }
     <section 
         id={id || "value"}
         ref={sectionRef} 
-        className="py-[15vh] relative overflow-hidden bg-white/50 z-30 flex flex-col justify-center"
-        style={{ 
+        className="py-[3vh] relative overflow-hidden bg-white/50 z-30 flex flex-col justify-center"
+        style={{
             clipPath: 'polygon(0 0, 100% 0, 100% 92%, 0 100%)',
-            minHeight: '120vh'
+            minHeight: '100vh'
         }}
     >
       
       <div className="max-w-[1400px] mx-auto px-[5vw] w-full relative z-10 flex flex-col items-center">
-        <div className="text-center mb-[6vh]">
+        <div className="text-center mb-[2.5vh]">
           {/* Responsive Heading */}
           {isEditMode ? (
             <div className="flex flex-col items-center gap-2">
@@ -205,10 +210,13 @@ const ValueSection: React.FC<ValueSectionProps> = ({ id, data, title, subtitle }
           )}
         </div>
 
-        {/* 1. Main Comparison Slider */}
-        <div 
+        {/* Main comparison + side thumbnails (3 images beside the big image) */}
+        <div className="w-full flex flex-col md:flex-row items-center justify-center gap-[1.5vw] mb-[3vh]">
+
+        {/* 1. Main Comparison Slider (enlarged) */}
+        <div
           ref={sliderRef}
-          className="w-full max-w-[1000px] aspect-[16/9] relative rounded-none overflow-hidden shadow-2xl bg-brand-soft mb-[6vh] cursor-ew-resize select-none border-4 border-white group/slider"
+          className="w-full md:flex-1 md:max-w-[920px] aspect-[16/9] relative rounded-none overflow-hidden shadow-2xl bg-brand-soft cursor-ew-resize select-none border-4 border-white group/slider"
           onMouseMove={handleMove}
           onTouchMove={handleMove}
         >
@@ -266,53 +274,43 @@ const ValueSection: React.FC<ValueSectionProps> = ({ id, data, title, subtitle }
           </button>
         </div>
 
+        {/* Side thumbnails: 3 images beside the main comparison */}
+        <div className="flex md:flex-col items-center justify-center gap-2 md:gap-3 shrink-0 w-full md:w-[230px]">
+            <button onClick={handlePrev} aria-label="הקודם" className="w-9 h-9 border-2 border-brand-dark flex items-center justify-center text-brand-dark hover:bg-brand-dark hover:text-white transition-all shrink-0">
+                <svg className="md:-rotate-90" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6" /></svg>
+            </button>
+
+            <div className="flex md:flex-col gap-2 md:gap-3 w-full">
+                {visibleThumbs.map((item, idx) => (
+                    <div
+                        key={`${item.id}-${idx}`}
+                        onClick={() => changeMainDisplay(item)}
+                        className={`aspect-[16/9] w-full relative cursor-pointer overflow-hidden shadow-md border-2 transition-all group ${activeItem.id === item.id ? 'border-brand-dark ring-2 ring-brand-light' : 'border-transparent hover:border-brand-dark'}`}
+                    >
+                        <LazyImage src={item.before} className="w-full h-full object-cover absolute inset-0 group-hover:opacity-0 transition-opacity" alt={`${sectionTitle} - לפני`} />
+                        <LazyImage src={item.after} className="w-full h-full object-cover absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity" alt={`${sectionTitle} - אחרי`} />
+                    </div>
+                ))}
+            </div>
+
+            <button onClick={handleNext} aria-label="הבא" className="w-9 h-9 border-2 border-brand-dark flex items-center justify-center text-brand-dark hover:bg-brand-dark hover:text-white transition-all shrink-0">
+                <svg className="md:-rotate-90" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6" /></svg>
+            </button>
+        </div>
+
+        </div>{/* end main + thumbnails row */}
+
         {sectionText && (
             isEditMode ? (
-                <EditableText tagName="p" multiline value={sectionText} onSave={() => {}} className="text-[clamp(16px,1.5vw,22px)] opacity-80 max-w-[800px] mx-auto mb-[6vh] block w-full text-center" />
+                <EditableText tagName="p" multiline value={sectionText} onSave={() => {}} className="text-[clamp(16px,1.5vw,22px)] opacity-80 max-w-[800px] mx-auto mb-[3vh] block w-full text-center" />
             ) : (
-                <p className="text-[clamp(16px,1.5vw,22px)] opacity-80 max-w-[800px] mx-auto mb-[6vh] animate-text">
+                <p className="text-[clamp(16px,1.5vw,22px)] opacity-80 max-w-[800px] mx-auto mb-[3vh] animate-text">
                     {sectionText}
                 </p>
             )
         )}
 
-        {/* 2. Controlled Carousel */}
-        <div className="w-full flex items-center justify-center gap-4 md:gap-6 select-none mb-[6vh]">
-            <button onClick={handlePrev} className="w-10 h-10 md:w-12 md:h-12 border-2 border-brand-dark flex items-center justify-center text-brand-dark hover:bg-brand-dark hover:text-white transition-all shrink-0">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6" /></svg>
-            </button>
-
-            <div className="w-full max-w-[900px] overflow-hidden rounded-none dir-rtl">
-                <div ref={carouselTrackRef} className="flex w-full" style={{ direction: 'rtl' }}>
-                    {carouselItems.map((item, idx) => (
-                        <div 
-                            key={`${item.id}-${idx}`} 
-                            className="shrink-0 px-[1vw]"
-                            style={{ width: `${100 / itemsPerView}%` }}
-                        >
-                            <div 
-                                onClick={() => changeMainDisplay(item)}
-                                className={`
-                                    aspect-[16/9] w-full relative cursor-pointer overflow-hidden shadow-md border-2 transition-all group
-                                    ${activeItem.id === item.id ? 'border-brand-dark ring-2 ring-brand-light' : 'border-transparent hover:border-brand-dark'}
-                                `}
-                            >
-                                <LazyImage src={item.before} className="w-full h-full object-cover absolute inset-0 group-hover:opacity-0 transition-opacity" alt={`${sectionTitle} - לפני`} />
-                                <LazyImage src={item.after} className="w-full h-full object-cover absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity" alt={`${sectionTitle} - אחרי`} />
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-            <button onClick={handleNext} className="w-10 h-10 md:w-12 md:h-12 border-2 border-brand-dark flex items-center justify-center text-brand-dark hover:bg-brand-dark hover:text-white transition-all shrink-0">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6" /></svg>
-            </button>
-        </div>
-
-        <div className="text-center text-[clamp(18px,2.2vw,28px)] font-bold text-brand-dark pb-10 animate-text">
-            מוסיפים חדש כל הזמן! מוזמנים לשוב לביקור
-        </div>
+        <SectionCTA label="יש לי מוצר שמחכה לקבל ערך" className="mt-[2vh]" />
       </div>
     </section>
   );

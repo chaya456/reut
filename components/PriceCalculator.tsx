@@ -145,7 +145,7 @@ const PriceCalculator: React.FC = () => {
           </p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-brand-light/30 p-6 md:p-10 space-y-8">
+        <div className="bg-white rounded-none shadow-sm border border-brand-light/30 p-6 md:p-10 space-y-8">
 
           {/* שלב 1: חריטה או חיתוך */}
           {hasCricut && hasXtool && (
@@ -159,7 +159,7 @@ const PriceCalculator: React.FC = () => {
                   <button
                     key={opt.id}
                     onClick={() => changeMethod(opt.id)}
-                    className={`py-4 rounded-xl font-bold text-base transition-all duration-300 border-2 ${
+                    className={`py-4 rounded-none font-bold text-base transition-all duration-300 border-2 ${
                       method === opt.id
                         ? 'bg-brand-dark text-white border-brand-dark shadow-md'
                         : 'bg-brand-soft text-dark-coal border-transparent hover:border-brand-light'
@@ -185,7 +185,7 @@ const PriceCalculator: React.FC = () => {
                   <button
                     key={opt.id}
                     onClick={() => setWorkType(opt.id)}
-                    className={`py-4 px-3 rounded-xl font-bold text-base transition-all duration-300 border-2 ${
+                    className={`py-4 px-3 rounded-none font-bold text-base transition-all duration-300 border-2 ${
                       workType === opt.id
                         ? 'bg-brand-dark text-white border-brand-dark shadow-md'
                         : 'bg-brand-soft text-dark-coal border-transparent hover:border-brand-light'
@@ -209,7 +209,7 @@ const PriceCalculator: React.FC = () => {
                     <button
                       key={m.id}
                       onClick={() => setMaterialId(m.id)}
-                      className={`py-3 px-2 rounded-xl font-bold text-sm transition-all duration-300 border-2 ${
+                      className={`py-3 px-2 rounded-none font-bold text-sm transition-all duration-300 border-2 ${
                         material.id === m.id
                           ? 'bg-brand-dark text-white border-brand-dark shadow-md'
                           : 'bg-brand-soft text-dark-coal border-transparent hover:border-brand-light'
@@ -235,7 +235,7 @@ const PriceCalculator: React.FC = () => {
                     <button
                       key={opt.id}
                       onClick={() => setPkg(opt.id)}
-                      className={`w-full text-right p-4 rounded-xl transition-all duration-300 border-2 flex items-center justify-between gap-4 ${
+                      className={`w-full text-right p-4 rounded-none transition-all duration-300 border-2 flex items-center justify-between gap-4 ${
                         pkg === opt.id
                           ? 'bg-brand-soft border-brand-dark shadow-sm'
                           : 'bg-white border-brand-light/40 hover:border-brand-light'
@@ -281,7 +281,7 @@ const PriceCalculator: React.FC = () => {
                   <button
                     key={opt.id}
                     onClick={() => setImageSize(opt.id)}
-                    className={`py-5 rounded-xl font-bold transition-all duration-300 border-2 ${
+                    className={`py-5 rounded-none font-bold transition-all duration-300 border-2 ${
                       imageSize === opt.id
                         ? 'bg-brand-dark text-white border-brand-dark shadow-md'
                         : 'bg-brand-soft text-dark-coal border-transparent hover:border-brand-light'
@@ -296,7 +296,7 @@ const PriceCalculator: React.FC = () => {
 
           {/* שלב 2 - מקלדת */}
           {workType === 'keyboard' && (
-            <div className="bg-brand-soft rounded-xl p-5 text-center">
+            <div className="bg-brand-soft rounded-none p-5 text-center">
               <p className="text-dark-coal font-medium">{t.keyboardNote}</p>
             </div>
           )}
@@ -308,7 +308,7 @@ const PriceCalculator: React.FC = () => {
           </div>
 
           {/* תוצאה */}
-          <div className="bg-dark-coal rounded-2xl p-6 md:p-8 text-white">
+          <div className="bg-dark-coal rounded-none p-6 md:p-8 text-white">
             {isCustomQuote ? (
               <div className="text-center">
                 <p className="text-lg font-bold mb-2">{t.customQuoteTitle}</p>
@@ -319,7 +319,7 @@ const PriceCalculator: React.FC = () => {
                   href={emailHref}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 bg-white text-dark-coal px-6 py-3 rounded-xl font-bold hover:bg-brand-light transition-colors"
+                  className="inline-flex items-center justify-center gap-2 bg-white text-dark-coal px-6 py-3 rounded-none font-bold hover:bg-brand-light transition-colors"
                 >
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <rect x="2" y="4" width="20" height="16" rx="2"></rect>
@@ -358,7 +358,7 @@ const PriceCalculator: React.FC = () => {
           </div>
 
           {/* הצעת מחיר מותאמת אישית לכמויות גדולות + כפתור שליחת מייל */}
-          <div className="bg-brand-soft rounded-2xl p-6 text-center border border-brand-light/40">
+          <div className="bg-brand-soft rounded-none p-6 text-center border border-brand-light/40">
             <p className="font-extrabold text-dark-coal text-lg mb-1">
               {t.bulkTitle}
             </p>
@@ -369,7 +369,7 @@ const PriceCalculator: React.FC = () => {
               href={emailHref}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-3 bg-brand-dark text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-dark-coal transition-all duration-300 shadow-md"
+              className="inline-flex items-center justify-center gap-3 bg-brand-dark text-white px-8 py-4 rounded-none font-bold text-lg hover:bg-dark-coal transition-all duration-300 shadow-md"
             >
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="2" y="4" width="20" height="16" rx="2"></rect>
@@ -392,7 +392,7 @@ const NumberStepper: React.FC<{ value: number; setValue: (n: number) => void; mi
     <div className="flex items-center gap-3">
       <button
         onClick={() => setValue(Math.max(min, value - 1))}
-        className="w-12 h-12 rounded-xl bg-brand-soft border-2 border-brand-light/50 text-2xl font-bold text-dark-coal hover:border-brand-dark transition-colors flex items-center justify-center"
+        className="w-12 h-12 rounded-none bg-brand-soft border-2 border-brand-light/50 text-2xl font-bold text-dark-coal hover:border-brand-dark transition-colors flex items-center justify-center"
         aria-label="הפחתה"
       >
         −
@@ -405,11 +405,11 @@ const NumberStepper: React.FC<{ value: number; setValue: (n: number) => void; mi
           const n = parseInt(e.target.value, 10);
           setValue(isNaN(n) ? min : Math.max(min, n));
         }}
-        className="w-20 h-12 text-center text-xl font-bold bg-white border-2 border-brand-light/50 rounded-xl focus:outline-none focus:border-brand-dark"
+        className="w-20 h-12 text-center text-xl font-bold bg-white border-2 border-brand-light/50 rounded-none focus:outline-none focus:border-brand-dark"
       />
       <button
         onClick={() => setValue(value + 1)}
-        className="w-12 h-12 rounded-xl bg-brand-soft border-2 border-brand-light/50 text-2xl font-bold text-dark-coal hover:border-brand-dark transition-colors flex items-center justify-center"
+        className="w-12 h-12 rounded-none bg-brand-soft border-2 border-brand-light/50 text-2xl font-bold text-dark-coal hover:border-brand-dark transition-colors flex items-center justify-center"
         aria-label="הוספה"
       >
         +

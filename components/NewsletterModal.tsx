@@ -10,8 +10,8 @@ const NewsletterModal: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   useEffect(() => {
-    // מופיע רק אחרי שמסך הטעינה הסתיים והאתר גלוי (+4 שניות).
-    return runAfterPreloader(4000, () => {
+    // לא קופץ מיד — מופיע רק אחרי שהגולש הספיק להתרשם מהאתר (20 שניות אחרי מסך הטעינה).
+    return runAfterPreloader(20000, () => {
         const hasSeenNewsletter = sessionStorage.getItem('hasSeenNewsletter');
         if (!hasSeenNewsletter) {
             setIsOpen(true);

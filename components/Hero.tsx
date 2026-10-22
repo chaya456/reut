@@ -6,6 +6,8 @@ import { useContent } from '../context/ContentContext';
 import { HeroContent } from '../types';
 import EditableText from './editable/EditableText';
 
+const HERO_BUTTON_TEXT = 'מיתוג אישי למוצרים ואירועי בוטיק';
+
 interface HeroProps {
     data?: HeroContent;
 }
@@ -96,14 +98,9 @@ const Hero: React.FC<HeroProps> = ({ data }) => {
     setMousePos({ x: `${x}px`, y: `${y}px` });
   };
 
-  const scrollToContact = () => {
-      const formElement = document.getElementById('contact-form-fields');
-      if (formElement) {
-          formElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      } else {
-          const contactSection = document.getElementById('contact');
-          if(contactSection) contactSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
+  const scrollToGallery = () => {
+      const gallery = document.getElementById('gallery-main');
+      if (gallery) gallery.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   return (
@@ -161,7 +158,7 @@ const Hero: React.FC<HeroProps> = ({ data }) => {
                             <EditableText tagName="h1" className="text-4xl font-bold text-white block" value={heroData.titleLine3} onSave={(v) => updateHero({ titleLine3: v })} />
                         </div>
                     ) : (
-                        <h1 className="hero-title text-[clamp(48px,9vw,130px)] font-extrabold leading-[0.9] mb-[2vh] drop-shadow-md text-white cursor-default">
+                        <h1 className="hero-title text-[clamp(48px,9vw,130px)] font-extrabold leading-[0.9] mb-[2vh] drop-shadow-md text-black cursor-default">
                             <div className="block overflow-hidden">
                                 {splitText(heroData.titleLine1 + " ")}
                                 <span className="transition-colors duration-300 hover:text-brand-dark cursor-default inline-block">
@@ -187,16 +184,13 @@ const Hero: React.FC<HeroProps> = ({ data }) => {
 
                     {/* Button */}
                     <div className="hero-tagline relative z-50 inline-flex flex-col items-center">
-                        {isEditMode ? (
-                            <EditableText tagName="span" className="px-6 py-3 bg-brand-dark text-white font-bold" value={heroData.buttonText} onSave={(v) => updateHero({ buttonText: v })} />
-                        ) : (
-                            <button 
-                                onClick={scrollToContact}
-                                className="text-[clamp(16px,1.5vw,22px)] font-medium px-[4vw] py-[2vh] bg-brand-dark border-2 border-brand-dark rounded-none text-white transition-all duration-300 hover:bg-white hover:text-brand-dark shadow-lg backdrop-blur-sm cursor-pointer transform hover:scale-105"
-                            >
-                            {heroData.buttonText}
-                            </button>
-                        )}
+                        {/* לפי בקשת רעות: הכפתור מפנה לגלריה עם הטקסט הקבוע הזה */}
+                        <button
+                            onClick={scrollToGallery}
+                            className="text-[clamp(16px,1.5vw,22px)] font-medium px-[4vw] py-[2vh] bg-brand-dark border-2 border-brand-dark rounded-none text-white transition-all duration-300 hover:bg-white hover:text-brand-dark shadow-lg backdrop-blur-sm cursor-pointer transform hover:scale-105"
+                        >
+                            {HERO_BUTTON_TEXT}
+                        </button>
                     </div>
                 </div>
 

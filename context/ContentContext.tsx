@@ -1,6 +1,6 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { AppContent, CalculatorTexts, GalleryItem, NewsPopupContent, PricingData, Recommendation, ValueItem } from '../types';
+import { AppContent, CalculatorTexts, GalleryItem, NewsItem, NewsPopupContent, PricingData, Recommendation, ValueItem } from '../types';
 import { saveContentToSanity, loadContentFromSanity, verifyPassword } from '../services/sanityService';
 
 // טקסטים (מלל) ברירת מחדל של מחשבון התמחור.
@@ -77,6 +77,27 @@ export const defaultNewsPopup: NewsPopupContent = {
   text: 'יצא ניוז חדש!\nהשאירו פרטים ונחזור אליכם עם כל הפרטים.',
   buttonText: 'להשארת פרטים',
 };
+
+// לוח הניוז ההתחלתי (עמוד /news). רעות מנהלת את זה מלוח הבקרה (טאב "ניוז").
+// התמונות יושבות ב-public/news (גרסאות מוקטנות ומותאמות לאינטרנט).
+export const defaultNews: NewsItem[] = [
+  {
+    id: 1,
+    title: 'מארזי חג שבועות',
+    tag: 'מבצע חג',
+    // ניוז אחד ארוך ורציף (שתי התמונות + תמונות הפיתות מהגיף), בלי אנימציה
+    cover: '/news/shavuot-full.webp',
+    thumb: '/news/thumb-pitot.webp',
+    images: [],
+  },
+  { id: 8, title: 'מתרגשים עד כלות', tag: 'עונת החתונות', cover: '/news/shavuot-teaser.webp', thumb: '/news/thumb-weddings.webp', images: [] },
+  { id: 2, title: 'חריטה על מצלמות', tag: 'מוצר חדש', cover: '/news/camera.webp', thumb: '/news/thumb-camera.webp', images: [] },
+  { id: 3, title: 'מזוודות בהתאמה אישית', tag: 'מוצר חדש', cover: '/news/suitcases.webp', thumb: '/news/thumb-suitcases.webp', images: [] },
+  { id: 4, title: 'מקלדות ממותגות', tag: 'מוצר חדש', cover: '/news/keyboards.webp', thumb: '/news/thumb-keyboards.webp', images: [] },
+  { id: 5, title: 'מכשירי כתיבה', tag: 'מוצר חדש', cover: '/news/writing.webp', thumb: '/news/thumb-writing.webp', images: [] },
+  { id: 6, title: 'מקרונים ממותגים', tag: 'חדש', cover: '/news/macarons.webp', thumb: '/news/thumb-macarons.webp', images: [] },
+  { id: 7, title: 'מזוזות מעוצבות', tag: 'מוצר חדש', cover: '/news/mezuzah.webp', thumb: '/news/thumb-mezuzah.webp', images: [] },
+];
 
 // Default / Initial Data
 const initialValueItems: ValueItem[] = [
@@ -251,7 +272,8 @@ const defaultContent: AppContent = {
   ],
   pricing: defaultPricing,
   calculator: defaultCalculatorTexts,
-  newsPopup: defaultNewsPopup
+  newsPopup: defaultNewsPopup,
+  news: defaultNews
 };
 
 interface ContentContextType {
@@ -276,6 +298,10 @@ interface ContentContextType {
   updateCalculatorText: (data: Partial<CalculatorTexts>) => void;
   // News popup
   updateNewsPopup: (data: Partial<NewsPopupContent>) => void;
+  // News feed (עמוד /news)
+  addNewsItem: (item: NewsItem) => void;
+  updateNewsItem: (id: number, item: Partial<NewsItem>) => void;
+  deleteNewsItem: (id: number) => void;
   resetContent: () => void;
   isAdmin: boolean;
   isEditMode: boolean;
@@ -543,6 +569,23 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }));
   };
 
+  // --- News Feed Logic (עמוד /news) ---
+  // פריט חדש נוסף לראש הרשימה כדי שהניוז העדכני יופיע ראשון.
+  const addNewsItem = (item: NewsItem) => {
+    setContent(prev => ({ ...prev, news: [item, ...(prev.news || [])] }));
+  };
+
+  const updateNewsItem = (id: number, itemData: Partial<NewsItem>) => {
+    setContent(prev => ({
+        ...prev,
+        news: (prev.news || []).map(item => item.id === id ? { ...item, ...itemData } : item)
+    }));
+  };
+
+  const deleteNewsItem = (id: number) => {
+    setContent(prev => ({ ...prev, news: (prev.news || []).filter(item => item.id !== id) }));
+  };
+
   const resetContent = () => {
       if(window.confirm("האם את בטוחה שאת רוצה לאפס את כל הנתונים לברירת המחדל?")) {
         setContent(defaultContent);
@@ -566,6 +609,9 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
         updatePricing,
         updateCalculatorText,
         updateNewsPopup,
+        addNewsItem,
+        updateNewsItem,
+        deleteNewsItem,
         resetContent,
         isAdmin,
         login,

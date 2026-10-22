@@ -18,10 +18,11 @@ const NewsPopupModal: React.FC = () => {
 
   useEffect(() => {
     // מציגים רק אם החלונית מופעלת מהניהול. פעם אחת לכל ביקור (סשן).
-    // מופיע רק אחרי שמסך הטעינה הסתיים והאתר גלוי (+1.5 שניות).
+    // מופיע רק אחרי שהמבקר כבר שהה באתר — לא בכניסה (מסך טעינה + 14 שניות),
+    // כדי שלא ירגיש שקופצים עליו מיד.
     if (!popup.enabled) return;
 
-    return runAfterPreloader(1500, () => {
+    return runAfterPreloader(14000, () => {
       const hasSeen = sessionStorage.getItem('hasSeenNewsPopup');
       if (!hasSeen) setIsOpen(true);
     });

@@ -22,14 +22,20 @@ const Footer: React.FC<FooterProps> = ({ hideContactForm = false }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
     
-  // Social Links
-  // Gmail Compose Link construction
-  const emailRecipient = "c0548496967@gmail.com";
-  const emailSubject = "גם אני רוצה אתר עם תוצאות";
-  const emailBody = `היי
+  // מייל של בונה האתר — לשורת הקרדיט בתחתית בלבד (לא לתוכן העסקי).
+  const builderEmail = "c0548496967@gmail.com";
+  const builderSubject = "גם אני רוצה אתר עם תוצאות";
+  const builderBody = `היי
 ראיתי את האתר של רעות
 אני רוצה אתר שיביא תוצאות`;
-  const gmailLink = `https://mail.google.com/mail/?view=cm&fs=1&to=${emailRecipient}&su=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+  const builderGmailLink = `https://mail.google.com/mail/?view=cm&fs=1&to=${builderEmail}&su=${encodeURIComponent(builderSubject)}&body=${encodeURIComponent(builderBody)}`;
+
+  // מייל של רעות (העסק) — ל"כאן בודקים את זה" בתוכן העסקי.
+  const reutEmail = "reut21948@gmail.com";
+  const reutSubject = "מעוניינת בהוספת ערך למוצר";
+  const reutBody = `היי רעות,
+ראיתי את האתר ואשמח לפרטים על הוספת ערך למוצר שלי.`;
+  const reutGmailLink = `https://mail.google.com/mail/?view=cm&fs=1&to=${reutEmail}&su=${encodeURIComponent(reutSubject)}&body=${encodeURIComponent(reutBody)}`;
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -87,15 +93,15 @@ const Footer: React.FC<FooterProps> = ({ hideContactForm = false }) => {
   };
 
   return (
-    <div className="relative -mt-[25vw] z-10 pb-0" ref={footerRef} id="contact">
+    <div className="relative -mt-[10vw] z-10 pb-0" ref={footerRef} id="contact">
         <div 
             className="absolute top-0 left-0 w-full h-full bg-brand-light z-0 pointer-events-none"
-            style={{ clipPath: 'polygon(0 5vw, 100% 30vw, 100% 100%, 0 100%)', height: '100%' }}
+            style={{ clipPath: 'polygon(0 2vw, 100% 11vw, 100% 100%, 0 100%)', height: '100%' }}
         />
 
         <footer 
             className="bg-dark-coal text-white text-center relative z-10"
-            style={{ clipPath: 'polygon(0 20vw, 100% 0, 100% 100%, 0 100%)', paddingTop: '25vw', paddingBottom: '20px' }}
+            style={{ clipPath: 'polygon(0 8vw, 100% 0, 100% 100%, 0 100%)', paddingTop: '9vw', paddingBottom: '20px' }}
         >
             <div className="max-w-[1000px] mx-auto px-[5vw]">
                 {!hideContactForm && (
@@ -111,8 +117,8 @@ const Footer: React.FC<FooterProps> = ({ hideContactForm = false }) => {
                 </div>
                 
                 <div className="mb-[4vh] animate-text-footer">
-                    <a 
-                        href={gmailLink}
+                    <a
+                        href={reutGmailLink}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-[clamp(18px,2.5vw,28px)] font-bold text-[#FFB07C] hover:text-white transition-colors underline underline-offset-8 decoration-2"
@@ -157,14 +163,14 @@ const Footer: React.FC<FooterProps> = ({ hideContactForm = false }) => {
                 </>
                 )}
 
-                <div className="text-center text-white/40 text-xs mt-2 mb-8 animate-text-footer">
+                <div className="text-center text-white/60 text-sm md:text-base mt-2 mb-8 animate-text-footer">
                     גאולה, ירושלים | אופציה למשלוחים
                 </div>
                 
                 {/* Credits */}
                 <div className="border-t border-white/10 pt-4 mt-2 text-sm md:text-base text-white/60 flex flex-col md:flex-row items-center justify-center gap-4 animate-text-footer relative pb-2">
                     <a 
-                        href="https://erech-musaf.co.il/" 
+                        href="https://cg-yetsira.netlify.app/" 
                         target="_blank" 
                         rel="noopener noreferrer"
                         className="font-semibold text-white/80 hover:text-brand-light transition-colors"
@@ -172,17 +178,12 @@ const Footer: React.FC<FooterProps> = ({ hideContactForm = false }) => {
                         אתרים שעובדים ח. גוטפרב
                     </a>
                     <span className="hidden md:inline text-white/30">|</span>
-                    <a href={gmailLink} target="_blank" rel="noopener noreferrer" className="hover:text-brand-light transition-colors font-bold focus:outline-none">צור קשר</a>
+                    <a href={builderGmailLink} target="_blank" rel="noopener noreferrer" className="hover:text-brand-light transition-colors font-bold focus:outline-none">צור קשר</a>
                 </div>
-
-                {/* Beta Warning */}
-                {!isSuccess && (
-                    <p className="text-center text-white/20 text-xs mt-0 mb-4">האתר בהרצה, יתכנו חסרים וליקויים, מצאת משו? ספרי לנו</p>
-                )}
 
                 {/* SEO Products Link */}
                 {/* Legal Links */}
-                <div className="flex items-center justify-center gap-3 text-[11px] md:text-xs text-white/40 mt-4 animate-text-footer flex-wrap">
+                <div className="flex items-center justify-center gap-3 text-xs md:text-sm text-white/50 mt-4 animate-text-footer flex-wrap">
                     <a href="/accessibility" className="hover:text-brand-light transition-colors">הצהרת נגישות</a>
                     <span>|</span>
                     <a href="/privacy" className="hover:text-brand-light transition-colors">מדיניות פרטיות</a>

@@ -1,5 +1,6 @@
 
 import React, { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import gsap from 'gsap';
 import { useContent } from '../context/ContentContext';
 import { Recommendation } from '../types';
@@ -60,6 +61,14 @@ const Recommendations: React.FC<RecommendationsProps> = ({ id, data, title, subt
     return () => ctx.revert();
   }, [reviews.length, isEditMode]);
 
+  // סגירת חלונית ההמלצה המוגדלת במקש Esc
+  useEffect(() => {
+    if (!selectedRec) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setSelectedRec(null); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [selectedRec]);
+
   const handleNextRec = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!selectedRec) return;
@@ -85,7 +94,7 @@ const Recommendations: React.FC<RecommendationsProps> = ({ id, data, title, subt
             className="relative z-10 -mt-[15vw] bg-transparent overflow-hidden" 
             style={{ 
                 paddingTop: '20vw',
-                paddingBottom: 'calc(10vw + 300px)' 
+                paddingBottom: '175px'
             }}
         >
           <div ref={containerRef} className="flex flex-col items-center justify-start relative w-full">
@@ -109,9 +118,10 @@ const Recommendations: React.FC<RecommendationsProps> = ({ id, data, title, subt
                     עם התמחות מיוחדת בחריטת לייזר
                 </p>
                 
-                <p className="text-[clamp(20px,2.2vw,26px)] leading-snug animate-text">
-                    <span className="text-[#FCA872] font-bold">יש לכם מוצר שמחכה לקבל ערך? בואו נעשה את זה ביחד:)</span>
+                <p className="text-[clamp(20px,2.2vw,26px)] leading-snug animate-text mb-8">
+                    <span className="text-[#FCA872] font-bold">יש לכם מוצר שמחכה לקבל ערך?<br />בואו נעשה את זה ביחד:)</span>
                 </p>
+
             </div>
 
             <div className="max-w-[1400px] w-full mx-auto px-[5vw] text-center mb-[6vh] relative z-20">
@@ -145,7 +155,7 @@ const Recommendations: React.FC<RecommendationsProps> = ({ id, data, title, subt
                             <div 
                                 onClick={() => !isEditMode && setSelectedRec(rec)}
                                 className={`
-                                    relative w-[80vw] md:w-[350px] h-[240px] p-3 shrink-0 cursor-pointer
+                                    relative w-[80vw] md:w-[400px] h-[300px] p-3 shrink-0 cursor-pointer
                                     shadow-[0_10px_30px_rgba(0,0,0,0.05)] hover:shadow-[0_15px_40px_rgba(0,0,0,0.1)] 
                                     flex flex-col items-center justify-between text-center 
                                     border border-brand-dark/10 rounded-xl transition-all duration-300 hover:scale-105
@@ -178,17 +188,17 @@ const Recommendations: React.FC<RecommendationsProps> = ({ id, data, title, subt
           </div>
         </section>
 
-        {/* Modal / Lightbox - Without dark backdrop */}
-        {selectedRec && (
+        {/* חלונית הגדלה של ההמלצה — נפתחת מעל כל האתר (portal ל-body כדי שלא תיחתך מתחת לתפריט) */}
+        {selectedRec && createPortal(
             <div 
-                className="fixed inset-0 z-[200] flex items-center justify-center p-4"
+                className="fixed inset-0 z-[10001] flex items-center justify-center p-3 md:p-6 bg-dark-coal/70 backdrop-blur-sm animate-[fadeIn_0.25s_ease-out]"
                 onClick={() => setSelectedRec(null)}
+                role="dialog"
+                aria-modal="true"
+                aria-label={`המלצה - ${selectedRec.name}`}
             >
-                {/* Transparent overlay to catch clicks */}
-                <div className="absolute inset-0 bg-transparent" />
-                
                 <div 
-                    className="relative bg-white rounded-xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] border border-gray-100 w-[90vw] md:w-[50vw] h-[60vh] md:h-[50vh] flex flex-col overflow-hidden animate-[popIn_0.3s_cubic-bezier(0.16,1,0.3,1)] z-10"
+                    className="relative bg-white rounded-xl shadow-[0_20px_60px_rgba(0,0,0,0.3)] w-[96vw] md:w-[min(80vw,1000px)] max-h-[90vh] flex flex-col overflow-hidden animate-[popIn_0.3s_cubic-bezier(0.16,1,0.3,1)] z-10"
                     onClick={(e) => e.stopPropagation()}
                 >
                     <button 
@@ -198,7 +208,7 @@ const Recommendations: React.FC<RecommendationsProps> = ({ id, data, title, subt
                         ✕
                     </button>
 
-                    <div className="flex-1 overflow-hidden relative flex items-center justify-center bg-white p-8">
+                    <div className="relative flex items-center justify-center bg-white px-12 md:px-16 pt-12 pb-4">
                         {/* Navigation Arrows - Thin and delicate */}
                         <button 
                             onClick={handleNextRec}
@@ -218,13 +228,15 @@ const Recommendations: React.FC<RecommendationsProps> = ({ id, data, title, subt
                             key={selectedRec.id} 
                             src={selectedRec.image} 
                             alt={`המלצה מפורטת - ${selectedRec.name}`} 
-                            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full object-contain animate-[fadeIn_0.3s_ease-out]"
+                            className="w-full h-auto max-h-[75vh] object-contain animate-[fadeIn_0.3s_ease-out]"
                         />
                     </div>
+                    <div className="shrink-0 text-center font-bold text-dark-coal/80 pb-4">{selectedRec.name}</div>
                 </div>
-            </div>
+            </div>,
+            document.body
         )}
-        <style>{`@keyframes popIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }`}</style>
+        <style>{`@keyframes popIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } } @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }`}</style>
     </>
   );
 };

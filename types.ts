@@ -162,6 +162,18 @@ export interface NewsPopupContent {
   buttonText: string;  // טקסט הכפתור ליצירת קשר. ריק = ללא כפתור
 }
 
+// פריט ב"לוח הניוז" בעמוד /news. רעות מנהלת את הרשימה מלוח הבקרה (טאב "ניוז"):
+// מעלה תמונות, כותבת כותרת+תווית, ומסתירה/מציגה פריטים. נשמר ל-Sanity עם שאר התוכן.
+export interface NewsItem {
+  id: number;
+  title: string;       // כותרת הכרטיס
+  tag: string;         // תווית קטגוריה (למשל "מוצר חדש", "מבצע חג")
+  cover: string;       // הגרפיקה המלאה של הניוז (נפתחת בלחיצה)
+  thumb?: string;      // תמונת התוצר הסופי — המלבן שמוצג בלוח (אם ריק מוצגת הגרפיקה)
+  images: string[];    // תמונות נוספות שנפתחות בחלונית הצפייה (יכול להיות ריק)
+  isHidden?: boolean;  // הסתרה מהאתר מבלי למחוק
+}
+
 export interface AppContent {
   hero: HeroContent;
   valueSection: ValueItem[];
@@ -172,4 +184,5 @@ export interface AppContent {
   pricing?: PricingData;
   calculator?: CalculatorTexts;
   newsPopup?: NewsPopupContent;
+  news?: NewsItem[];
 }

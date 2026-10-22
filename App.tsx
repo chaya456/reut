@@ -10,10 +10,13 @@ import AdminPanel from './components/AdminPanel';
 import AdminToolbar from './components/editable/AdminToolbar';
 import ProductsDirectory from './components/ProductsDirectory';
 import PriceCalculator from './components/PriceCalculator';
+import NewsPage from './components/NewsPage';
+import NewsArticle from './components/NewsArticle';
 import FloatingCalcButton from './components/FloatingCalcButton';
 import NewsletterModal from './components/NewsletterModal';
 import NewsPopupModal from './components/NewsPopupModal';
 import Preloader from './components/Preloader';
+import AccessibilityWidget from './components/AccessibilityWidget';
 import { products } from './data/products';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -215,6 +218,16 @@ const App: React.FC = () => {
     if (currentPath === '/calculator') {
       return <PriceCalculator />;
     }
+
+    // דף ניוז מלא: /news/<מספר>
+    const newsMatch = currentPath.match(/^\/news\/(\d+)\/?$/);
+    if (newsMatch) {
+      return <NewsArticle id={Number(newsMatch[1])} />;
+    }
+
+    if (currentPath === '/news') {
+      return <NewsPage />;
+    }
     
     if (currentPath.startsWith('/product/')) {
       const encodedSlug = currentPath.split('/product/')[1];
@@ -241,6 +254,8 @@ const App: React.FC = () => {
     <ContentProvider>
         <Preloader />
         {renderRoute()}
+        {/* תפריט נגישות — מוצג בכל עמודי האתר */}
+        <AccessibilityWidget />
     </ContentProvider>
   );
 };

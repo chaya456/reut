@@ -1,34 +1,46 @@
 import React, { useState, useEffect } from 'react';
 
-const AccessibilityWidget: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  
-  const [settings, setSettings] = useState({
+const DEFAULT_SETTINGS = {
     fontSize: 100, // percentage
     grayscale: false,
     highContrast: false,
     highlightLinks: false,
-  });
+    stopAnimations: false,
+};
+const STORAGE_KEY = 'reutAccessibility';
+
+// ההגדרות נשמרות בדפדפן של הגולש, כך שהן נשארות גם במעבר בין עמודים.
+const loadSettings = (): typeof DEFAULT_SETTINGS => {
+    try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) return { ...DEFAULT_SETTINGS, ...JSON.parse(saved) };
+    } catch { /* אין גישה לאחסון — משתמשים בברירת המחדל */ }
+    return DEFAULT_SETTINGS;
+};
+
+const AccessibilityWidget: React.FC = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  
+  const [settings, setSettings] = useState(loadSettings);
 
   useEffect(() => {
     const root = document.documentElement;
     const body = document.body;
 
-    // Font Size (Affects rem units)
-    root.style.fontSize = `${settings.fontSize}%`;
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(settings)); } catch { /* לא קריטי */ }
 
-    // Grayscale & Contrast
+    // גודל טקסט — האתר בנוי ביחידות פיקסלים, לכן מגדילים את כל התצוגה (zoom) ולא רק rem.
+    (root.style as any).zoom = settings.fontSize === 100 ? '' : String(settings.fontSize / 100);
+
+    // Grayscale & Contrast — על html (ולא על body) כדי לא לשבור אלמנטים קבועים כמו התפריט וההירו.
     let filterString = '';
     if (settings.grayscale) filterString += 'grayscale(100%) ';
     if (settings.highContrast) filterString += 'contrast(125%) ';
-    body.style.filter = filterString;
+    root.style.filter = filterString.trim();
+    body.style.filter = '';
 
-    // Highlight Links logic
-    if (settings.highlightLinks) {
-        body.classList.add('access-highlight-links');
-    } else {
-        body.classList.remove('access-highlight-links');
-    }
+    body.classList.toggle('access-highlight-links', settings.highlightLinks);
+    body.classList.toggle('access-stop-animations', settings.stopAnimations);
 
   }, [settings]);
 
@@ -45,6 +57,13 @@ const AccessibilityWidget: React.FC = () => {
                 font-weight: bold !important;
                 box-shadow: 0 0 0 2px #FF9666 !important;
             }
+            .access-stop-animations *,
+            .access-stop-animations *::before,
+            .access-stop-animations *::after {
+                animation-play-state: paused !important;
+                transition: none !important;
+                scroll-behavior: auto !important;
+            }
           `;
           document.head.appendChild(style);
       }
@@ -57,16 +76,11 @@ const AccessibilityWidget: React.FC = () => {
   };
 
   const resetSettings = () => {
-      setSettings({
-          fontSize: 100,
-          grayscale: false,
-          highContrast: false,
-          highlightLinks: false
-      });
+      setSettings(DEFAULT_SETTINGS);
   };
 
   return (
-      <div className="fixed bottom-4 left-4 z-[9999] font-sans dir-rtl">
+      <div className="fixed bottom-20 left-4 z-[9999] font-sans dir-rtl" dir="rtl">
         
         {/* Panel Container */}
         <div 
@@ -158,7 +172,21 @@ const AccessibilityWidget: React.FC = () => {
                         <div className={`w-3 h-3 rounded-full border ${settings.highlightLinks ? 'bg-brand-light border-transparent' : 'border-current opacity-30'}`}></div>
                     </button>
 
+                    <button 
+                        onClick={() => updateSetting('stopAnimations', !settings.stopAnimations)} 
+                        aria-pressed={settings.stopAnimations}
+                        className={`flex items-center justify-between p-3 rounded-lg border transition-all duration-200 group ${settings.stopAnimations ? 'bg-dark-coal text-white border-dark-coal' : 'bg-white hover:bg-brand-soft border-brand-light/20 text-dark-coal'}`}
+                    >
+                        <span className="text-sm font-medium flex items-center gap-2">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="10" y1="9" x2="10" y2="15"/><line x1="14" y1="9" x2="14" y2="15"/></svg>
+                            עצירת אנימציות
+                        </span>
+                        <div className={`w-3 h-3 rounded-full border ${settings.stopAnimations ? 'bg-brand-light border-transparent' : 'border-current opacity-30'}`}></div>
+                    </button>
+
                 </div>
+
+                <a href="/accessibility" className="block text-center text-sm font-bold text-brand-dark hover:underline pt-1">הצהרת נגישות</a>
             </div>
         </div>
 

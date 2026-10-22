@@ -44,10 +44,14 @@ const AboutSection: React.FC<AboutSectionProps> = ({ id, title, text, summary })
         <section
             id={id}
             ref={sectionRef}
-            className="pt-[15vh] pb-[30vh] relative z-30 bg-[#FCA872] text-white"
+            className="pt-[8vh] relative z-30 bg-[#FCA872] text-white"
             style={{
                 clipPath: 'polygon(0 0, 100% 0, 100% calc(100% - 15vw), 0 100%)',
-                marginBottom: '-15vw'
+                marginBottom: '-15vw',
+                // ריפוד תחתון ב-vw (לא vh) בכוונה: החיתוך האלכסוני (clipPath) נמדד ב-vw,
+                // אז הריווח שמגן על הכפתור מפניו חייב להישאר יחסי לרוחב ולא לגובה המסך —
+                // אחרת בחלון רחב-וקצר הכפתור נחתך על ידי האלכסון.
+                paddingBottom: 'calc(14vw + 2rem)'
             }}
         >
             <div className="max-w-[1200px] mx-auto px-[5vw] text-center flex flex-col items-center">
@@ -72,11 +76,24 @@ const AboutSection: React.FC<AboutSectionProps> = ({ id, title, text, summary })
                         multiline
                         value={text}
                         onSave={(v) => updateAbout(v)}
-                        className="text-[clamp(20px,2.2vw,26px)] leading-tight font-medium whitespace-pre-line text-white max-w-[800px] drop-shadow-sm mb-[10vh] block w-full text-center"
+                        className="text-[clamp(20px,2.2vw,26px)] leading-tight font-medium whitespace-pre-line text-white max-w-[800px] drop-shadow-sm mb-[2vh] block w-full text-center"
                     />
                 ) : (
-                    <div className="text-[clamp(20px,2.2vw,26px)] leading-tight font-medium animate-about-text whitespace-pre-line text-white max-w-[800px] drop-shadow-sm mb-[10vh] text-center">
-                        {text}
+                    <div className="text-[clamp(20px,2.2vw,26px)] leading-tight font-medium animate-about-text whitespace-pre-line text-white max-w-[800px] drop-shadow-sm mb-[2vh] text-center">
+                        {/* שתי השורות הראשונות ("אצלנו תשדרגו... ויצירתית") הן קישור לעמוד הניוז */}
+                        {(() => {
+                            const lines = text.split('\n');
+                            const linked = lines.slice(0, 2);
+                            const rest = lines.slice(2);
+                            return (
+                                <>
+                                    <a href="/news" className="underline underline-offset-[6px] decoration-2 decoration-white/60 hover:decoration-white hover:text-dark-coal transition-colors">
+                                        {linked.join('\n')}
+                                    </a>
+                                    {rest.length > 0 && '\n' + rest.join('\n')}
+                                </>
+                            );
+                        })()}
                     </div>
                 )}
 
@@ -97,6 +114,7 @@ const AboutSection: React.FC<AboutSectionProps> = ({ id, title, text, summary })
                         </p>
                     )}
                 </div>
+
             </div>
         </section>
     );

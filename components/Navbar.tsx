@@ -60,6 +60,7 @@ const Navbar: React.FC = () => {
     { name: 'ערך מוסף', id: 'comparison-main' },
     { name: 'גלריה', id: 'gallery-main' },
     { name: 'המלצות', id: 'testimonials-main' },
+    { name: 'ניוז', id: 'news' },
     { name: 'מחשבון מחירים', id: 'calculator' },
     { name: 'צור קשר', id: 'contact' },
   ];
@@ -73,6 +74,12 @@ const Navbar: React.FC = () => {
       return;
     }
 
+    // עמוד הניוז — עמוד נפרד משלו
+    if (id === 'news') {
+      window.location.href = '/news';
+      return;
+    }
+
     if (window.location.pathname !== '/') {
       window.location.href = id === 'home' ? '/' : `/#${id}`;
       return;
@@ -83,21 +90,10 @@ const Navbar: React.FC = () => {
         return;
     }
 
-    // Special case for Contact: Open Gmail directly
-    if (id === 'contact') {
-        const emailRecipient = "c0548496967@gmail.com";
-        const emailSubject = "גם אני רוצה אתר עם תוצאות";
-        const emailBody = `היי
-ראיתי את האתר של רעות
-אני רוצה אתר שיביא תוצאות`;
-        const gmailLink = `https://mail.google.com/mail/?view=cm&fs=1&to=${emailRecipient}&su=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
-        window.open(gmailLink, '_blank');
-        return;
-    }
-
-    const targetId = id;
+    // "צור קשר" — גלילה לטופס הפנייה של רעות בתחתית העמוד (לא מייל חיצוני).
+    const targetId = id === 'contact' ? 'contact-form-fields' : id;
     const element = document.getElementById(targetId);
-    
+
     // If exact target not found (e.g. contact-form-fields missing), try original ID
     const finalElement = element || document.getElementById(id);
 
@@ -127,7 +123,7 @@ const Navbar: React.FC = () => {
                 <button 
                     key={link.name}
                     onClick={() => scrollToSection(link.id)}
-                    className={`text-[clamp(16px,1.1vw,22px)] font-medium transition-all duration-300 relative group ${
+                    className={`text-[clamp(17px,1.2vw,22px)] font-medium transition-all duration-300 relative group ${
                         activeSection === link.id ? 'text-brand-dark' : 'text-dark-coal hover:text-brand-dark'
                     }`}
                 >

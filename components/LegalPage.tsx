@@ -60,7 +60,7 @@ export const AccessibilityStatement = () => (
 
                 <h3 className="text-2xl font-bold text-dark-coal mt-8 mb-4 underline decoration-brand-dark decoration-4 underline-offset-4">פניות בנושאי נגישות</h3>
                 <p>אם נתקלתם בקושי בגלישה באתר או שיש לכם הצעה לשיפור, נשמח לשמוע מכם:</p>
-                <p>מייל: c0548496967@gmail.com</p>
+                <p>מייל: reut21948@gmail.com</p>
                 <p>טלפון: 053-9660418</p>
             </div>
         } 

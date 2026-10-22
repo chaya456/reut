@@ -5,6 +5,7 @@ import { GalleryItem } from '../types';
 import EditableText from './editable/EditableText';
 import EditableImage from './editable/EditableImage';
 import LazyImage from './LazyImage';
+import SectionCTA from './SectionCTA';
 
 interface GalleryProps {
     id?: string;
@@ -102,15 +103,14 @@ const Gallery: React.FC<GalleryProps> = ({ id, data, title, subtitle }) => {
         <section 
             id={id || "gallery"}
             ref={galleryRef} 
-            className="py-[10vh] pb-[20vh] relative z-20 -mt-[15vw] flex flex-col justify-center bg-gradient-to-br from-brand-soft via-brand-light/30 to-brand-soft"
-            style={{ 
+            className="py-[10vh] pb-[8vh] relative z-20 -mt-[15vw] flex flex-col justify-center bg-gradient-to-br from-brand-soft via-brand-light/30 to-brand-soft"
+            style={{
                 clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 92%)',
-                paddingTop: '20vw', 
-                minHeight: '120vh'
+                paddingTop: '13vw'
             }}
         >
         <div className="max-w-[1400px] mx-auto px-[5vw] w-full">
-            <div className="text-center mb-[8vh] pt-0">
+            <div className="text-center mb-[3vh] pt-0">
             {isEditMode ? (
                 <div className="flex flex-col items-center gap-2">
                     <EditableText tagName="h2" value={sectionTitle} onSave={() => {}} className="text-[clamp(36px,5vw,70px)] font-extrabold m-0 leading-tight text-dark-coal" />
@@ -136,7 +136,7 @@ const Gallery: React.FC<GalleryProps> = ({ id, data, title, subtitle }) => {
             </div>
 
             {/* Fluid Grid */}
-            <div className="gallery-grid grid grid-cols-1 md:grid-cols-4 auto-rows-[min(300px,35vh)] gap-[1.5vw]">
+            <div className="gallery-grid grid grid-cols-1 md:grid-cols-4 auto-rows-[220px] md:auto-rows-[clamp(200px,24vh,300px)] gap-[1.5vw]">
                 {galleryItems.map((item) => (
                     <div 
                         key={item.id}
@@ -172,6 +172,8 @@ const Gallery: React.FC<GalleryProps> = ({ id, data, title, subtitle }) => {
                     </div>
                 ))}
             </div>
+
+            <SectionCTA label="לאירוע משלכם עם ערך מוסף" className="mt-[4vh]" />
         </div>
         </section>
 
