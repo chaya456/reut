@@ -1,6 +1,8 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import Logo from './Logo';
+import { useContent } from '../context/ContentContext';
+import { optimizeImg } from '../utils/img';
 import { PRELOADER_DURATION, PRELOADER_FADE, markPreloaderDone } from '../preloaderTiming';
 
 // מסך טעינה בכניסה לאתר (לפי בקשת רעות):
@@ -8,12 +10,22 @@ import { PRELOADER_DURATION, PRELOADER_FADE, markPreloaderDone } from '../preloa
 // לבבונים מתפזרים והלוגו רוקד "ג'לי". הסלוגן נכנס מענק, צמוד, ונשאר גדול,
 // והלבבון קופץ בסוף "הערך שלנו".
 
-// מסך הטעינה מוצג רק בכניסה הראשונה לאתר (נשמר בדפדפן), ולא בכל מעבר בין עמודים או ביקור חוזר.
+// מסך הטעינה מוצג בכל כניסה לאתר (כל ביקור חדש / לשונית חדשה), אבל לא במעבר בין עמודים
+// באותו ביקור. בזמן שהוא מוצג, התמונות של העמוד נטענות ברקע — כך שהאתר נפתח מוכן ומהיר.
 const SEEN_KEY = 'reutPreloaderSeen';
 const alreadySeen = () => {
   // ?intro בכתובת מציג את מסך הטעינה שוב (לצפייה ובדיקה)
   if (new URLSearchParams(window.location.search).has('intro')) return false;
-  try { return localStorage.getItem(SEEN_KEY) === '1'; } catch { return false; }
+  try { return sessionStorage.getItem(SEEN_KEY) === '1'; } catch { return false; }
+};
+
+// טעינה מראש של התמונות הראשונות שהגולש יראה (הירו, לפני/אחרי, גלריה)
+const warmImages = (urls: string[]) => {
+  urls.filter(Boolean).forEach((u) => {
+    const img = new Image();
+    img.decoding = 'async';
+    img.src = u;
+  });
 };
 
 const SPARKS = 8; // לבבונים קטנים שמתפזרים כשהכדור נוחת
@@ -23,6 +35,7 @@ const Preloader: React.FC = () => {
   const [fadingOut, setFadingOut] = useState(false);
   const [hidden, setHidden] = useState(skip);
   const rootRef = useRef<HTMLDivElement>(null);
+  const { content } = useContent();
 
   // תזמון כללי: הצגה, היעלמות ושחרור החלוניות הקופצות
   useEffect(() => {
@@ -30,7 +43,14 @@ const Preloader: React.FC = () => {
       markPreloaderDone();
       return;
     }
-    try { localStorage.setItem(SEEN_KEY, '1'); } catch { /* גלישה פרטית — לא קריטי */ }
+    try { sessionStorage.setItem(SEEN_KEY, '1'); } catch { /* גלישה פרטית — לא קריטי */ }
+
+    warmImages([
+      optimizeImg('https://i.postimg.cc/cHrJ308q/after.jpg', 'lg'),
+      optimizeImg('https://i.postimg.cc/KzRYTxgh/befor.jpg', 'lg'),
+      ...content.valueSection.slice(0, 4).flatMap((v) => [optimizeImg(v.before), optimizeImg(v.after)]),
+      ...content.gallery.filter((g) => !g.isHidden).map((g) => optimizeImg(g.thumbnail, g.size === 'large' ? 'lg' : 'sm')),
+    ]);
 
     document.body.style.overflow = 'hidden';
     const fadeTimer = setTimeout(() => setFadingOut(true), PRELOADER_DURATION);
