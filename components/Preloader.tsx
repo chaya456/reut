@@ -19,14 +19,23 @@ const alreadySeen = () => {
   try { return sessionStorage.getItem(SEEN_KEY) === '1'; } catch { return false; }
 };
 
-// טעינה מראש של התמונות הראשונות שהגולש יראה (הירו, לפני/אחרי, גלריה)
-const warmImages = (urls: string[]) => {
-  urls.filter(Boolean).forEach((u) => {
-    const img = new Image();
-    img.decoding = 'async';
-    img.src = u;
-  });
-};
+// טעינה מראש של התמונות הראשונות שהגולש יראה. מחזיר הבטחה שמסתיימת כשכולן נטענו (או נכשלו).
+const warmImages = (urls: string[]): Promise<void> =>
+  Promise.all(
+    urls.filter(Boolean).map(
+      (u) =>
+        new Promise<void>((resolve) => {
+          const img = new Image();
+          img.decoding = 'async';
+          img.onload = img.onerror = () => resolve();
+          img.src = u;
+        })
+    )
+  ).then(() => undefined);
+
+// מסך הטעינה נשאר לפחות עד שההנפשה העיקרית הסתיימה, ולכל היותר PRELOADER_DURATION.
+// אם התמונות מוכנות מוקדם — נכנסים לאתר מוקדם, בלי לחכות סתם.
+const PRELOADER_MIN = 3200;
 
 const SPARKS = 8; // לבבונים קטנים שמתפזרים כשהכדור נוחת
 
@@ -45,24 +54,52 @@ const Preloader: React.FC = () => {
     }
     try { sessionStorage.setItem(SEEN_KEY, '1'); } catch { /* גלישה פרטית — לא קריטי */ }
 
-    warmImages([
-      optimizeImg('https://i.postimg.cc/cHrJ308q/after.jpg', 'lg'),
-      optimizeImg('https://i.postimg.cc/KzRYTxgh/befor.jpg', 'lg'),
-      ...content.valueSection.slice(0, 4).flatMap((v) => [optimizeImg(v.before), optimizeImg(v.after)]),
-      ...content.gallery.filter((g) => !g.isHidden).map((g) => optimizeImg(g.thumbnail, g.size === 'large' ? 'lg' : 'sm')),
-    ]);
+    // טוענים מראש רק את התמונות של העמוד שבו נכנסו (ולא של עמוד הבית בכל עמוד)
+    const path = window.location.pathname;
+    const news = (content.news || []).filter((n) => !n.isHidden);
+    const newsMatch = path.match(/^\/news\/(\d+)/);
+    let ready: Promise<void> = Promise.resolve();
+    if (newsMatch) {
+      const item = news.find((n) => n.id === Number(newsMatch[1]));
+      ready = warmImages(item ? [item.cover, ...(item.images || [])] : []);
+    } else if (path.startsWith('/news')) {
+      ready = warmImages(news.map((n) => optimizeImg(n.thumb || n.cover)));
+    } else if (path === '/' || path.startsWith('/product/')) {
+      ready = warmImages([
+        optimizeImg('https://i.postimg.cc/cHrJ308q/after.jpg', 'lg'),
+        optimizeImg('https://i.postimg.cc/KzRYTxgh/befor.jpg', 'lg'),
+        ...content.valueSection.slice(0, 4).flatMap((v) => [optimizeImg(v.before), optimizeImg(v.after)]),
+        ...content.gallery.filter((g) => !g.isHidden).map((g) => optimizeImg(g.thumbnail, g.size === 'large' ? 'lg' : 'sm')),
+      ]);
+    }
 
     document.body.style.overflow = 'hidden';
-    const fadeTimer = setTimeout(() => setFadingOut(true), PRELOADER_DURATION);
-    const hideTimer = setTimeout(() => {
-      setHidden(true);
-      document.body.style.overflow = '';
-      markPreloaderDone();
-    }, PRELOADER_DURATION + PRELOADER_FADE);
+    const start = performance.now();
+    let done = false;
+    let hideTimer: number | undefined;
+    let minTimer: number | undefined;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      setFadingOut(true);
+      hideTimer = window.setTimeout(() => {
+        setHidden(true);
+        document.body.style.overflow = '';
+        markPreloaderDone();
+      }, PRELOADER_FADE);
+    };
+    // יוצאים כשהתמונות מוכנות (אבל לא לפני המינימום), ובכל מקרה עד המקסימום
+    const maxTimer = window.setTimeout(finish, PRELOADER_DURATION);
+    ready.then(() => {
+      if (done) return;
+      const wait = Math.max(0, PRELOADER_MIN - (performance.now() - start));
+      minTimer = window.setTimeout(finish, wait);
+    });
 
     return () => {
-      clearTimeout(fadeTimer);
-      clearTimeout(hideTimer);
+      clearTimeout(maxTimer);
+      if (minTimer) clearTimeout(minTimer);
+      if (hideTimer) clearTimeout(hideTimer);
       document.body.style.overflow = '';
     };
   }, []);

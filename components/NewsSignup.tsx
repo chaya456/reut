@@ -39,10 +39,9 @@ const NewsSignup: React.FC = () => {
         </div>
       ) : (
         <>
-          <h2 className="text-[clamp(24px,3vw,34px)] font-extrabold text-dark-coal">
-            רוצים לקבל את הניוז <span className="text-brand-dark">ראשונים?</span>
+          <h2 className="text-[clamp(24px,3vw,34px)] font-extrabold text-dark-coal mb-6">
+            הרשמו וקבלו שיתוף <span className="text-brand-dark">לפני כולם</span>
           </h2>
-          <p className="text-[clamp(16px,1.6vw,20px)] text-dark-coal/70 mt-2 mb-6">הירשמו ותקבלו למייל מוצרים חדשים, מבצעי חג והשראה.</p>
           <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-3">
             <input
               type="text"

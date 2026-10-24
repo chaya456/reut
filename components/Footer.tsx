@@ -45,7 +45,8 @@ const Footer: React.FC<FooterProps> = ({ hideContactForm = false }) => {
                 { y: 30, opacity: 0 },
                 { 
                     y: 0, opacity: 1, duration: 1, ease: "power3.out",
-                    scrollTrigger: { trigger: text, start: "top 95%" }
+                    // "top bottom" = ברגע שהטקסט נכנס למסך; כך גם בתחתית העמוד במסכים גבוהים הוא תמיד מופיע
+                    scrollTrigger: { trigger: text, start: "top bottom", once: true }
                 }
             );
         });
@@ -163,12 +164,12 @@ const Footer: React.FC<FooterProps> = ({ hideContactForm = false }) => {
                 </>
                 )}
 
-                <div className="text-center text-white/60 text-sm md:text-base mt-2 mb-8 animate-text-footer">
+                <div className="text-center text-white/60 text-sm md:text-base mt-2 mb-8">
                     גאולה, ירושלים | אופציה למשלוחים
                 </div>
                 
                 {/* Credits */}
-                <div className="border-t border-white/10 pt-4 mt-2 text-sm md:text-base text-white/60 flex flex-col md:flex-row items-center justify-center gap-4 animate-text-footer relative pb-2">
+                <div className="border-t border-white/10 pt-4 mt-2 text-sm md:text-base text-white/60 flex flex-col md:flex-row items-center justify-center gap-4 relative pb-2">
                     <a 
                         href="https://cg-yetsira.netlify.app/" 
                         target="_blank" 
@@ -183,7 +184,7 @@ const Footer: React.FC<FooterProps> = ({ hideContactForm = false }) => {
 
                 {/* SEO Products Link */}
                 {/* Legal Links */}
-                <div className="flex items-center justify-center gap-3 text-xs md:text-sm text-white/50 mt-4 animate-text-footer flex-wrap">
+                <div className="flex items-center justify-center gap-3 text-xs md:text-sm text-white/50 mt-4 flex-wrap">
                     <a href="/accessibility" className="hover:text-brand-light transition-colors">הצהרת נגישות</a>
                     <span>|</span>
                     <a href="/privacy" className="hover:text-brand-light transition-colors">מדיניות פרטיות</a>
