@@ -1,4 +1,5 @@
 
+import { optimizeImg } from '../utils/img';
 import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import gsap from 'gsap';
@@ -94,7 +95,8 @@ const Recommendations: React.FC<RecommendationsProps> = ({ id, data, title, subt
             className="relative z-10 -mt-[15vw] bg-transparent overflow-hidden" 
             style={{ 
                 paddingTop: '20vw',
-                paddingBottom: '175px'
+                // התחתית (הפוטר) עולה מעל המקטע באלכסון שנמדד ב-vw — לכן הריווח יחסי לרוחב, כדי שההמלצות לא יוסתרו במסכים רחבים
+                paddingBottom: 'calc(12vw + 60px)'
             }}
         >
           <div ref={containerRef} className="flex flex-col items-center justify-start relative w-full">
@@ -226,7 +228,7 @@ const Recommendations: React.FC<RecommendationsProps> = ({ id, data, title, subt
 
                         <img 
                             key={selectedRec.id} 
-                            src={selectedRec.image} 
+                            src={optimizeImg(selectedRec.image, "lg")} 
                             alt={`המלצה מפורטת - ${selectedRec.name}`} 
                             className="w-full h-auto max-h-[75vh] object-contain animate-[fadeIn_0.3s_ease-out]"
                         />

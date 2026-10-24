@@ -80,7 +80,7 @@ const AccessibilityWidget: React.FC = () => {
   };
 
   return (
-      <div className="fixed bottom-20 left-4 z-[9999] font-sans dir-rtl" dir="rtl">
+      <div className="fixed bottom-5 left-5 z-[9999] font-sans dir-rtl" dir="rtl">
         
         {/* Panel Container */}
         <div 
@@ -196,17 +196,20 @@ const AccessibilityWidget: React.FC = () => {
             className={`
                 relative w-14 h-14 rounded-full shadow-lg flex items-center justify-center 
                 transition-all duration-500 ease-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-brand-light/50
-                ${isOpen ? 'bg-dark-coal text-white' : 'bg-brand-light text-dark-coal hover:bg-brand-dark hover:text-white'}
+                ${isOpen ? 'bg-dark-coal text-white' : 'bg-brand-dark text-white border-2 border-white shadow-[0_8px_24px_rgba(255,150,102,0.45)] hover:bg-dark-coal'}
             `}
             aria-label="תפריט נגישות"
             aria-expanded={isOpen}
         >
             {/* Standard Accessibility Icon (Legal Requirement) */}
             <div className={`absolute transition-all duration-300 w-8 h-8 ${isOpen ? 'opacity-0 scale-50' : 'opacity-100 scale-100'}`}>
-                <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full">
-                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" fill="none" />
-                    <circle cx="12" cy="7.5" r="1.5" />
-                    <path d="M9 10.5h6v1.5h-1.5v5h-3v-5H9v-1.5z" />
+                {/* סמל הנגישות הבינלאומי — דמות עם ידיים פרושות */}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full" aria-hidden="true">
+                    <circle cx="12" cy="4.2" r="2" fill="currentColor" stroke="none" />
+                    <path d="M4.5 8.2c2.5.8 5 1.2 7.5 1.2s5-.4 7.5-1.2" />
+                    <path d="M12 9.4v5.2" />
+                    <path d="M12 14.6l-3.2 6.2" />
+                    <path d="M12 14.6l3.2 6.2" />
                 </svg>
             </div>
 

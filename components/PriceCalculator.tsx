@@ -124,7 +124,7 @@ const PriceCalculator: React.FC = () => {
     <div className="min-h-screen bg-brand-soft font-sans flex flex-col" dir="rtl">
       <Navbar />
 
-      <main className="flex-grow pt-[18vh] pb-24 px-[5vw] max-w-[900px] mx-auto w-full relative z-20">
+      <main className="flex-grow pt-[18vh] pb-[calc(12vw+4rem)] px-[5vw] max-w-[900px] mx-auto w-full relative z-20">
         <div className="mb-6">
           <a href="/" className="text-brand-dark hover:text-dark-coal font-medium flex items-center gap-2 transition-colors w-fit">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

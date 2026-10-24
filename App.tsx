@@ -40,6 +40,26 @@ const MainContent = ({ productSlug }: { productSlug?: string }) => {
         }
     }, [product]);
 
+    // פתיחת כניסת הניהול: ?admin בכתובת, או Ctrl+Shift+A
+    useEffect(() => {
+        const openAdmin = () => {
+            if (isAdmin) setShowAdminPanel(true);
+            else setShowPasswordModal(true);
+        };
+        const onKey = (e: KeyboardEvent) => {
+            if (e.ctrlKey && e.shiftKey && (e.key === 'A' || e.key === 'a' || e.code === 'KeyA')) {
+                e.preventDefault();
+                openAdmin();
+            }
+        };
+        window.addEventListener('keydown', onKey);
+        return () => window.removeEventListener('keydown', onKey);
+    }, [isAdmin]);
+
+    useEffect(() => {
+        if (new URLSearchParams(window.location.search).has('admin')) setShowPasswordModal(true);
+    }, []);
+
     const handleLoginSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const success = await login(passwordInput);
@@ -94,21 +114,8 @@ const MainContent = ({ productSlug }: { productSlug?: string }) => {
                 <Footer />
             </main>
 
-            {/* Hidden Admin Trigger - Bottom Left Corner */}
-            <div 
-                className="fixed bottom-0 left-0 w-12 h-12 z-[9999] cursor-pointer hover:bg-red-500/10 transition-colors"
-                onClick={(e) => {
-                    // Double click to open
-                    if (e.detail === 2) { 
-                        if (isAdmin) {
-                            setShowAdminPanel(true);
-                        } else {
-                            setShowPasswordModal(true);
-                        }
-                    }
-                }}
-                title="" 
-            />
+            {/* כניסת ניהול: הכפתור הנסתר בפינה הוסר (גולשים לחצו עליו בטעות והוא הפריע לכפתור הנגישות).
+                נכנסים עכשיו דרך הכתובת erech-musaf.co.il/?admin — או בקיצור המקלדת Ctrl+Shift+A. */}
 
             {/* Password Modal */}
             {showPasswordModal && (

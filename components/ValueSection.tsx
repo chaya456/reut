@@ -1,4 +1,5 @@
 
+import { optimizeImg } from '../utils/img';
 import React, { useRef, useState, useEffect } from 'react';
 import gsap from 'gsap';
 import { useContent } from '../context/ContentContext';
@@ -228,7 +229,7 @@ const ValueSection: React.FC<ValueSectionProps> = ({ id, data, title, subtitle }
                     aspectRatio="aspect-auto w-full h-full"
                 />
             ) : (
-                <img src={activeItem.after} alt={`${sectionTitle} - אחרי מיתוג וחריטה`} className="w-full h-full object-cover" draggable={false} loading="lazy" />
+                <img src={optimizeImg(activeItem.after, "lg")} alt={`${sectionTitle} - אחרי מיתוג וחריטה`} className="w-full h-full object-cover" draggable={false} loading="lazy" />
             )}
           </div>
           
@@ -244,7 +245,7 @@ const ValueSection: React.FC<ValueSectionProps> = ({ id, data, title, subtitle }
                     aspectRatio="aspect-auto w-full h-full"
                 />
             ) : (
-                <img src={activeItem.before} alt={`${sectionTitle} - לפני מיתוג וחריטה`} className="w-full h-full object-cover" draggable={false} loading="lazy" />
+                <img src={optimizeImg(activeItem.before, "lg")} alt={`${sectionTitle} - לפני מיתוג וחריטה`} className="w-full h-full object-cover" draggable={false} loading="lazy" />
             )}
           </div>
 

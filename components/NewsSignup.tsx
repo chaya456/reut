@@ -31,7 +31,7 @@ const NewsSignup: React.FC = () => {
   };
 
   return (
-    <section id="news-signup" className="news-head max-w-[860px] mx-auto bg-white shadow-xl border border-brand-light/40 px-6 py-8 md:px-10 md:py-10 text-center">
+    <section id="news-signup" className="max-w-[860px] mx-auto bg-white shadow-xl border border-brand-light/40 px-6 py-8 md:px-10 md:py-10 text-center">
       {isSuccess ? (
         <div>
           <h2 className="text-[clamp(24px,3vw,34px)] font-extrabold text-dark-coal">נרשמתם בהצלחה!</h2>

@@ -1,3 +1,4 @@
+import { optimizeImg } from '../utils/img';
 import React, { useState, useEffect } from 'react';
 import { useContent, defaultNewsPopup } from '../context/ContentContext';
 import { CONTACT_CONFIG } from '../formConfig';
@@ -74,7 +75,7 @@ const NewsPopupModal: React.FC = () => {
         {/* תמונה */}
         {popup.image && (
           <div className="w-full md:w-[45%] h-[22vh] md:h-auto relative shrink-0">
-            <img src={popup.image} alt={popup.title || 'ניוז'} className="w-full h-full object-cover" />
+            <img src={optimizeImg(popup.image, "lg")} alt={popup.title || 'ניוז'} className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent mix-blend-overlay"></div>
           </div>
         )}

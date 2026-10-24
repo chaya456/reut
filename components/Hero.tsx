@@ -1,4 +1,5 @@
 
+import { optimizeImg } from '../utils/img';
 import React, { useRef, useEffect, useState } from 'react';
 import gsap from 'gsap';
 import Logo from './Logo';
@@ -116,7 +117,7 @@ const Hero: React.FC<HeroProps> = ({ data }) => {
         {/* BACKGROUND LAYERS */}
         <div className="absolute inset-0 w-full h-full z-0">
             <img
-                src="https://i.postimg.cc/cHrJ308q/after.jpg"
+                src={optimizeImg("https://i.postimg.cc/cHrJ308q/after.jpg", "lg")}
                 alt="חריטה ומיתוג על מוצרים - אחרי"
                 className="w-full h-full object-cover object-center"
                 decoding="async"
@@ -132,7 +133,7 @@ const Hero: React.FC<HeroProps> = ({ data }) => {
                 }}
             >
                 <img
-                    src="https://i.postimg.cc/KzRYTxgh/befor.jpg"
+                    src={optimizeImg("https://i.postimg.cc/KzRYTxgh/befor.jpg", "lg")}
                     alt="חריטה ומיתוג על מוצרים - לפני"
                     className="w-full h-full object-cover object-center"
                 />

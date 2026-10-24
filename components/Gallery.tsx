@@ -1,3 +1,4 @@
+import { optimizeImg } from '../utils/img';
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { useContent } from '../context/ContentContext';
@@ -157,6 +158,7 @@ const Gallery: React.FC<GalleryProps> = ({ id, data, title, subtitle }) => {
                         ) : (
                             <LazyImage
                                 src={item.thumbnail}
+                                size={item.size === "large" ? "lg" : "sm"}
                                 alt={`חריטה ומיתוג אישי - ${item.title}`}
                                 className="absolute inset-0 w-full h-full object-cover"
                             />
@@ -201,7 +203,7 @@ const Gallery: React.FC<GalleryProps> = ({ id, data, title, subtitle }) => {
 
                         <img 
                             key={`${currentProject.id}-${currentImageIndex}`}
-                            src={currentProject.images[currentImageIndex].url} 
+                            src={optimizeImg(currentProject.images[currentImageIndex].url, "lg")} 
                             alt={`חריטה על ${currentProject.title} - ${currentProject.images[currentImageIndex].description || ''}`} 
                             onLoad={() => setIsImageLoading(false)}
                             className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-w-full max-h-[70vh] object-contain shadow-2xl z-10 transition-opacity duration-300 ease-out will-change-opacity ${isImageLoading ? 'opacity-0' : 'opacity-100'}`}
@@ -237,7 +239,7 @@ const Gallery: React.FC<GalleryProps> = ({ id, data, title, subtitle }) => {
                                     onClick={(e) => { e.stopPropagation(); if (idx !== currentImageIndex) { setIsImageLoading(true); setCurrentImageIndex(idx); } }}
                                     className={`w-[clamp(50px,6vw,80px)] h-[clamp(50px,6vw,80px)] shrink-0 cursor-pointer border-2 transition-all ${idx === currentImageIndex ? 'border-brand-dark opacity-100' : 'border-transparent opacity-50 hover:opacity-80'}`}
                                 >
-                                    <img src={imgObj.url} className="w-full h-full object-cover" alt={`תצוגה מקדימה - ${currentProject.title}`} />
+                                    <img src={optimizeImg(imgObj.url)} className="w-full h-full object-cover" alt={`תצוגה מקדימה - ${currentProject.title}`} />
                                 </div>
                             ))}
                         </div>

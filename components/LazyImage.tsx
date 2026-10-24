@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { optimizeImg } from '../utils/img';
 
 /**
  * תמונה שנטענת רק כשהיא מתקרבת לאזור התצוגה (IntersectionObserver).
@@ -14,9 +15,11 @@ const PLACEHOLDER =
 
 interface LazyImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   src: string;
+  /** גודל הגרסה המוקטנת: sm לכרטיסים (ברירת מחדל), lg לתמונות גדולות */
+  size?: 'sm' | 'lg';
 }
 
-const LazyImage: React.FC<LazyImageProps> = ({ src, ...rest }) => {
+const LazyImage: React.FC<LazyImageProps> = ({ src, size = 'sm', ...rest }) => {
   const ref = useRef<HTMLImageElement>(null);
   const [visible, setVisible] = useState(false);
 
@@ -42,7 +45,7 @@ const LazyImage: React.FC<LazyImageProps> = ({ src, ...rest }) => {
     return () => io.disconnect();
   }, [src]);
 
-  return <img ref={ref} src={visible ? src : PLACEHOLDER} decoding="async" {...rest} />;
+  return <img ref={ref} src={visible ? optimizeImg(src, size) : PLACEHOLDER} decoding="async" {...rest} />;
 };
 
 export default LazyImage;

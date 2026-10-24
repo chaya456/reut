@@ -18,7 +18,7 @@ const LegalPage: React.FC<LegalPageProps> = ({ title, content }) => {
         <div className="min-h-screen bg-brand-soft font-sans overflow-x-hidden w-full">
             <Navbar />
             
-            <main className="pt-32 pb-20 px-[5vw]">
+            <main className="pt-32 pb-[calc(12vw+4rem)] px-[5vw]">
                 <div className="max-w-[800px] mx-auto bg-white p-8 md:p-16 shadow-xl border border-brand-light/20 relative">
                     {/* Decorative accent */}
                     <div className="absolute top-0 right-0 w-24 h-24 border-t-4 border-r-4 border-brand-dark/10 m-4 pointer-events-none"></div>
