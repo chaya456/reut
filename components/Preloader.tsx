@@ -71,7 +71,11 @@ const Preloader: React.FC = () => {
   useLayoutEffect(() => {
     if (skip || !rootRef.current) return;
     const ctx = gsap.context(() => {
-      const strokes = gsap.utils.toArray<SVGPathElement>('.pre-logo #logo-character path');
+      // סדר הציור מימין לשמאל (כמו כתיבה בעברית): ממיינים את המשיכות לפי המיקום שלהן, מהימנית לשמאלית
+      const strokes = gsap.utils.toArray<SVGPathElement>('.pre-logo #logo-character path').sort((a, b) => {
+        const ca = a.getBBox(), cb = b.getBBox();
+        return (cb.x + cb.width / 2) - (ca.x + ca.width / 2);
+      });
       const ball = '.pre-logo #logo-ball';
 
       gsap.set('.pre-logo', { opacity: 1 });
@@ -89,8 +93,12 @@ const Preloader: React.FC = () => {
 
       const tl = gsap.timeline({ delay: 0.1 });
 
-      // 1. הכתב "רעות" מצטייר בקו, כאילו כותבים אותו ביד
-      tl.to(strokes, { strokeDashoffset: 0, duration: 1.0, ease: 'power2.inOut', stagger: 0.22 });
+      // 1. הכתב "רעות" מצטייר בקו, כאילו כותבים אותו ביד — וה"עט" נע מימין לשמאל (חשיפה הדרגתית)
+      tl.fromTo('.pre-logo svg',
+        { clipPath: 'inset(-25% -25% -25% 125%)' },
+        { clipPath: 'inset(-25% -25% -25% -25%)', duration: 1.4, ease: 'power1.inOut' }, 0)
+        .set('.pre-logo svg', { clipPath: 'none' }, 1.45);
+      tl.to(strokes, { strokeDashoffset: 0, duration: 1.0, ease: 'power2.inOut', stagger: 0.22 }, 0);
 
       // 2. המילוי "נשפך" פנימה והקו נעלם — עם קפיצה קטנה של כל הלוגו
       tl.to(strokes, { fillOpacity: 1, duration: 0.45, ease: 'power1.out', stagger: 0.06 }, 1.05)
@@ -98,7 +106,7 @@ const Preloader: React.FC = () => {
         .fromTo('.pre-logo', { scale: 1 }, { scale: 1.08, duration: 0.18, yoyo: true, repeat: 1, ease: 'power2.out' }, 1.15);
 
       // 3. הנקודה נופלת מלמעלה, נמעכת בנחיתה וקופצת כמו כדור
-      tl.addLabel('drop', 1.35);
+      tl.addLabel('drop', 1.5);
       tl.to(ball, { opacity: 1, duration: 0.01 }, 'drop')
         .to(ball, { y: 0, duration: 0.42, ease: 'power2.in' }, 'drop')
         .to(ball, { scaleX: 1.8, scaleY: 0.45, duration: 0.08, ease: 'power1.out' })
@@ -122,11 +130,11 @@ const Preloader: React.FC = () => {
 
       // 5. הסלוגן נכנס מענק ונשאר גדול
       tl.fromTo('.pre-line-1',
-        { scale: 4, opacity: 0, filter: 'blur(8px)' },
-        { scale: 1, opacity: 1, filter: 'blur(0px)', duration: 1.0, ease: 'expo.out' }, 1.0);
+        { scale: 4, x: 120, opacity: 0, filter: 'blur(8px)' },
+        { scale: 1, x: 0, opacity: 1, filter: 'blur(0px)', duration: 1.0, ease: 'expo.out' }, 1.0);
       tl.fromTo('.pre-line-2',
-        { scale: 4, opacity: 0, filter: 'blur(8px)' },
-        { scale: 1, opacity: 1, filter: 'blur(0px)', duration: 1.0, ease: 'expo.out' }, 1.45);
+        { scale: 4, x: 120, opacity: 0, filter: 'blur(8px)' },
+        { scale: 1, x: 0, opacity: 1, filter: 'blur(0px)', duration: 1.0, ease: 'expo.out' }, 1.45);
       // הלבבון קופץ בסוף "הערך שלנו"
       tl.fromTo('.pre-heart',
         { scale: 0, opacity: 0, rotation: -45 },
@@ -169,7 +177,7 @@ const Preloader: React.FC = () => {
       </div>
 
       {/* הסלוגן — ענק, צמוד, ונשאר גדול */}
-      <div className="flex flex-col items-center text-center font-black leading-[0.82] tracking-tight text-[clamp(52px,11vw,140px)] [@media(max-height:700px)]:text-[clamp(44px,9vh,110px)]">
+      <div className="flex flex-col items-center text-center font-black leading-[0.82] tracking-tight text-[clamp(38px,7vw,90px)] [@media(max-height:700px)]:text-[clamp(32px,6vh,72px)]">
         <span className="pre-line-1 block opacity-0 whitespace-nowrap text-brand-dark">המוצר שלכם</span>
         <span className="pre-line-2 flex items-center gap-[0.12em] opacity-0 whitespace-nowrap text-dark-coal">
           הערך שלנו

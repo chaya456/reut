@@ -19,7 +19,7 @@ const Hero: React.FC<HeroProps> = ({ data }) => {
   // אפקט "לפני/אחרי" בעקבות העכבר רלוונטי רק במכשירים עם עכבר אמיתי.
   // במגע (טלפון/טאבלט) אין מיקום עכבר, אז בלי הבדיקה הזו הייתה נשארת "חורית" קבועה
   // באמצע התמונה שמערבבת בין שתי התמונות - בדיוק הבאג שדווח.
-  const [hasHoverSupport, setHasHoverSupport] = useState(false);
+  const [hasHoverSupport, setHasHoverSupport] = useState(() => typeof window !== 'undefined' && window.matchMedia('(hover: hover) and (pointer: fine)').matches);
   const { content, isEditMode, updateHero } = useContent();
   const heroData = data || content.hero;
 
@@ -113,6 +113,7 @@ const Hero: React.FC<HeroProps> = ({ data }) => {
         className="relative w-full h-full bg-white overflow-hidden" 
         id="reveal-hero"
         onMouseMove={handleMouseMove}
+        onMouseLeave={() => setMousePos(null)}
       >
         {/* BACKGROUND LAYERS */}
         <div className="absolute inset-0 w-full h-full z-0">
@@ -124,13 +125,15 @@ const Hero: React.FC<HeroProps> = ({ data }) => {
             />
         </div>
 
-        {hasHoverSupport && mousePos && (
+        {/* תמונת ה"לפני" (בלי חריטה) מכסה את כל המסך מההתחלה; רק סביב העכבר נפתח "חור"
+            שחושף את החריטה מתחת. כשהעכבר יוצא מהאזור — התמונה חוזרת להיות שלמה. */}
+        {hasHoverSupport && (
             <div
                 className="absolute inset-0 w-full h-full z-10 pointer-events-none"
-                style={{
+                style={mousePos ? {
                     maskImage: `radial-gradient(circle 300px at ${mousePos.x} ${mousePos.y}, transparent 0%, black 100%)`,
                     WebkitMaskImage: `radial-gradient(circle 300px at ${mousePos.x} ${mousePos.y}, transparent 0%, black 100%)`
-                }}
+                } : undefined}
             >
                 <img
                     src={optimizeImg("https://i.postimg.cc/KzRYTxgh/befor.jpg", "lg")}
