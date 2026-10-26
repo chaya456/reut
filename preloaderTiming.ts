@@ -1,7 +1,7 @@
 // תיאום תזמון בין מסך הטעינה (Preloader) לחלוניות הקופצות.
 // המטרה: החלוניות יופיעו רק אחרי שמסך הטעינה נעלם והאתר כבר גלוי — לא לפני.
 
-export const PRELOADER_DURATION = 5000; // משך מסך הטעינה (מ"ש)
+export const PRELOADER_DURATION = 4000; // משך מסך הטעינה המקסימלי (מ"ש) — בפועל נגמר מוקדם יותר כשהתמונות מוכנות
 export const PRELOADER_FADE = 600;      // משך אנימציית ההיעלמות (מ"ש)
 export const PRELOADER_DONE_EVENT = 'reut:preloader-done';
 

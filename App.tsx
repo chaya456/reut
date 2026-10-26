@@ -6,7 +6,8 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ContentProvider, useContent } from './context/ContentContext';
 import SectionRenderer from './components/SectionRenderer';
-import AdminPanel from './components/AdminPanel';
+// לוח הבקרה נטען רק כשרעות פותחת אותו — כך גולשים רגילים מורידים פחות קוד והאתר עולה מהר יותר
+const AdminPanel = React.lazy(() => import('./components/AdminPanel'));
 import AdminToolbar from './components/editable/AdminToolbar';
 import ProductsDirectory from './components/ProductsDirectory';
 import PriceCalculator from './components/PriceCalculator';
@@ -183,7 +184,11 @@ const MainContent = ({ productSlug }: { productSlug?: string }) => {
             )}
 
             {/* Global Admin Panel */}
-            <AdminPanel isOpen={showAdminPanel && isAdmin} onClose={() => setShowAdminPanel(false)} />
+            {showAdminPanel && isAdmin && (
+                <React.Suspense fallback={null}>
+                    <AdminPanel isOpen onClose={() => setShowAdminPanel(false)} />
+                </React.Suspense>
+            )}
             
             {/* Floating Admin Toolbar */}
             <AdminToolbar />

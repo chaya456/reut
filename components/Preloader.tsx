@@ -35,7 +35,7 @@ const warmImages = (urls: string[]): Promise<void> =>
 
 // מסך הטעינה נשאר לפחות עד שההנפשה העיקרית הסתיימה, ולכל היותר PRELOADER_DURATION.
 // אם התמונות מוכנות מוקדם — נכנסים לאתר מוקדם, בלי לחכות סתם.
-const PRELOADER_MIN = 3200;
+const PRELOADER_MIN = 2400;
 
 const SPARKS = 8; // לבבונים קטנים שמתפזרים כשהכדור נוחת
 
@@ -129,6 +129,7 @@ const Preloader: React.FC = () => {
       gsap.set(ball, { transformOrigin: '50% 100%', y: -340, opacity: 0 });
 
       const tl = gsap.timeline({ delay: 0.1 });
+      tl.timeScale(1.35); // כל ההנפשה רצה מהר יותר, כדי שהכניסה לאתר תהיה זריזה
 
       // 1. הכתב "רעות" מצטייר בקו, כאילו כותבים אותו ביד — וה"עט" נע מימין לשמאל (חשיפה הדרגתית)
       tl.fromTo('.pre-logo svg',

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import Navbar from './Navbar';
 import Footer from './Footer';
-import LazyImage from './LazyImage';
+import { optimizeImg } from '../utils/img';
 import NewsSignup from './NewsSignup';
 import { useContent } from '../context/ContentContext';
 
@@ -33,16 +33,19 @@ const NewsPage: React.FC = () => {
       <main className="px-[5vw] pb-[calc(12vw+4rem)]">
         <div className="max-w-[1240px] mx-auto">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-            {items.map((item) => (
+            {items.map((item, i) => (
               <a
                 key={item.id}
                 href={`/news/${item.id}`}
-                className="group relative block overflow-hidden bg-white shadow-lg hover:shadow-2xl transition-shadow duration-300 aspect-[4/3]"
+                className="group relative block overflow-hidden bg-brand-light/30 shadow-lg hover:shadow-2xl transition-shadow duration-300 aspect-[4/3]"
                 aria-label={item.title}
               >
-                <LazyImage
-                  src={item.thumb || item.cover}
+                {/* תמונות קטנות וקלות — נטענות מיד (בלי לחכות לגלילה), כך שהלוח מופיע מהר */}
+                <img
+                  src={optimizeImg(item.thumb || item.cover)}
                   alt={item.title}
+                  loading={i < 6 ? 'eager' : 'lazy'}
+                  decoding="async"
                   className={`w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04] ${item.thumb ? 'object-center' : 'object-top'}`}
                 />
                 {/* שם הניוז — מופיע בריחוף על התמונה */}

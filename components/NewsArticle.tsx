@@ -28,9 +28,9 @@ const NewsArticle: React.FC<{ id: number }> = ({ id }) => {
     <div className="min-h-screen bg-brand-soft font-sans overflow-x-hidden w-full" dir="rtl">
       <Navbar />
 
-      <main className="pt-32 pb-[calc(12vw+4rem)] px-[5vw]">
+      <main className="pt-[clamp(150px,18vh,210px)] pb-[calc(12vw+4rem)] px-[5vw]">
         <div className="max-w-[760px] mx-auto">
-          <a href="/news" className="inline-flex items-center gap-2 text-brand-dark font-bold hover:text-dark-coal transition-colors mb-6">
+          <a href="/news" className="relative z-10 inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-brand-light text-brand-dark font-bold hover:bg-brand-dark hover:text-white transition-colors mb-6 shadow-sm">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6" /></svg>
             לכל הניוזים
           </a>
@@ -60,6 +60,14 @@ const NewsArticle: React.FC<{ id: number }> = ({ id }) => {
               )}
             </>
           )}
+
+          {/* חזרה ללוח הניוזים גם בסוף הניוז (אחרי גלילה בתמונה הארוכה) */}
+          <div className="mt-10 flex justify-center">
+            <a href="/news" className="inline-flex items-center gap-2 px-8 py-4 bg-dark-coal text-white font-bold text-[clamp(16px,1.5vw,19px)] hover:bg-brand-dark transition-colors shadow-lg">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6" /></svg>
+              לכל הניוזים
+            </a>
+          </div>
 
           <div className="mt-14">
             <NewsSignup />
